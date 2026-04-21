@@ -86,7 +86,7 @@ export default function Navigation({ currentPage }: { currentPage?: string }) {
   }
 
   const logoText = settings.logo_text || 'NUCHA'
-  const logoUrl = settings.logo_url
+  const logoUrl = settings.logo_url || '/logo-nucha.png'
 
   const navLabels = {
     home: settings.nav_home || 'หน้าแรก',

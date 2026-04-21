@@ -61,7 +61,7 @@ export default function NavigationClient({
   }
 
   const logoText = settings.logo_text || 'NUCHA'
-  const logoUrl = settings.logo_url
+  const logoUrl = settings.logo_url || '/logo-nucha.png'
 
   const navLinks = [
     { href: '/', label: navLabels.home },

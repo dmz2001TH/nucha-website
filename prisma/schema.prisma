@@ -1,0 +1,438 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id         String        @id @default(cuid())
+  email      String        @unique
+  password   String
+  name       String
+  role       Role          @default(VIEWER)
+  avatar     String?
+  isActive   Boolean       @default(true)
+  lastLogin  DateTime?
+  createdAt  DateTime      @default(now())
+  updatedAt  DateTime      @updatedAt
+  activities ActivityLog[]
+  inquiries  Inquiry[]     @relation("AssignedInquiries")
+
+  @@map("users")
+}
+
+model Portfolio {
+  id            String            @id @default(cuid())
+  title         String
+  titleEn       String?
+  slug          String            @unique
+  description   String
+  descriptionEn String?
+  location      String
+  year          Int
+  category      PortfolioCategory
+  status        ContentStatus     @default(PUBLISHED)
+  featured      Boolean           @default(false)
+  sortOrder     Int               @default(0)
+  coverImage    String
+  createdAt     DateTime          @default(now())
+  updatedAt     DateTime          @updatedAt
+  images        PortfolioImage[]
+
+  @@index([category])
+  @@index([status])
+  @@index([featured])
+  @@map("portfolios")
+}
+
+model PortfolioImage {
+  id          String    @id @default(cuid())
+  url         String
+  alt         String?
+  altEn       String?
+  sortOrder   Int       @default(0)
+  portfolioId String
+  createdAt   DateTime  @default(now())
+  portfolio   Portfolio @relation(fields: [portfolioId], references: [id], onDelete: Cascade)
+
+  @@map("portfolio_images")
+}
+
+model Villa {
+  id            String         @id @default(cuid())
+  name          String
+  nameEn        String?
+  slug          String         @unique
+  description   String
+  descriptionEn String?
+  location      String
+  price         Float
+  currency      String         @default("THB")
+  bedrooms      Int
+  bathrooms     Int
+  area          Float
+  landArea      Float
+  floors        Int            @default(1)
+  parking       Int            @default(0)
+  status        VillaStatus    @default(AVAILABLE)
+  featured      Boolean        @default(false)
+  sortOrder     Int            @default(0)
+  coverImage    String
+  latitude      Float?
+  longitude     Float?
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  inquiries     Inquiry[]      @relation("VillaInquiries")
+  features      VillaFeature[]
+  images        VillaImage[]
+
+  @@index([status])
+  @@index([featured])
+  @@index([price])
+  @@map("villas")
+}
+
+model VillaImage {
+  id        String   @id @default(cuid())
+  url       String
+  alt       String?
+  altEn     String?
+  sortOrder Int      @default(0)
+  villaId   String
+  createdAt DateTime @default(now())
+  villa     Villa    @relation(fields: [villaId], references: [id], onDelete: Cascade)
+
+  @@map("villa_images")
+}
+
+model VillaFeature {
+  id      String  @id @default(cuid())
+  name    String
+  nameEn  String?
+  icon    String?
+  villaId String
+  villa   Villa   @relation(fields: [villaId], references: [id], onDelete: Cascade)
+
+  @@map("villa_features")
+}
+
+model Service {
+  id            String        @id @default(cuid())
+  title         String
+  titleEn       String?
+  slug          String        @unique
+  description   String
+  descriptionEn String?
+  icon          String
+  sortOrder     Int           @default(0)
+  status        ContentStatus @default(PUBLISHED)
+  coverImage    String?
+  features      String?
+  whyChooseUs   String?
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  @@index([status])
+  @@map("services")
+}
+
+model Page {
+  id         String        @id @default(cuid())
+  title      String
+  titleEn    String?
+  slug       String        @unique
+  content    String
+  contentEn  String?
+  coverImage String?
+  status     ContentStatus @default(PUBLISHED)
+  createdAt  DateTime      @default(now())
+  updatedAt  DateTime      @updatedAt
+
+  @@index([status])
+  @@map("pages")
+}
+
+model Inquiry {
+  id           String          @id @default(cuid())
+  name         String
+  email        String
+  phone        String?
+  interest     InquiryInterest
+  message      String?
+  status       InquiryStatus   @default(NEW)
+  source       String          @default("website")
+  assignedToId String?
+  villaId      String?
+  notes        String?
+  createdAt    DateTime        @default(now())
+  updatedAt    DateTime        @updatedAt
+  assignedTo   User?           @relation("AssignedInquiries", fields: [assignedToId], references: [id])
+  villa        Villa?          @relation("VillaInquiries", fields: [villaId], references: [id])
+
+  @@index([status])
+  @@index([interest])
+  @@index([createdAt])
+  @@map("inquiries")
+}
+
+model Booking {
+  id        String        @id @default(cuid())
+  name      String
+  email     String
+  phone     String
+  date      DateTime
+  timeSlot  String
+  topic     String?
+  message   String?
+  status    BookingStatus @default(PENDING)
+  notes     String?
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+
+  @@index([date])
+  @@index([status])
+  @@map("bookings")
+}
+
+model Review {
+  id        String        @id @default(cuid())
+  name      String
+  nameEn    String?
+  role      String?
+  roleEn    String?
+  content   String
+  contentEn String?
+  rating    Int           @default(5)
+  avatar    String?
+  projectId String?
+  status    ContentStatus @default(PUBLISHED)
+  featured  Boolean       @default(false)
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+
+  @@index([status])
+  @@index([featured])
+  @@map("reviews")
+}
+
+model FAQ {
+  id         String        @id @default(cuid())
+  question   String
+  questionEn String?
+  answer     String
+  answerEn   String?
+  category   String        @default("general")
+  sortOrder  Int           @default(0)
+  status     ContentStatus @default(PUBLISHED)
+  createdAt  DateTime      @default(now())
+  updatedAt  DateTime      @updatedAt
+
+  @@index([status])
+  @@index([category])
+  @@index([sortOrder])
+  @@map("faqs")
+}
+
+model Media {
+  id           String   @id @default(cuid())
+  filename     String
+  originalName String
+  url          String
+  mimeType     String
+  size         Int
+  width        Int?
+  height       Int?
+  alt          String?
+  altEn        String?
+  folder       String   @default("uploads")
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@index([mimeType])
+  @@index([folder])
+  @@map("media")
+}
+
+model Setting {
+  id        String      @id @default(cuid())
+  key       String      @unique
+  value     String
+  type      SettingType @default(TEXT)
+  group     String      @default("general")
+  label     String
+  labelEn   String?
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+
+  @@index([group])
+  @@map("settings")
+}
+
+model ActivityLog {
+  id          String   @id @default(cuid())
+  action      String
+  entity      String
+  entityId    String
+  description String?
+  userId      String
+  ipAddress   String?
+  userAgent   String?
+  createdAt   DateTime @default(now())
+  user        User     @relation(fields: [userId], references: [id])
+
+  @@index([entity])
+  @@index([entityId])
+  @@index([userId])
+  @@index([createdAt])
+  @@map("activity_logs")
+}
+
+model Subscriber {
+  id        String           @id @default(cuid())
+  email     String           @unique
+  name      String?
+  status    SubscriberStatus @default(ACTIVE)
+  source    String           @default("website")
+  createdAt DateTime         @default(now())
+  updatedAt DateTime         @updatedAt
+
+  @@index([status])
+  @@index([email])
+  @@map("subscribers")
+}
+
+model Post {
+  id          String        @id @default(cuid())
+  title       String
+  titleEn     String?
+  slug        String        @unique
+  excerpt     String?
+  excerptEn   String?
+  content     String
+  contentEn   String?
+  coverImage  String?
+  category    String        @default("news")
+  tags        String?
+  authorId    String?
+  status      ContentStatus @default(DRAFT)
+  featured    Boolean       @default(false)
+  views       Int           @default(0)
+  publishedAt DateTime?
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  @@index([status])
+  @@index([category])
+  @@index([slug])
+  @@index([featured])
+  @@map("posts")
+}
+
+model Document {
+  id            String        @id @default(cuid())
+  title         String
+  titleEn       String?
+  description   String?
+  descriptionEn String?
+  filename      String
+  originalName  String
+  url           String
+  mimeType      String
+  size          Int
+  category      String        @default("brochure")
+  downloads     Int           @default(0)
+  status        ContentStatus @default(PUBLISHED)
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  @@index([status])
+  @@index([category])
+  @@map("documents")
+}
+
+model BeforeAfter {
+  id            String        @id @default(cuid())
+  title         String
+  titleEn       String?
+  description   String?
+  descriptionEn String?
+  beforeImage   String
+  afterImage    String
+  projectId     String?
+  sortOrder     Int           @default(0)
+  status        ContentStatus @default(PUBLISHED)
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  @@index([status])
+  @@index([sortOrder])
+  @@map("before_after")
+}
+
+enum Role {
+  ADMIN
+  EDITOR
+  VIEWER
+}
+
+enum PortfolioCategory {
+  RESIDENTIAL
+  COMMERCIAL
+  INTERIOR
+  ARCHITECTURE
+}
+
+enum VillaStatus {
+  AVAILABLE
+  RESERVED
+  SOLD
+  UNDER_CONSTRUCTION
+}
+
+enum InquiryInterest {
+  RESIDENTIAL_DESIGN
+  COMMERCIAL_PROJECT
+  INTERIOR_CONSULTATION
+  VILLA_PURCHASE
+  GENERAL_INQUIRY
+}
+
+enum InquiryStatus {
+  NEW
+  CONTACTED
+  IN_PROGRESS
+  QUALIFIED
+  CONVERTED
+  CLOSED
+}
+
+enum BookingStatus {
+  PENDING
+  CONFIRMED
+  CANCELLED
+  COMPLETED
+}
+
+enum SettingType {
+  TEXT
+  TEXTAREA
+  NUMBER
+  BOOLEAN
+  JSON
+  IMAGE
+  COLOR
+}
+
+enum SubscriberStatus {
+  ACTIVE
+  UNSUBSCRIBED
+}
+
+enum ContentStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+}

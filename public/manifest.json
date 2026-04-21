@@ -1,0 +1,21 @@
+{
+  "name": "NUCHA INNOVATION VILL PATTAYA",
+  "short_name": "NUCHA",
+  "description": "สถาปัตยกรรมแห่งอนาคต - การออกแบบบ้านหรูในพัทยา",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#C41E3A",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ],
+  "categories": ["business", "lifestyle"],
+  "lang": "th",
+  "dir": "ltr"
+}

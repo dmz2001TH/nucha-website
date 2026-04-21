@@ -1,0 +1,171 @@
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Thai+Looped:wght@300;400;500;600;700;800&display=swap');
+
+@import "tailwindcss";
+
+:root {
+  --background: #ffffff;
+  --foreground: #1a1c1c;
+  --primary: #D32F2F;
+  --primary-light: #ffdad6;
+  --primary-dark: #930010;
+  --gray-50: #F5F5F5;
+  --gray-100: #EEEEEE;
+  --gray-200: #E0E0E0;
+  --gray-500: #9E9E9E;
+  --gray-600: #757575;
+  --gray-900: #212121;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-primary: var(--primary);
+  --color-primary-light: var(--primary-light);
+  --color-primary-dark: var(--primary-dark);
+  --color-gray-50: var(--gray-50);
+  --color-gray-100: var(--gray-100);
+  --color-gray-200: var(--gray-200);
+  --color-gray-500: var(--gray-500);
+  --color-gray-600: var(--gray-600);
+  --color-gray-900: var(--gray-900);
+  --font-headline: 'Noto Sans Thai Looped', sans-serif;
+  --font-body: 'Noto Sans Thai Looped', sans-serif;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: 'Noto Sans Thai Looped', sans-serif;
+}
+
+.material-symbols-outlined {
+  font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+}
+
+.glass-nav {
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(24px);
+}
+
+.editorial-shadow {
+  box-shadow: 0px 24px 48px rgba(211, 47, 47, 0.1);
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--gray-100);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--gray-500);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--gray-600);
+}
+
+/* Selection color */
+::selection {
+  background: var(--primary);
+  color: white;
+}
+
+/* Smooth scrolling */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Focus styles */
+*:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+
+/* Animation utilities */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideIn {
+  from { transform: translateX(100%); }
+  to { transform: translateX(0); }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.5s ease-out forwards;
+}
+
+.animate-slide-in {
+  animation: slideIn 0.3s ease-out forwards;
+}
+
+/* Accordion hover effect */
+.accordion-item {
+  flex: 1;
+  transition: flex 1s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.accordion-item:hover,
+.accordion-item.active {
+  flex: 3;
+}
+
+@media (min-width: 1024px) {
+  .accordion-item[style*="--lg-grid-col"] {
+    grid-column: var(--lg-grid-col);
+    grid-row: var(--lg-grid-row);
+    flex: unset;
+    transition: none;
+  }
+  .accordion-item[style*="--lg-grid-col"]:hover,
+  .accordion-item[style*="--lg-grid-col"].active {
+    flex: unset;
+  }
+}
+
+/* Grayscale hover */
+.grayscale-hover {
+  filter: grayscale(100%);
+  transition: all 0.7s ease;
+}
+
+.grayscale-hover:hover {
+  filter: grayscale(0%);
+  transform: scale(1.05);
+}
+
+/* Form input focus */
+input:focus, select:focus, textarea:focus {
+  border-color: var(--primary) !important;
+  box-shadow: none !important;
+}
+
+/* Button hover */
+.btn-primary {
+  background: var(--primary);
+  color: white;
+  transition: all 0.2s ease;
+}
+
+.btn-primary:hover {
+  background: var(--primary-dark);
+  transform: scale(1.02);
+}
+
+/* Loading skeleton */
+.skeleton {
+  background: linear-gradient(90deg, var(--gray-100) 25%, var(--gray-50) 50%, var(--gray-100) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+@keyframes shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}

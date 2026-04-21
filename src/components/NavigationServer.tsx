@@ -1,5 +1,6 @@
 import NavigationClient from './NavigationClient'
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 interface SiteSettings {
   logo_url?: string
   logo_text?: string

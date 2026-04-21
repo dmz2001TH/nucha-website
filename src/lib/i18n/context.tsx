@@ -1,6 +1,6 @@
 'use client'
 
-import { createContext, useContext, useState, useEffect, ReactNode } from 'react'
+import { createContext, useContext, useState, useEffect, useCallback, ReactNode } from 'react'
 import { th } from './translations/th'
 import { en } from './translations/en'
 
@@ -21,26 +21,25 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
   const [language, setLanguageState] = useState<Language>('th')
   const [mounted, setMounted] = useState(false)
 
+  // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => {
-    setMounted(true)
-    // โหลดภาษาจาก localStorage
     const savedLang = localStorage.getItem('language') as Language
     if (savedLang && (savedLang === 'th' || savedLang === 'en')) {
       setLanguageState(savedLang)
     } else {
-      // ตรวจสอบภาษาจาก browser
       const browserLang = navigator.language.split('-')[0]
       if (browserLang === 'en') {
         setLanguageState('en')
       }
     }
+    setMounted(true)
   }, [])
 
-  const setLanguage = (lang: Language) => {
+  const setLanguage = useCallback((lang: Language) => {
     setLanguageState(lang)
     localStorage.setItem('language', lang)
     document.documentElement.lang = lang
-  }
+  }, [])
 
   const t = translations[language]
 

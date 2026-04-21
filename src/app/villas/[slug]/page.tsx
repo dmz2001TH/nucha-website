@@ -1,5 +1,7 @@
 'use client'
 
+import Link from 'next/link'
+
 import { useState, useEffect, use } from 'react'
 import Navigation from '@/components/Navigation'
 import Footer from '@/components/Footer'
@@ -98,10 +100,10 @@ export default function VillaDetailPage({ params }: { params: Promise<{ slug: st
             <span className="material-symbols-outlined text-8xl text-gray-300 mb-4 block">home</span>
             <h1 className="text-3xl font-headline font-black text-gray-900 mb-2">ไม่พบวิลล่า</h1>
             <p className="text-gray-500 mb-6">วิลล่าที่คุณค้นหาไม่พบในระบบ</p>
-            <a href="/villas" className="inline-flex items-center gap-2 bg-primary text-white px-8 py-3 font-headline font-bold text-sm rounded-lg hover:bg-primary-dark transition-all">
+            <Link href="/villas" className="inline-flex items-center gap-2 bg-primary text-white px-8 py-3 font-headline font-bold text-sm rounded-lg hover:bg-primary-dark transition-all">
               <span className="material-symbols-outlined text-[18px]">arrow_back</span>
               กลับไปรายการวิลล่า
-            </a>
+            </Link>
           </div>
         </main>
         <Footer />
@@ -120,9 +122,9 @@ export default function VillaDetailPage({ params }: { params: Promise<{ slug: st
         <div className="max-w-[1600px] mx-auto px-4 sm:px-6 md:px-10">
           {/* Breadcrumb */}
           <div className="mb-6 flex items-center gap-2 text-sm text-gray-500 font-body">
-            <a href="/" className="hover:text-primary transition-colors">หน้าแรก</a>
+            <Link href="/" className="hover:text-primary transition-colors">หน้าแรก</Link>
             <span className="material-symbols-outlined text-[16px]">chevron_right</span>
-            <a href="/villas" className="hover:text-primary transition-colors">วิลล่า</a>
+            <Link href="/villas" className="hover:text-primary transition-colors">วิลล่า</Link>
             <span className="material-symbols-outlined text-[16px]">chevron_right</span>
             <span className="text-gray-900 font-bold">{villa.name}</span>
           </div>
@@ -259,20 +261,18 @@ export default function VillaDetailPage({ params }: { params: Promise<{ slug: st
                 </div>
 
                 <div className="space-y-3 mb-8">
-                  <a
-                    href="/contact"
+                  <Link href="/contact"
                     className="w-full bg-primary text-white py-4 font-headline font-bold text-base rounded-xl hover:bg-primary-dark transition-all flex items-center justify-center gap-2 shadow-xl shadow-red-500/20"
                   >
                     <span className="material-symbols-outlined text-[20px]">mail</span>
                     สอบถามรายละเอียด
-                  </a>
-                  <a
-                    href="/booking"
+                  </Link>
+                  <Link href="/booking"
                     className="w-full bg-white text-gray-900 border-2 border-gray-200 py-4 font-headline font-bold text-base rounded-xl hover:border-primary hover:text-primary transition-all flex items-center justify-center gap-2"
                   >
                     <span className="material-symbols-outlined text-[20px]">calendar_month</span>
                     นัดชมโครงการ
-                  </a>
+                  </Link>
                 </div>
 
                 <div className="pt-6 border-t border-gray-100">

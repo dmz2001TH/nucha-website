@@ -3,7 +3,6 @@ import { NextRequest, NextResponse } from 'next/server'
 const rateLimitMap = new Map<string, { count: number; resetTime: number }>()
 
 const RATE_LIMIT_WINDOW = 60 * 1000
-const RATE_LIMIT_MAX_REQUESTS = 60
 const API_RATE_LIMIT = 30
 
 function getRateLimitKey(request: NextRequest): string {

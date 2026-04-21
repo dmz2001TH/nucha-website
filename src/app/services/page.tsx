@@ -1,5 +1,7 @@
 'use client'
 
+import Link from 'next/link'
+
 import { useState, useEffect } from 'react'
 import Navigation from '@/components/Navigation'
 import Footer from '@/components/Footer'
@@ -14,7 +16,7 @@ interface Service {
 }
 
 export default function ServicesPage() {
-  const [activeService, setActiveService] = useState(0)
+  const [_activeService] = useState(0)
   const [services, setServices] = useState<Service[]>([])
   const [loading, setLoading] = useState(true)
 
@@ -126,7 +128,7 @@ export default function ServicesPage() {
         <section className="px-5 sm:px-8 md:px-12 mb-12 sm:mb-16">
           <div className="max-w-[1400px] mx-auto">
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              {services.map((service, index) => (
+              {services.map((service) => (
                 <a
                   key={service.id}
                   href={`/services/${encodeURIComponent(service.title)}`}
@@ -199,10 +201,10 @@ export default function ServicesPage() {
                     </ul>
                   </div>
 
-                  <a href="/contact" className="inline-flex items-center gap-2 bg-primary text-white px-8 py-3 font-headline font-bold text-sm tracking-widest rounded-lg hover:bg-primary-dark transition-all shadow-lg shadow-red-500/20">
+                  <Link href="/contact" className="inline-flex items-center gap-2 bg-primary text-white px-8 py-3 font-headline font-bold text-sm tracking-widest rounded-lg hover:bg-primary-dark transition-all shadow-lg shadow-red-500/20">
                     <span className="material-symbols-outlined text-[18px]">mail</span>
                     สอบถามบริการนี้
-                  </a>
+                  </Link>
                 </div>
               </div>
             </div>

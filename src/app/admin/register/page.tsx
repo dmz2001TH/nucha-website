@@ -1,5 +1,7 @@
 'use client'
 
+import Link from 'next/link'
+
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 
@@ -148,9 +150,9 @@ export default function RegisterPage() {
           <div className="mt-6 text-center">
             <p className="text-sm text-gray-500">
               มีบัญชีอยู่แล้ว?{' '}
-              <a href="/admin/login" className="text-primary font-bold hover:underline">
+              <Link href="/admin/login" className="text-primary font-bold hover:underline">
                 เข้าสู่ระบบ
-              </a>
+              </Link>
             </p>
           </div>
         </div>

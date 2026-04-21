@@ -1,5 +1,7 @@
 'use client'
 
+import Link from 'next/link'
+
 import { useState, useEffect } from 'react'
 import Navigation from '@/components/Navigation'
 import Footer from '@/components/Footer'
@@ -72,14 +74,14 @@ function HeroSection() {
 
         <div className="lg:col-span-5 xl:col-span-4 hidden lg:block">
           <div className="border-l-2 border-primary/20 pl-8 space-y-6">
-            <a href="/portfolio" className="group cursor-pointer block">
+            <Link href="/portfolio" className="group cursor-pointer block">
               <span className="block text-[0.65rem] tracking-widest text-primary font-bold uppercase mb-1 font-headline">แบบ</span>
               <h3 className="text-xl font-headline text-gray-900 group-hover:text-primary transition-colors">{sidebarProject}</h3>
-            </a>
-            <a href="/portfolio" className="group cursor-pointer block">
+            </Link>
+            <Link href="/portfolio" className="group cursor-pointer block">
               <span className="block text-[0.65rem] tracking-widest text-primary font-bold uppercase mb-1 font-headline">สถานะ</span>
               <h3 className="text-xl font-headline text-gray-900 group-hover:text-primary transition-colors">{sidebarStatus}</h3>
-            </a>
+            </Link>
             <div className="pt-4 border-t border-gray-200">
               <p className="text-4xl font-headline font-black text-primary" style={{textShadow: '2px 2px 0px white'}}>{stat1Value}</p>
               <p className="text-sm text-gray-900 font-body font-semibold" style={{textShadow: '2px 2px 0px white'}}>{stat1Label}</p>
@@ -191,13 +193,12 @@ function ServicesSection() {
         </div>
 
         <div className="text-center mt-10 sm:mt-12">
-          <a
-            href="/services"
+          <Link href="/services"
             className="inline-flex items-center gap-3 bg-primary text-white px-8 sm:px-10 py-4 font-headline font-bold text-sm tracking-wider rounded-xl hover:bg-primary-dark transition-all shadow-xl shadow-red-500/20"
           >
             <span className="material-symbols-outlined text-[20px]">grid_view</span>
             ดูบริการทั้งหมด
-          </a>
+          </Link>
         </div>
       </div>
     </section>
@@ -256,9 +257,9 @@ function PortfolioSection() {
               ผลงานการออกแบบที่โดดเด่น
             </p>
           </div>
-          <a href="/portfolio" className="text-xs font-headline tracking-[0.3em] uppercase font-bold text-gray-500 hover:text-primary transition-colors flex items-center gap-2">
+          <Link href="/portfolio" className="text-xs font-headline tracking-[0.3em] uppercase font-bold text-gray-500 hover:text-primary transition-colors flex items-center gap-2">
             ดูทั้งหมด <span className="material-symbols-outlined text-[16px]">arrow_forward</span>
-          </a>
+          </Link>
         </div>
 
         <div className="flex flex-col sm:flex-row lg:grid lg:grid-cols-12 gap-4 sm:gap-4 lg:gap-6 lg:auto-rows-[300px]">

@@ -1,5 +1,7 @@
 'use client'
 
+import Link from 'next/link'
+
 import { useState, useEffect } from 'react'
 
 interface SessionUser {
@@ -21,6 +23,18 @@ export default function NavigationClient({
   const [openDropdown, setOpenDropdown] = useState<string | null>(null)
   const [sessionUser, setSessionUser] = useState<SessionUser | null>(null)
 
+  const fetchSession = async () => {
+    try {
+      const res = await fetch('/api/auth/session')
+      const data = await res.json()
+      if (data?.user) {
+        setSessionUser(data.user)
+      }
+    } catch {
+      // ไม่มี session
+    }
+  }
+
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 20)
     window.addEventListener('scroll', handleScroll)
@@ -37,20 +51,8 @@ export default function NavigationClient({
   }, [isMenuOpen])
 
   useEffect(() => {
-    fetchSession()
+    fetchSession() // eslint-disable-line react-hooks/set-state-in-effect
   }, [])
-
-  const fetchSession = async () => {
-    try {
-      const res = await fetch('/api/auth/session')
-      const data = await res.json()
-      if (data?.user) {
-        setSessionUser(data.user)
-      }
-    } catch {
-      // ไม่มี session
-    }
-  }
 
   const isActive = (href: string) => {
     if (href === '/') return currentPage === 'home'
@@ -90,8 +92,7 @@ export default function NavigationClient({
       >
         <div className="flex justify-between items-center px-5 sm:px-8 md:px-12 lg:px-16 pt-2 md:pt-3 pb-4 md:pb-5 max-w-[1920px] mx-auto">
           {logoUrl && (
-            <a
-              href="/"
+            <Link href="/"
               className="flex items-center gap-3 hover:opacity-80 transition-opacity"
             >
               <img
@@ -103,7 +104,7 @@ export default function NavigationClient({
                 className="h-10 sm:h-12 md:h-16 w-auto object-contain"
                 loading="eager"
               />
-            </a>
+            </Link>
           )}
 
           {/* Desktop Navigation */}
@@ -156,40 +157,36 @@ export default function NavigationClient({
                 )}
               </div>
             ))}
-            <a
-              href="/booking"
+            <Link href="/booking"
               className="inline-flex items-center gap-2 bg-primary text-white px-5 xl:px-6 py-2.5 font-headline font-bold text-xs xl:text-sm tracking-wider rounded-lg hover:bg-primary-dark hover:scale-105 duration-200 ease-out transition-all shadow-lg shadow-red-500/20"
             >
               <span className="material-symbols-outlined text-[18px]">event</span>
               จองคิว
-            </a>
+            </Link>
           </div>
 
           <div className="flex items-center gap-3">
             {sessionUser ? (
-              <a
-                href="/admin"
+              <Link href="/admin"
                 className="hidden lg:inline-flex items-center gap-2 text-gray-600 hover:text-primary font-headline font-bold text-xs xl:text-sm tracking-wider transition-colors"
               >
                 <span className="material-symbols-outlined text-[18px]">manage_accounts</span>
                 {sessionUser.name || sessionUser.email}
-              </a>
+              </Link>
             ) : (
               <>
-                <a
-                  href="/admin/login"
+                <Link href="/admin/login"
                   className="hidden lg:inline-flex items-center gap-2 text-gray-600 hover:text-primary font-headline font-bold text-xs xl:text-sm tracking-wider transition-colors"
                 >
                   <span className="material-symbols-outlined text-[18px]">person</span>
                   เข้าสู่ระบบ
-                </a>
-                <a
-                  href="/admin/register"
+                </Link>
+                <Link href="/admin/register"
                   className="hidden lg:inline-flex bg-primary text-white px-5 xl:px-6 py-2.5 font-headline font-bold text-xs xl:text-sm tracking-wider rounded-lg hover:bg-primary-dark hover:scale-105 duration-200 ease-out transition-all shadow-lg shadow-red-500/20 items-center gap-2"
                 >
                   <span className="material-symbols-outlined text-[18px]">how_to_reg</span>
                   สมัครสมาชิก
-                </a>
+                </Link>
               </>
             )}
 
@@ -246,45 +243,41 @@ export default function NavigationClient({
                       {link.label}
                     </a>
                   ))}
-                  <a
-                    href="/booking"
+                  <Link href="/booking"
                     onClick={() => setIsMenuOpen(false)}
                     className="flex items-center justify-center gap-2 mt-4 bg-primary text-white py-4 rounded-xl font-headline font-bold text-sm tracking-wider hover:bg-primary-dark transition-colors shadow-lg shadow-red-500/20"
                   >
                     <span className="material-symbols-outlined text-[20px]">event</span>
                     จองคิวปรึกษา
-                  </a>
+                  </Link>
                 </div>
               </div>
 
               <div className="px-6 py-6 border-t border-gray-100 space-y-3">
                 {sessionUser ? (
-                  <a
-                    href="/admin"
+                  <Link href="/admin"
                     onClick={() => setIsMenuOpen(false)}
                     className="flex items-center justify-center gap-2 w-full bg-white text-primary border-2 border-primary py-3.5 rounded-xl font-headline font-bold text-sm tracking-wider hover:bg-primary/5 transition-colors"
                   >
                     <span className="material-symbols-outlined text-[20px]">manage_accounts</span>
                     {sessionUser.name || sessionUser.email}
-                  </a>
+                  </Link>
                 ) : (
                   <>
-                    <a
-                      href="/admin/login"
+                    <Link href="/admin/login"
                       onClick={() => setIsMenuOpen(false)}
                       className="flex items-center justify-center gap-2 w-full bg-white text-primary border-2 border-primary py-3.5 rounded-xl font-headline font-bold text-sm tracking-wider hover:bg-primary/5 transition-colors"
                     >
                       <span className="material-symbols-outlined text-[20px]">person</span>
                       เข้าสู่ระบบ
-                    </a>
-                    <a
-                      href="/admin/register"
+                    </Link>
+                    <Link href="/admin/register"
                       onClick={() => setIsMenuOpen(false)}
                       className="flex items-center justify-center gap-2 w-full bg-primary text-white py-4 rounded-xl font-headline font-bold text-sm tracking-wider hover:bg-primary-dark transition-colors shadow-lg shadow-red-500/20"
                     >
                       <span className="material-symbols-outlined text-[20px]">how_to_reg</span>
                       สมัครสมาชิก
-                    </a>
+                    </Link>
                   </>
                 )}
               </div>

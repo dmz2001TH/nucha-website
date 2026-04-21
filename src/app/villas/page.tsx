@@ -1,5 +1,7 @@
 'use client'
 
+import Link from 'next/link'
+
 import { useState, useEffect } from 'react'
 import Navigation from '@/components/Navigation'
 import Footer from '@/components/Footer'
@@ -236,10 +238,10 @@ export default function VillasPage() {
             <p className="text-gray-600 font-body mb-6 sm:mb-8 text-sm sm:text-base">
               ติดต่อเราเพื่อรับข้อมูลวิลล่าที่กำลังจะเปิดตัว หรือสร้างวิลล่าในฝันตามแบบที่คุณต้องการ
             </p>
-            <a href="/contact" className="inline-flex items-center gap-2 bg-primary text-white px-8 sm:px-12 py-3 sm:py-4 font-headline font-bold text-xs sm:text-sm tracking-widest rounded-lg hover:bg-primary-dark transition-all shadow-xl shadow-red-500/20">
+            <Link href="/contact" className="inline-flex items-center gap-2 bg-primary text-white px-8 sm:px-12 py-3 sm:py-4 font-headline font-bold text-xs sm:text-sm tracking-widest rounded-lg hover:bg-primary-dark transition-all shadow-xl shadow-red-500/20">
               <span className="material-symbols-outlined text-[18px]">mail</span>
               ติดต่อเรา
-            </a>
+            </Link>
           </div>
         </section>
       </main>

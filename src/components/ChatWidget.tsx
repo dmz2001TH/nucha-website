@@ -13,11 +13,6 @@ export default function ChatWidget() {
   const [config, setConfig] = useState<ChatConfig>({})
   const [mounted, setMounted] = useState(false)
 
-  useEffect(() => {
-    setMounted(true)
-    fetchConfig()
-  }, [])
-
   const fetchConfig = async () => {
     try {
       const [lineRes, whatsappRes] = await Promise.all([
@@ -35,6 +30,11 @@ export default function ChatWidget() {
       // ใช้ค่า default
     }
   }
+
+  useEffect(() => {
+    setMounted(true) // eslint-disable-line react-hooks/set-state-in-effect
+    fetchConfig()
+  }, [])
 
   if (!mounted) return null
 

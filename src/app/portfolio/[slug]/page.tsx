@@ -1,5 +1,7 @@
 'use client'
 
+import Link from 'next/link'
+
 import { useState, useEffect, useCallback } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import Navigation from '@/components/Navigation'
@@ -251,14 +253,14 @@ export default function PortfolioDetailPage() {
               <div className="bg-gray-900 rounded-2xl p-6 text-white">
                 <h3 className="font-headline font-black text-lg mb-2">สนใจโครงการนี้?</h3>
                 <p className="text-white/60 font-body text-sm mb-5 leading-relaxed">ติดต่อทีมงานของเราเพื่อรับข้อมูลเพิ่มเติมและขอรับใบเสนอราคา</p>
-                <a href="/contact" className="flex items-center justify-center gap-2 bg-primary text-white px-6 py-3 font-headline font-bold text-sm tracking-wider rounded-xl hover:bg-red-700 transition-all w-full mb-3">
+                <Link href="/contact" className="flex items-center justify-center gap-2 bg-primary text-white px-6 py-3 font-headline font-bold text-sm tracking-wider rounded-xl hover:bg-red-700 transition-all w-full mb-3">
                   <span className="material-symbols-outlined text-[18px]">mail</span>
                   ติดต่อเรา
-                </a>
-                <a href="/booking" className="flex items-center justify-center gap-2 border border-white/20 text-white/80 px-6 py-3 font-headline font-bold text-sm tracking-wider rounded-xl hover:border-white hover:text-white transition-all w-full">
+                </Link>
+                <Link href="/booking" className="flex items-center justify-center gap-2 border border-white/20 text-white/80 px-6 py-3 font-headline font-bold text-sm tracking-wider rounded-xl hover:border-white hover:text-white transition-all w-full">
                   <span className="material-symbols-outlined text-[18px]">event</span>
                   นัดปรึกษา
-                </a>
+                </Link>
               </div>
 
               {/* Share */}
@@ -273,10 +275,10 @@ export default function PortfolioDetailPage() {
               </div>
 
               {/* Back to portfolio */}
-              <a href="/portfolio" className="flex items-center justify-center gap-2 border border-gray-200 text-gray-600 px-6 py-3 font-headline font-bold text-sm tracking-wider rounded-xl hover:border-primary hover:text-primary transition-all w-full">
+              <Link href="/portfolio" className="flex items-center justify-center gap-2 border border-gray-200 text-gray-600 px-6 py-3 font-headline font-bold text-sm tracking-wider rounded-xl hover:border-primary hover:text-primary transition-all w-full">
                 <span className="material-symbols-outlined text-[18px]">grid_view</span>
                 ดูผลงานทั้งหมด
-              </a>
+              </Link>
             </div>
           </div>
 
@@ -288,7 +290,7 @@ export default function PortfolioDetailPage() {
                   <span className="text-primary text-[0.6rem] sm:text-xs tracking-[0.3em] sm:tracking-[0.4em] uppercase font-bold mb-1 block font-headline">ดูเพิ่มเติม</span>
                   <h2 className="text-2xl sm:text-3xl font-headline font-black text-gray-900">ผลงานที่เกี่ยวข้อง</h2>
                 </div>
-                <a href="/portfolio" className="text-sm font-headline font-bold text-primary hover:underline hidden sm:block">ดูทั้งหมด →</a>
+                <Link href="/portfolio" className="text-sm font-headline font-bold text-primary hover:underline hidden sm:block">ดูทั้งหมด →</Link>
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6">
                 {related.map((p) => (

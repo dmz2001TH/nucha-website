@@ -94,16 +94,3 @@ declare module 'next-auth' {
     }
   }
 }
-
-// Extend JWT type for NextAuth v5
-type JWT = {
-  id: string
-  role: 'ADMIN' | 'EDITOR' | 'VIEWER'
-  avatar: string | null
-  sub?: string
-  name?: string | null
-  email?: string | null
-  iat?: number
-  exp?: number
-  jti?: string
-}

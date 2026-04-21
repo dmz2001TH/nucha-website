@@ -24,6 +24,14 @@ export default function BeforeAfterSlider({ items, className = '' }: BeforeAfter
 
   const currentItem = items[currentIndex]
 
+  const updateSliderPosition = (clientX: number) => {
+    if (!containerRef.current) return
+    const rect = containerRef.current.getBoundingClientRect()
+    const x = clientX - rect.left
+    const percentage = Math.max(0, Math.min(100, (x / rect.width) * 100))
+    setSliderPosition(percentage)
+  }
+
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
       if (!isDragging || !containerRef.current) return
@@ -53,14 +61,6 @@ export default function BeforeAfterSlider({ items, className = '' }: BeforeAfter
       document.removeEventListener('touchend', handleMouseUp)
     }
   }, [isDragging])
-
-  const updateSliderPosition = (clientX: number) => {
-    if (!containerRef.current) return
-    const rect = containerRef.current.getBoundingClientRect()
-    const x = clientX - rect.left
-    const percentage = Math.max(0, Math.min(100, (x / rect.width) * 100))
-    setSliderPosition(percentage)
-  }
 
   const handleStart = (e: React.MouseEvent | React.TouchEvent) => {
     e.preventDefault()

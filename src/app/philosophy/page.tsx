@@ -1,5 +1,7 @@
 'use client'
 
+import Link from 'next/link'
+
 import { useState, useEffect } from 'react'
 import Navigation from '@/components/Navigation'
 import Footer from '@/components/Footer'
@@ -153,14 +155,14 @@ export default function PhilosophyPage() {
                 </p>
               )}
               <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
-                <a href="/contact" className="inline-flex items-center justify-center gap-2 bg-primary text-white px-6 sm:px-8 py-3 font-headline font-bold text-xs tracking-widest uppercase rounded-lg hover:bg-primary-dark transition-all">
+                <Link href="/contact" className="inline-flex items-center justify-center gap-2 bg-primary text-white px-6 sm:px-8 py-3 font-headline font-bold text-xs tracking-widest uppercase rounded-lg hover:bg-primary-dark transition-all">
                   <span className="material-symbols-outlined text-[18px]">mail</span>
                   ติดต่อเรา
-                </a>
-                <a href="/portfolio" className="inline-flex items-center justify-center gap-2 border border-gray-300 text-gray-700 px-6 sm:px-8 py-3 font-headline font-bold text-xs tracking-widest uppercase rounded-lg hover:border-primary hover:text-primary transition-all">
+                </Link>
+                <Link href="/portfolio" className="inline-flex items-center justify-center gap-2 border border-gray-300 text-gray-700 px-6 sm:px-8 py-3 font-headline font-bold text-xs tracking-widest uppercase rounded-lg hover:border-primary hover:text-primary transition-all">
                   <span className="material-symbols-outlined text-[18px]">visibility</span>
                   ดูผลงาน
-                </a>
+                </Link>
               </div>
             </div>
             <div className="relative">
@@ -308,10 +310,10 @@ export default function PhilosophyPage() {
             <p className="text-gray-600 font-body mb-6 sm:mb-8 text-sm sm:text-base">
               ติดต่อเราเพื่อปรึกษาเกี่ยวกับบ้านในฝันของคุณ
             </p>
-            <a href="/contact" className="inline-flex items-center gap-2 bg-primary text-white px-8 sm:px-12 py-3 sm:py-4 font-headline font-bold text-xs sm:text-sm tracking-widest uppercase rounded-lg hover:bg-primary-dark transition-all shadow-xl shadow-red-500/20">
+            <Link href="/contact" className="inline-flex items-center gap-2 bg-primary text-white px-8 sm:px-12 py-3 sm:py-4 font-headline font-bold text-xs sm:text-sm tracking-widest uppercase rounded-lg hover:bg-primary-dark transition-all shadow-xl shadow-red-500/20">
               <span className="material-symbols-outlined text-[18px]">mail</span>
               ติดต่อเรา
-            </a>
+            </Link>
           </div>
         </section>
       </main>

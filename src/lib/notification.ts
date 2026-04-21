@@ -157,7 +157,7 @@ export async function sendTestLineNotify() {
     } else {
       return { success: false, message: 'Token ไม่ถูกต้องหรือหมดอายุ' }
     }
-  } catch (error) {
+  } catch {
     return { success: false, message: 'เกิดข้อผิดพลาดในการส่ง' }
   }
 }

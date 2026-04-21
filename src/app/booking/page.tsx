@@ -1,6 +1,8 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import Link from 'next/link'
+
+import { useState } from 'react'
 import Navigation from '@/components/Navigation'
 import Footer from '@/components/Footer'
 
@@ -443,12 +445,11 @@ export default function BookingPage() {
                   </div>
                 </div>
                 <div className="flex flex-col sm:flex-row gap-3">
-                  <a
-                    href="/"
+                  <Link href="/"
                     className="flex-1 bg-primary text-white py-3 font-headline font-bold text-sm rounded-lg hover:bg-primary-dark transition-all"
                   >
                     กลับหน้าแรก
-                  </a>
+                  </Link>
                   <button
                     onClick={() => {
                       setStep(1)

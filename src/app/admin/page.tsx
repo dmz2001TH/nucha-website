@@ -283,8 +283,7 @@ export default function AdminDashboard() {
       <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 mb-8">
         <h2 className="text-lg font-headline font-bold text-gray-900 mb-4">ส่งออกข้อมูล</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <a
-            href="/api/export?type=bookings"
+          <Link href="/api/export?type=bookings"
             className="flex items-center gap-4 p-4 bg-gray-50 rounded-lg hover:bg-primary hover:text-white transition-all group"
           >
             <div className="w-12 h-12 bg-primary/10 group-hover:bg-white/20 rounded-lg flex items-center justify-center">
@@ -295,9 +294,8 @@ export default function AdminDashboard() {
               <p className="text-sm text-gray-500 group-hover:text-white/80">ดาวน์โหลดเป็น Excel</p>
             </div>
             <span className="material-symbols-outlined ml-auto">download</span>
-          </a>
-          <a
-            href="/api/export?type=inquiries"
+          </Link>
+          <Link href="/api/export?type=inquiries"
             className="flex items-center gap-4 p-4 bg-gray-50 rounded-lg hover:bg-primary hover:text-white transition-all group"
           >
             <div className="w-12 h-12 bg-primary/10 group-hover:bg-white/20 rounded-lg flex items-center justify-center">
@@ -308,7 +306,7 @@ export default function AdminDashboard() {
               <p className="text-sm text-gray-500 group-hover:text-white/80">ดาวน์โหลดเป็น Excel</p>
             </div>
             <span className="material-symbols-outlined ml-auto">download</span>
-          </a>
+          </Link>
         </div>
       </div>
 

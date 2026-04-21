@@ -1,5 +1,7 @@
 'use client'
 
+import Link from 'next/link'
+
 import { useState, useEffect } from 'react'
 
 interface SiteSettings {
@@ -18,10 +20,6 @@ interface SiteSettings {
 export default function Footer() {
   const [settings, setSettings] = useState<SiteSettings>({})
 
-  useEffect(() => {
-    fetchSettings()
-  }, [])
-
   const fetchSettings = async () => {
     try {
       const res = await fetch('/api/settings')
@@ -35,6 +33,10 @@ export default function Footer() {
       }
     } catch {}
   }
+
+  useEffect(() => {
+    fetchSettings() // eslint-disable-line react-hooks/set-state-in-effect
+  }, [])
 
   const siteName = settings.site_name || 'NUCHA INNOVATION'
   const tagline = settings.site_tagline || 'สถาปัตยกรรมแห่งอนาคต'
@@ -153,12 +155,12 @@ export default function Footer() {
             © 2024 {siteName}. ความเป็นเลิศทางสถาปัตยกรรม
           </p>
           <div className="flex flex-wrap justify-center gap-4 sm:gap-6">
-            <a href="/contact" className="font-body text-xs tracking-widest uppercase text-gray-500 hover:text-primary transition-colors">
+            <Link href="/contact" className="font-body text-xs tracking-widest uppercase text-gray-500 hover:text-primary transition-colors">
               สำนักงานพัทยา
-            </a>
-            <a href="/contact" className="font-body text-xs tracking-widest uppercase text-gray-500 hover:text-primary transition-colors">
+            </Link>
+            <Link href="/contact" className="font-body text-xs tracking-widest uppercase text-gray-500 hover:text-primary transition-colors">
               ติดต่อเรา
-            </a>
+            </Link>
           </div>
         </div>
       </div>

@@ -40,7 +40,8 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ data: services })
   } catch (error) {
     console.error('Error fetching services:', error)
-    return NextResponse.json({ error: 'Failed to fetch services' }, { status: 500 })
+    // Return empty data so frontend falls back to defaults
+    return NextResponse.json({ data: [] })
   }
 }
 

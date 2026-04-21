@@ -145,7 +145,8 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ data: settings })
   } catch (error) {
     console.error('Error fetching settings:', error)
-    return NextResponse.json({ error: 'Failed to fetch settings' }, { status: 500 })
+    // Return empty data so frontend falls back to defaults instead of crashing
+    return NextResponse.json({ data: [] })
   }
 }
 

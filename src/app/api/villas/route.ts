@@ -69,7 +69,7 @@ export async function GET(request: NextRequest) {
     })
   } catch (error) {
     console.error('Error fetching villas:', error)
-    return NextResponse.json({ error: 'Failed to fetch villas' }, { status: 500 })
+    return NextResponse.json({ data: [] })
   }
 }
 

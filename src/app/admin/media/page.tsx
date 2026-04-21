@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
+import Image from 'next/image'
 
 interface Media {
   id: string
@@ -187,10 +188,12 @@ export default function AdminMediaPage() {
               >
                 <div className="aspect-square bg-gray-100 relative overflow-hidden">
                   {item.mimeType.startsWith('image/') ? (
-                    <img
+                    <Image
                       src={item.url}
                       alt={item.originalName}
-                      className="w-full h-full object-cover"
+                      fill
+                      className="object-cover"
+                      sizes="(max-width: 640px) 50vw, 25vw"
                     />
                   ) : (
                     <div className="w-full h-full flex items-center justify-center">
@@ -228,10 +231,12 @@ export default function AdminMediaPage() {
               
               <div className="aspect-square bg-gray-100 rounded-lg overflow-hidden mb-4">
                 {selectedMedia.mimeType.startsWith('image/') ? (
-                  <img
+                  <Image
                     src={selectedMedia.url}
                     alt={selectedMedia.originalName}
-                    className="w-full h-full object-contain"
+                    fill
+                    className="object-contain"
+                    sizes="(max-width: 768px) 100vw, 50vw"
                   />
                 ) : (
                   <div className="w-full h-full flex items-center justify-center">

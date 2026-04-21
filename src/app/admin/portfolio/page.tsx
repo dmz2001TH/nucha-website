@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
+import Image from 'next/image'
 import { useToast } from '@/components/Toast'
 
 interface Portfolio {
@@ -140,7 +141,7 @@ export default function AdminPortfolioPage() {
         {paginated.map((portfolio) => (
           <div key={portfolio.id} className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden group">
             <div className="relative h-48 overflow-hidden">
-              <img src={portfolio.coverImage} alt={portfolio.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+              <Image src={portfolio.coverImage} alt={portfolio.title} fill className="object-cover group-hover:scale-105 transition-transform duration-500" sizes="(max-width: 768px) 100vw, 50vw" />
               <div className="absolute top-3 left-3 flex gap-2">
                 <span className={`px-2 py-1 rounded text-xs font-bold ${statusColors[portfolio.status]}`}>
                   {statusLabels[portfolio.status] || portfolio.status}

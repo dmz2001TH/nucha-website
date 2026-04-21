@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useRef } from 'react'
+import Image from 'next/image'
 
 interface MultiImageUploadProps {
   value: string[]
@@ -79,7 +80,7 @@ export default function MultiImageUpload({ value = [], onChange, label }: MultiI
         <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-3 mb-4">
           {value.map((url, index) => (
             <div key={index} className="relative group aspect-square rounded-lg overflow-hidden border border-gray-200">
-              <img src={url} alt={`รูปที่ ${index + 1}`} className="w-full h-full object-cover" />
+              <Image src={url} alt={`รูปที่ ${index + 1}`} fill className="object-cover" sizes="(max-width: 640px) 33vw, (max-width: 768px) 25vw, 16vw" />
               <button
                 type="button"
                 onClick={() => handleRemove(index)}

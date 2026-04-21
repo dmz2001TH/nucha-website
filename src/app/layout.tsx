@@ -125,6 +125,7 @@ export default function RootLayout({
         <link rel="apple-touch-icon" href="/favicon-180x180.png" sizes="180x180" />
         <link rel="manifest" href="/manifest.json" />
         <meta name="theme-color" content="#C41E3A" />
+        {/* eslint-disable-next-line @next/next/no-page-custom-font -- Material Symbols is an icon font, not supported by next/font */}
         <link
           href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=swap"
           rel="stylesheet"

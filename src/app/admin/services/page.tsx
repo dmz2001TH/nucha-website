@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import Image from 'next/image'
 import IconSelector from '@/components/IconSelector'
 import ImageUpload from '@/components/ImageUpload'
 import { useToast } from '@/components/Toast'
@@ -356,10 +357,12 @@ export default function AdminServicesPage() {
           <div key={service.id} className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden group">
             {service.coverImage && (
               <div className="relative h-40 overflow-hidden">
-                <img
+                <Image
                   src={service.coverImage}
                   alt={service.title}
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                  fill
+                  className="object-cover group-hover:scale-105 transition-transform duration-500"
+                  sizes="(max-width: 768px) 100vw, 50vw"
                 />
               </div>
             )}

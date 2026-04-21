@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
+import Image from 'next/image'
 import { useToast } from '@/components/Toast'
 
 interface Villa {
@@ -146,7 +147,7 @@ export default function AdminVillasPage() {
               <tr key={villa.id} className="hover:bg-gray-50">
                 <td className="px-6 py-4">
                   <div className="flex items-center gap-4">
-                    <img src={villa.coverImage} alt={villa.name} className="w-16 h-12 object-cover rounded-lg" />
+                    <Image src={villa.coverImage} alt={villa.name} width={64} height={48} className="object-cover rounded-lg" />
                     <div>
                       <p className="font-bold text-gray-900">{villa.name}</p>
                       <p className="text-xs text-gray-500">{villa.area} ตร.ม.</p>

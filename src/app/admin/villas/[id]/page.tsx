@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
+import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 import ImageUpload from '@/components/ImageUpload'
 import { useToast } from '@/components/Toast'
@@ -232,7 +233,7 @@ export default function EditVillaPage({ params }: { params: Promise<{ id: string
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
             {images.map((image) => (
               <div key={image.id} className="relative group aspect-square rounded-lg overflow-hidden border border-gray-200">
-                <img src={image.url} alt={image.alt || ''} className="w-full h-full object-cover" />
+                <Image src={image.url} alt={image.alt || ''} fill className="object-cover" sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 16vw" />
                 <button
                   type="button"
                   onClick={() => handleDeleteImage(image.id)}

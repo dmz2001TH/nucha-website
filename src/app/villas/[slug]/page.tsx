@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import Image from 'next/image'
 
 import { useState, useEffect, use } from 'react'
 import Navigation from '@/components/Navigation'
@@ -43,22 +44,21 @@ export default function VillaDetailPage({ params }: { params: Promise<{ slug: st
   const [lightboxOpen, setLightboxOpen] = useState(false)
 
   useEffect(() => {
+    const fetchVilla = async () => {
+      try {
+        const res = await fetch(`/api/villas?slug=${slug}`)
+        const data = await res.json()
+        if (data.data && data.data.length > 0) {
+          setVilla(data.data[0])
+        }
+      } catch (error) {
+        console.error('Error fetching villa:', error)
+      } finally {
+        setLoading(false)
+      }
+    }
     fetchVilla()
   }, [slug])
-
-  const fetchVilla = async () => {
-    try {
-      const res = await fetch(`/api/villas?slug=${slug}`)
-      const data = await res.json()
-      if (data.data && data.data.length > 0) {
-        setVilla(data.data[0])
-      }
-    } catch (error) {
-      console.error('Error fetching villa:', error)
-    } finally {
-      setLoading(false)
-    }
-  }
 
   const statusLabels: Record<string, string> = {
     'AVAILABLE': 'พร้อมขาย',
@@ -138,10 +138,11 @@ export default function VillaDetailPage({ params }: { params: Promise<{ slug: st
                 onClick={() => allImages.length > 0 && setLightboxOpen(true)}
               >
                 {allImages.length > 0 ? (
-                  <img
+                  <Image
                     src={allImages[selectedImage]?.url || villa.coverImage}
                     alt={allImages[selectedImage]?.alt || villa.name}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                    fill
+                    className="object-cover group-hover:scale-105 transition-transform duration-700"
                   />
                 ) : (
                   <div className="w-full h-full flex items-center justify-center">
@@ -166,7 +167,7 @@ export default function VillaDetailPage({ params }: { params: Promise<{ slug: st
                         selectedImage === i ? 'border-primary ring-2 ring-primary/30' : 'border-gray-200'
                       }`}
                     >
-                      <img src={img.url} alt={img.alt || `${villa.name} ${i + 1}`} className="w-full h-full object-cover" />
+                      <Image src={img.url} alt={img.alt || `${villa.name} ${i + 1}`} fill className="object-cover" />
                     </button>
                   ))}
                 </div>
@@ -306,9 +307,11 @@ export default function VillaDetailPage({ params }: { params: Promise<{ slug: st
           >
             <span className="material-symbols-outlined text-4xl">chevron_left</span>
           </button>
-          <img 
-            src={allImages[selectedImage]?.url} 
+          <Image
+            src={allImages[selectedImage]?.url}
             alt={allImages[selectedImage]?.alt || villa.name}
+            width={1200}
+            height={800}
             className="max-w-[90vw] max-h-[90vh] object-contain"
           />
           <button 

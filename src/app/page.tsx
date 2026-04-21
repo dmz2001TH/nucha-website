@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import Image from 'next/image'
 
 import { useState, useEffect } from 'react'
 import Navigation from '@/components/Navigation'
@@ -39,10 +40,13 @@ function HeroSection() {
   return (
     <section className="relative min-h-[100dvh] flex items-center overflow-hidden pt-16 md:pt-20 bg-white">
       <div className="absolute inset-0 z-0">
-        <img
+        <Image
           alt="Luxury Villa Architectural View"
-          className="w-full h-full object-cover opacity-50 sm:opacity-55 grayscale"
+          fill
+          className="object-cover opacity-50 sm:opacity-55 grayscale"
           src={heroImage}
+          priority
+          sizes="100vw"
         />
         <div className="absolute inset-0 bg-gradient-to-r from-red-500/30 via-white/80 sm:via-white/70 to-transparent" />
       </div>
@@ -151,9 +155,11 @@ function ServicesSection() {
                 onClick={() => handleCardClick(index)}
                 className={`accordion-item group relative overflow-hidden rounded-xl bg-gray-100 cursor-pointer ${activeCard === index ? 'active' : ''}`}
               >
-                <img
+                <Image
                   alt={service.title}
-                  className={`absolute inset-0 w-full h-full object-cover transition-all duration-500 ${
+                  fill
+                  sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                  className={`object-cover transition-all duration-500 ${
                     activeCard === index 
                       ? 'opacity-100' 
                       : 'opacity-70 sm:group-hover:opacity-100'
@@ -275,9 +281,11 @@ function PortfolioSection() {
                 className={`accordion-item group relative overflow-hidden rounded-xl editorial-shadow cursor-pointer ${activeCard === index ? 'active' : ''}`}
                 style={{ ['--lg-grid-col' as string]: project.gridStyle.gridColumn, ['--lg-grid-row' as string]: project.gridStyle.gridRow }}
               >
-                <img
+                <Image
                   alt={project.title}
-                  className={`w-full h-full object-cover transition-all duration-700 ${
+                  fill
+                  sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                  className={`object-cover transition-all duration-700 ${
                     activeCard === index
                       ? 'grayscale-0 scale-105'
                       : 'grayscale-0 sm:opacity-70 sm:grayscale-[40%] sm:group-hover:opacity-100 sm:group-hover:grayscale-0 sm:group-hover:scale-110'
@@ -323,10 +331,37 @@ function PortfolioSection() {
 
 // Contact / Booking Section
 function ContactSection() {
+  const [form, setForm] = useState({ name: '', email: '', interest: 'RESIDENTIAL_DESIGN' })
+  const [submitting, setSubmitting] = useState(false)
+  const [submitted, setSubmitted] = useState(false)
+  const [error, setError] = useState('')
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!form.name || !form.email) { setError('กรุณากรอกชื่อและอีเมล'); return }
+    setSubmitting(true)
+    setError('')
+    try {
+      const res = await fetch('/api/inquiries', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ...form, source: 'website-home' })
+      })
+      if (!res.ok) throw new Error('Failed')
+      setSubmitted(true)
+      setForm({ name: '', email: '', interest: 'RESIDENTIAL_DESIGN' })
+    } catch {
+      setError('ไม่สามารถส่งข้อความได้ กรุณาลองใหม่อีกครั้ง')
+    } finally {
+      setSubmitting(false)
+    }
+  }
+
   return (
     <section className="bg-white pt-12 sm:pt-16 pb-16 sm:pb-24 md:pb-32 px-5 sm:px-8 md:px-12">
       <div className="max-w-[1200px] mx-auto bg-gray-50 p-6 sm:p-8 md:p-12 lg:p-24 relative overflow-hidden rounded-2xl border-t-4 border-primary shadow-2xl">
         <div className="relative z-10 grid grid-cols-1 lg:grid-cols-2 gap-8 md:gap-16">
+          {/* Left column - info */}
           <div>
             <h2 className="text-2xl sm:text-3xl md:text-5xl font-headline font-black text-gray-900 leading-tight mb-6 sm:mb-8">
               เริ่มสร้าง <br />
@@ -347,31 +382,48 @@ function ContactSection() {
             </div>
           </div>
 
+          {/* Right column - form */}
           <div className="flex flex-col justify-center gap-6">
-            <form className="space-y-6" onSubmit={(e) => e.preventDefault()}>
-              <div className="space-y-2">
-                <label className="text-[0.65rem] tracking-widest text-primary font-bold uppercase font-headline">ชื่อ-นามสกุล</label>
-                <input
-                  type="text"
-                  placeholder="ชื่อเต็มของคุณ"
-                  className="w-full bg-transparent border-0 border-b border-gray-300 focus:border-primary focus:ring-0 text-gray-900 placeholder:text-gray-400 transition-all py-3"
-                />
+            {submitted ? (
+              <div className="text-center py-12">
+                <span className="material-symbols-outlined text-5xl text-green-500 mb-4 block">check_circle</span>
+                <p className="text-lg font-headline font-bold text-gray-900 mb-2">ส่งข้อความสำเร็จ!</p>
+                <p className="text-gray-600 text-sm">ทีมงานจะติดต่อกลับโดยเร็วที่สุด</p>
+                <button onClick={() => setSubmitted(false)} className="mt-4 text-primary text-sm underline">ส่งข้อความอีกครั้ง</button>
               </div>
-              <div className="space-y-2">
-                <label className="text-[0.65rem] tracking-widest text-primary font-bold uppercase font-headline">ความสนใจ</label>
-                <select className="w-full bg-transparent border-0 border-b border-gray-300 focus:border-primary focus:ring-0 text-gray-900 transition-all py-3">
-                  <option className="bg-white">ออกแบบบ้านพักอาศัย</option>
-                  <option className="bg-white">โครงการพาณิชย์</option>
-                  <option className="bg-white">ปรึกษาออกแบบภายใน</option>
-                </select>
-              </div>
-              <button
-                type="submit"
-                className="w-full bg-primary text-white font-headline font-bold py-3.5 sm:py-4 uppercase tracking-[0.2em] rounded-lg hover:bg-primary-dark transition-all shadow-xl shadow-red-500/20 text-sm sm:text-base"
-              >
-                จองคิวปรึกษา
-              </button>
-            </form>
+            ) : (
+              <form className="space-y-6" onSubmit={handleSubmit}>
+                {error && <p className="text-red-500 text-sm">{error}</p>}
+                <div className="space-y-2">
+                  <label className="text-[0.65rem] tracking-widest text-primary font-bold uppercase font-headline">ชื่อ-นามสกุล</label>
+                  <input type="text" placeholder="ชื่อเต็มของคุณ" value={form.name}
+                    onChange={e => setForm(f => ({ ...f, name: e.target.value }))}
+                    className="w-full bg-transparent border-0 border-b border-gray-300 focus:border-primary focus:ring-0 text-gray-900 placeholder:text-gray-400 transition-all py-3" />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-[0.65rem] tracking-widest text-primary font-bold uppercase font-headline">อีเมล</label>
+                  <input type="email" placeholder="your@email.com" value={form.email}
+                    onChange={e => setForm(f => ({ ...f, email: e.target.value }))}
+                    className="w-full bg-transparent border-0 border-b border-gray-300 focus:border-primary focus:ring-0 text-gray-900 placeholder:text-gray-400 transition-all py-3" />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-[0.65rem] tracking-widest text-primary font-bold uppercase font-headline">ความสนใจ</label>
+                  <select value={form.interest}
+                    onChange={e => setForm(f => ({ ...f, interest: e.target.value }))}
+                    className="w-full bg-transparent border-0 border-b border-gray-300 focus:border-primary focus:ring-0 text-gray-900 transition-all py-3">
+                    <option className="bg-white" value="RESIDENTIAL_DESIGN">ออกแบบบ้านพักอาศัย</option>
+                    <option className="bg-white" value="COMMERCIAL_PROJECT">โครงการพาณิชย์</option>
+                    <option className="bg-white" value="INTERIOR_CONSULTATION">ปรึกษาออกแบบภายใน</option>
+                    <option className="bg-white" value="VILLA_PURCHASE">ซื้อวิลล่า</option>
+                    <option className="bg-white" value="GENERAL_INQUIRY">สอบถามทั่วไป</option>
+                  </select>
+                </div>
+                <button type="submit" disabled={submitting}
+                  className="w-full bg-primary text-white font-headline font-bold py-3.5 sm:py-4 uppercase tracking-[0.2em] rounded-lg hover:bg-primary-dark transition-all shadow-xl shadow-red-500/20 text-sm sm:text-base disabled:opacity-50">
+                  {submitting ? 'กำลังส่ง...' : 'จองคิวปรึกษา'}
+                </button>
+              </form>
+            )}
           </div>
         </div>
 
@@ -385,7 +437,6 @@ function ContactSection() {
   )
 }
 
-// Main Home Page
 export default function Home() {
   return (
     <>

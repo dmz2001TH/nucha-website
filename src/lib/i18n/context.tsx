@@ -18,22 +18,18 @@ const translations: Record<Language, Translations> = { th, en }
 const LanguageContext = createContext<LanguageContextType | undefined>(undefined)
 
 export function LanguageProvider({ children }: { children: ReactNode }) {
-  const [language, setLanguageState] = useState<Language>('th')
-  const [mounted, setMounted] = useState(false)
-
-  // eslint-disable-next-line react-hooks/set-state-in-effect
-  useEffect(() => {
+  const [language, setLanguageState] = useState<Language>(() => {
+    if (typeof window === 'undefined') return 'th'
     const savedLang = localStorage.getItem('language') as Language
-    if (savedLang && (savedLang === 'th' || savedLang === 'en')) {
-      setLanguageState(savedLang)
-    } else {
-      const browserLang = navigator.language.split('-')[0]
-      if (browserLang === 'en') {
-        setLanguageState('en')
-      }
-    }
-    setMounted(true)
-  }, [])
+    if (savedLang === 'th' || savedLang === 'en') return savedLang
+    const browserLang = navigator.language.split('-')[0]
+    if (browserLang === 'en') return 'en'
+    return 'th'
+  })
+
+  useEffect(() => {
+    document.documentElement.lang = language
+  }, [language])
 
   const setLanguage = useCallback((lang: Language) => {
     setLanguageState(lang)
@@ -42,14 +38,6 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
   }, [])
 
   const t = translations[language]
-
-  if (!mounted) {
-    return (
-      <LanguageContext.Provider value={{ language: 'th', setLanguage, t: translations.th }}>
-        {children}
-      </LanguageContext.Provider>
-    )
-  }
 
   return (
     <LanguageContext.Provider value={{ language, setLanguage, t }}>

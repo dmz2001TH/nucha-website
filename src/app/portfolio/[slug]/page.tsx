@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import Image from 'next/image'
 
 import { useState, useEffect, useCallback } from 'react'
 import { useParams, useRouter } from 'next/navigation'
@@ -47,28 +48,28 @@ export default function PortfolioDetailPage() {
   const [lightboxOpen, setLightboxOpen] = useState(false)
 
   useEffect(() => {
-    if (slug) fetchPortfolio()
-  }, [slug])
-
-  const fetchPortfolio = async () => {
-    try {
-      const res = await fetch(`/api/portfolio/slug/${encodeURIComponent(slug)}`)
-      if (!res.ok) { router.push('/portfolio'); return }
-      const data = await res.json()
-      setPortfolio(data.data)
-      setActiveImageIndex(0)
-      // Fetch related
-      const relRes = await fetch(`/api/portfolio?status=PUBLISHED`)
-      const relData = await relRes.json()
-      if (relData.data) {
-        setRelated((relData.data as Portfolio[]).filter((p: Portfolio) => p.slug !== slug).slice(0, 3))
+    if (!slug) return
+    const fetchPortfolio = async () => {
+      try {
+        const res = await fetch(`/api/portfolio/slug/${encodeURIComponent(slug)}`)
+        if (!res.ok) { router.push('/portfolio'); return }
+        const data = await res.json()
+        setPortfolio(data.data)
+        setActiveImageIndex(0)
+        // Fetch related
+        const relRes = await fetch(`/api/portfolio?status=PUBLISHED`)
+        const relData = await relRes.json()
+        if (relData.data) {
+          setRelated((relData.data as Portfolio[]).filter((p: Portfolio) => p.slug !== slug).slice(0, 3))
+        }
+      } catch {
+        router.push('/portfolio')
+      } finally {
+        setLoading(false)
       }
-    } catch {
-      router.push('/portfolio')
-    } finally {
-      setLoading(false)
     }
-  }
+    fetchPortfolio()
+  }, [slug, router])
 
   const allImages = portfolio ? [
     { id: 'cover', url: portfolio.coverImage, alt: portfolio.title },
@@ -133,9 +134,11 @@ export default function PortfolioDetailPage() {
               </button>
             </>
           )}
-          <img
+          <Image
             src={allImages[activeImageIndex]?.url}
             alt={allImages[activeImageIndex]?.alt || portfolio.title}
+            width={1200}
+            height={800}
             className="max-h-[90vh] max-w-[90vw] object-contain"
             onClick={e => e.stopPropagation()}
           />
@@ -147,10 +150,12 @@ export default function PortfolioDetailPage() {
 
         {/* Hero image full-width */}
         <div className="relative w-full h-[40vh] sm:h-[55vh] md:h-[65vh] mb-12 sm:mb-16 overflow-hidden cursor-zoom-in" onClick={() => setLightboxOpen(true)}>
-          <img
+          <Image
             src={allImages[activeImageIndex]?.url || portfolio.coverImage}
             alt={portfolio.title}
-            className="w-full h-full object-cover transition-all duration-700"
+            fill
+            sizes="100vw"
+            className="object-cover transition-all duration-700"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
           <div className="absolute bottom-6 left-6 sm:bottom-10 sm:left-10">
@@ -226,7 +231,7 @@ export default function PortfolioDetailPage() {
                           activeImageIndex === index ? 'border-primary shadow-lg shadow-red-500/20' : 'border-transparent hover:border-gray-300'
                         }`}
                       >
-                        <img src={img.url} alt={img.alt || portfolio.title} className="w-full h-full object-cover" />
+                        <Image src={img.url} alt={img.alt || portfolio.title} fill sizes="150px" className="object-cover" />
                         <div className="absolute inset-0 bg-black/0 hover:bg-black/20 transition-colors flex items-center justify-center opacity-0 hover:opacity-100">
                           <span className="material-symbols-outlined text-white text-2xl">zoom_in</span>
                         </div>
@@ -295,10 +300,12 @@ export default function PortfolioDetailPage() {
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6">
                 {related.map((p) => (
                   <a key={p.id} href={`/portfolio/${encodeURIComponent(p.slug)}`} className="group relative overflow-hidden rounded-xl editorial-shadow block">
-                    <img
+                    <Image
                       src={p.coverImage}
                       alt={p.title}
-                      className="w-full h-[200px] sm:h-[240px] object-cover sm:opacity-80 sm:grayscale-[30%] sm:group-hover:opacity-100 sm:group-hover:grayscale-0 sm:group-hover:scale-105 transition-all duration-700"
+                      fill
+                      sizes="(max-width: 640px) 100vw, 33vw"
+                      className="object-cover sm:opacity-80 sm:grayscale-[30%] sm:group-hover:opacity-100 sm:group-hover:grayscale-0 sm:group-hover:scale-105 transition-all duration-700"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent" />
                     <div className="absolute bottom-4 left-4 right-4">

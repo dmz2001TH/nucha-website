@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import Image from 'next/image'
 
 import { useState, useEffect } from 'react'
 import Navigation from '@/components/Navigation'
@@ -166,9 +167,11 @@ export default function PhilosophyPage() {
               </div>
             </div>
             <div className="relative">
-              <img
+              <Image
                 alt="Our Philosophy"
-                className="w-full h-[300px] sm:h-[400px] lg:h-[500px] object-cover rounded-xl editorial-shadow"
+                fill
+                sizes="(max-width: 1024px) 100vw, 50vw"
+                className="object-cover rounded-xl editorial-shadow"
                 src={page?.coverImage || settings['about_image'] || 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=800'}
               />
               <div className="absolute -bottom-4 -left-4 sm:-bottom-6 sm:-left-6 bg-primary text-white p-4 sm:p-6 rounded-xl shadow-xl">
@@ -243,10 +246,12 @@ export default function PhilosophyPage() {
         <section className="py-16 sm:py-24 px-5 sm:px-8 md:px-12">
           <div className="max-w-[1400px] mx-auto">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 sm:gap-16 items-center">
-              <div className="order-2 lg:order-1">
-                <img
+              <div className="relative order-2 lg:order-1">
+                <Image
                   alt="Our Story"
-                  className="w-full h-[300px] sm:h-[400px] object-cover rounded-xl editorial-shadow"
+                  fill
+                  sizes="(max-width: 1024px) 100vw, 50vw"
+                  className="object-cover rounded-xl editorial-shadow"
                   src={settings['story_image'] || 'https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=800'}
                 />
               </div>

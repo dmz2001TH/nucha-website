@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import Image from 'next/image'
 
 import { useState, useEffect } from 'react'
 
@@ -95,14 +96,14 @@ export default function NavigationClient({
             <Link href="/"
               className="flex items-center gap-3 hover:opacity-80 transition-opacity"
             >
-              <img
+              <Image
                 key={logoUrl}
                 src={logoUrl}
                 alt=""
                 width={200}
                 height={80}
                 className="h-10 sm:h-12 md:h-16 w-auto object-contain"
-                loading="eager"
+                priority
               />
             </Link>
           )}

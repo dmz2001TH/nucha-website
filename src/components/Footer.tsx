@@ -152,7 +152,7 @@ export default function Footer() {
         {/* Bottom Bar */}
         <div className="mt-12 pt-8 border-t border-gray-800 flex flex-col sm:flex-row justify-between items-center gap-4">
           <p className="font-body text-xs tracking-widest uppercase text-gray-500 text-center sm:text-left">
-            © 2024 {siteName}. ความเป็นเลิศทางสถาปัตยกรรม
+            © {new Date().getFullYear()} {siteName}. ความเป็นเลิศทางสถาปัตยกรรม
           </p>
           <div className="flex flex-wrap justify-center gap-4 sm:gap-6">
             <Link href="/contact" className="font-body text-xs tracking-widest uppercase text-gray-500 hover:text-primary transition-colors">

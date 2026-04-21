@@ -55,7 +55,6 @@ export default function InteractiveMap({
       const L = await import('leaflet')
       await import('leaflet/dist/leaflet.css')
 
-      ;(L.Icon.Default.prototype as unknown as Record<string, unknown>)._getIconUrl
       L.Icon.Default.mergeOptions({
         iconRetinaUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-icon-2x.png',
         iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-icon.png',
@@ -204,7 +203,7 @@ export default function InteractiveMap({
         map = null
       }
     }
-  }, [isClient, locations.length])
+  }, [isClient, locations, center.lat, center.lng, zoom, defaultMarkerIcon])
 
   if (!isClient) {
     return (

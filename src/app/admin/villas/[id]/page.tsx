@@ -41,38 +41,34 @@ export default function EditVillaPage({ params }: { params: Promise<{ id: string
     const resolveParams = async () => {
       const resolved = await params
       setVillaId(resolved.id)
-      fetchVilla(resolved.id)
+      try {
+        const response = await fetch(`/api/villas/${resolved.id}`)
+        if (!response.ok) throw new Error('ไม่พบวิลล่านี้')
+        const data = await response.json()
+        const villa = data.data
+        setForm({
+          name: villa.name,
+          nameEn: villa.nameEn || '',
+          description: villa.description,
+          location: villa.location,
+          price: villa.price.toString(),
+          bedrooms: villa.bedrooms.toString(),
+          bathrooms: villa.bathrooms.toString(),
+          area: villa.area.toString(),
+          landArea: villa.landArea?.toString() || '',
+          coverImage: villa.coverImage || '',
+          status: villa.status || 'AVAILABLE',
+          featured: villa.featured || false
+        })
+      } catch {
+        toast.error('ไม่พบวิลล่านี้')
+        router.push('/admin/villas')
+      } finally {
+        setLoading(false)
+      }
     }
     resolveParams()
-  }, [params])
-
-  const fetchVilla = async (id: string) => {
-    try {
-      const response = await fetch(`/api/villas/${id}`)
-      if (!response.ok) throw new Error('ไม่พบวิลล่านี้')
-      const data = await response.json()
-      const villa = data.data
-      setForm({
-        name: villa.name,
-        nameEn: villa.nameEn || '',
-        description: villa.description,
-        location: villa.location,
-        price: villa.price.toString(),
-        bedrooms: villa.bedrooms.toString(),
-        bathrooms: villa.bathrooms.toString(),
-        area: villa.area.toString(),
-        landArea: villa.landArea.toString(),
-        coverImage: villa.coverImage,
-        status: villa.status,
-        featured: villa.featured
-      })
-      setImages(villa.images || [])
-    } catch {
-      toast.error('ไม่พบวิลล่านี้')
-    } finally {
-      setLoading(false)
-    }
-  }
+  }, [params, toast, router])
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value, type } = e.target

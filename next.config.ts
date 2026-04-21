@@ -4,6 +4,9 @@ const nextConfig: NextConfig = {
   // สำหรับ production deploy
   images: {
     unoptimized: true,
+    remotePatterns: [
+      { protocol: 'https', hostname: '**' },
+    ],
   },
 };
 

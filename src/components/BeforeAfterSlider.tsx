@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useRef, useEffect } from 'react'
+import Image from 'next/image'
 
 interface BeforeAfterItem {
   id: string
@@ -91,10 +92,12 @@ export default function BeforeAfterSlider({ items, className = '' }: BeforeAfter
         onTouchStart={handleStart}
       >
         {/* After Image (Background) */}
-        <img
+        <Image
           src={currentItem.afterImage}
           alt={`${currentItem.title} - After`}
-          className="absolute inset-0 w-full h-full object-cover"
+          fill
+          className="object-cover"
+          sizes="(max-width: 768px) 100vw, 50vw"
         />
 
         {/* Before Image (Clipped) */}
@@ -102,10 +105,12 @@ export default function BeforeAfterSlider({ items, className = '' }: BeforeAfter
           className="absolute inset-0 overflow-hidden"
           style={{ clipPath: `inset(0 ${100 - sliderPosition}% 0 0)` }}
         >
-          <img
+          <Image
             src={currentItem.beforeImage}
             alt={`${currentItem.title} - Before`}
-            className="absolute inset-0 w-full h-full object-cover"
+            fill
+            className="object-cover"
+            sizes="(max-width: 768px) 100vw, 50vw"
           />
         </div>
 
@@ -154,7 +159,7 @@ export default function BeforeAfterSlider({ items, className = '' }: BeforeAfter
                 currentIndex === index ? 'border-primary' : 'border-transparent opacity-60 hover:opacity-100'
               }`}
             >
-              <img src={item.afterImage} alt={item.title} className="w-full h-full object-cover" />
+              <Image src={item.afterImage} alt={item.title} width={80} height={80} className="w-full h-full object-cover" />
             </button>
           ))}
         </div>

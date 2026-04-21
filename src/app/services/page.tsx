@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import Image from 'next/image'
 
 import { useState, useEffect } from 'react'
 import Navigation from '@/components/Navigation'
@@ -16,7 +17,6 @@ interface Service {
 }
 
 export default function ServicesPage() {
-  const [_activeService] = useState(0)
   const [services, setServices] = useState<Service[]>([])
   const [loading, setLoading] = useState(true)
 
@@ -102,7 +102,7 @@ export default function ServicesPage() {
     )
   }
 
-  const currentService = services[activeService] || services[0]
+  const currentService = services[0]
   const features = defaultFeatures[currentService?.title] || defaultFeatures['ออกแบบภายใน'] || []
 
   return (
@@ -134,10 +134,12 @@ export default function ServicesPage() {
                   href={`/services/${encodeURIComponent(service.title)}`}
                   className="group relative overflow-hidden rounded-xl editorial-shadow"
                 >
-                  <img
+                  <Image
                     src={service.coverImage || 'https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?w=800'}
                     alt={service.title}
-                    className="w-full h-48 sm:h-56 object-cover sm:opacity-70 sm:grayscale-[40%] sm:group-hover:opacity-100 sm:group-hover:grayscale-0 transition-all duration-700"
+                    fill
+                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                    className="object-cover sm:opacity-70 sm:grayscale-[40%] sm:group-hover:opacity-100 sm:group-hover:grayscale-0 transition-all duration-700"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent sm:opacity-0 sm:group-hover:opacity-100 transition-opacity duration-500" />
                   <div className="absolute bottom-0 left-0 right-0 p-4" style={{textShadow: '0 1px 4px rgba(0,0,0,0.7)'}}>
@@ -157,10 +159,12 @@ export default function ServicesPage() {
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 sm:gap-12">
                 {/* Image */}
                 <div className="relative overflow-hidden rounded-xl editorial-shadow">
-                  <img
+                  <Image
                     src={currentService.coverImage || 'https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?w=800'}
                     alt={currentService.title}
-                    className="w-full h-[300px] sm:h-[400px] lg:h-[500px] object-cover grayscale-0 sm:opacity-70 sm:grayscale-[40%] sm:hover:opacity-100 sm:hover:grayscale-0 transition-all duration-700"
+                    fill
+                    sizes="(max-width: 1024px) 100vw, 50vw"
+                    className="object-cover grayscale-0 sm:opacity-70 sm:grayscale-[40%] sm:hover:opacity-100 sm:hover:grayscale-0 transition-all duration-700"
                   />
                   <div className="absolute bottom-4 left-4 sm:bottom-6 sm:left-6 flex items-center gap-3">
                     {currentService.icon && (

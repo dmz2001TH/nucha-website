@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import Image from 'next/image'
 
 import { useState, useEffect } from 'react'
 import Navigation from '@/components/Navigation'
@@ -140,11 +141,11 @@ export default function PortfolioPage() {
                     onClick={(e) => handleProjectClick(e, project.id)}
                     className={`group relative overflow-hidden rounded-xl editorial-shadow cursor-pointer block ${activeCard === project.id ? 'mobile-active' : ''}`}
                   >
-                    <img
+                    <Image
                       alt={project.title}
-                      className={`w-full object-cover transition-all duration-700 ${
-                        'h-[220px] sm:h-[280px] lg:h-[320px]'
-                      } ${
+                      fill
+                      sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                      className={`object-cover transition-all duration-700 ${
                         activeCard === project.id
                           ? 'grayscale-0 scale-105'
                           : 'grayscale-0 sm:opacity-70 sm:grayscale-[40%] sm:group-hover:opacity-100 sm:group-hover:grayscale-0 sm:group-hover:scale-110'

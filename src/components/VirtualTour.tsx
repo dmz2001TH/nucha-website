@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import Image from 'next/image'
 
 interface VirtualTourProps {
   tourUrl?: string
@@ -70,10 +71,12 @@ export default function VirtualTour({ tourUrl, images, title, className = '' }: 
               </button>
 
               <div className="relative">
-                <img
+                <Image
                   src={images[currentImageIndex]}
                   alt={`${title || 'Virtual Tour'} - ${currentImageIndex + 1}`}
-                  className="w-full h-[70vh] object-cover rounded-xl"
+                  fill
+                  className="object-cover rounded-xl"
+                  sizes="(max-width: 768px) 100vw, 80vw"
                 />
 
                 {/* Navigation */}
@@ -108,7 +111,7 @@ export default function VirtualTour({ tourUrl, images, title, className = '' }: 
                       currentImageIndex === index ? 'border-primary' : 'border-transparent opacity-60 hover:opacity-100'
                     }`}
                   >
-                    <img src={img} alt="" className="w-full h-full object-cover" />
+                    <Image src={img} alt="" width={80} height={80} className="w-full h-full object-cover" />
                   </button>
                 ))}
               </div>

@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import prisma from '@/lib/prisma'
-import * as XLSX from 'xlsx'
+import ExcelJS from 'exceljs'
 
 export async function GET(request: NextRequest) {
   try {
@@ -97,17 +97,26 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Invalid type' }, { status: 400 })
     }
 
-    // Create Excel file
-    const worksheet = XLSX.utils.json_to_sheet(data)
-    const workbook = XLSX.utils.book_new()
-    XLSX.utils.book_append_sheet(workbook, worksheet, type === 'bookings' ? 'การจองคิว' : 'คำถาม')
+    // Create Excel file with exceljs
+    const workbook = new ExcelJS.Workbook()
+    const sheetName = type === 'bookings' ? 'การจองคิว' : 'คำถาม'
+    const worksheet = workbook.addWorksheet(sheetName)
 
-    // Set column widths
-    const columnWidths = Object.keys(data[0] || {}).map(() => ({ wch: 20 }))
-    worksheet['!cols'] = columnWidths
+    if (data.length > 0) {
+      // Add headers
+      const headers = Object.keys(data[0])
+      worksheet.columns = headers.map(h => ({ header: h, key: h, width: 20 }))
 
-    // Generate buffer
-    const buffer = XLSX.write(workbook, { type: 'buffer', bookType: 'xlsx' })
+      // Add rows
+      data.forEach(row => {
+        worksheet.addRow(row)
+      })
+
+      // Style header row
+      worksheet.getRow(1).font = { bold: true }
+    }
+
+    const buffer = await workbook.xlsx.writeBuffer()
 
     return new NextResponse(buffer, {
       headers: {

@@ -1,8 +1,9 @@
 'use client'
 
 import Link from 'next/link'
+import Image from 'next/image'
 
-import { useState, useEffect, use } from 'react'
+import { useState, useEffect, useCallback, use } from 'react'
 import Navigation from '@/components/Navigation'
 import Footer from '@/components/Footer'
 
@@ -131,11 +132,7 @@ export default function ServiceDetailPage({ params }: { params: Promise<{ slug: 
   const [service, setService] = useState<Service | null>(null)
   const [loading, setLoading] = useState(true)
 
-  useEffect(() => {
-    fetchService()
-  }, [slug])
-
-  const fetchService = async () => {
+  const fetchService = useCallback(async () => {
     try {
       const res = await fetch(`/api/services?status=PUBLISHED`)
       const data = await res.json()
@@ -182,7 +179,11 @@ export default function ServiceDetailPage({ params }: { params: Promise<{ slug: 
     } finally {
       setLoading(false)
     }
-  }
+  }, [slug])
+
+  useEffect(() => {
+    fetchService()
+  }, [fetchService])
 
   if (loading) {
     return (
@@ -254,10 +255,12 @@ export default function ServiceDetailPage({ params }: { params: Promise<{ slug: 
           {/* Hero */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 mb-16">
             <div className="relative aspect-[4/3] rounded-2xl overflow-hidden">
-              <img
+              <Image
                 src={service.coverImage || 'https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=800'}
                 alt={service.title}
-                className="w-full h-full object-cover"
+                fill
+                sizes="(max-width: 1024px) 100vw, 50vw"
+                className="object-cover"
               />
               <div className="absolute top-4 left-4 bg-white/90 backdrop-blur-sm px-4 py-2 rounded-lg">
                 <span className="material-symbols-outlined text-primary">{icon}</span>

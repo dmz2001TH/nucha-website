@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useSession } from 'next-auth/react'
 import { useToast } from '@/components/Toast'
 
@@ -41,11 +41,7 @@ export default function AdminUsersPage() {
   const [editForm, setEditForm] = useState({ name: '', email: '', role: 'VIEWER' as User['role'], isActive: true })
   const [passwordForm, setPasswordForm] = useState({ password: '', confirm: '' })
 
-  useEffect(() => {
-    fetchUsers()
-  }, [])
-
-  const fetchUsers = async () => {
+  const fetchUsers = useCallback(async () => {
     try {
       const res = await fetch('/api/users')
       const data = await res.json()
@@ -55,7 +51,11 @@ export default function AdminUsersPage() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [toast])
+
+  useEffect(() => {
+    fetchUsers()
+  }, [fetchUsers])
 
   const handleCreate = async (e: React.FormEvent) => {
     e.preventDefault()

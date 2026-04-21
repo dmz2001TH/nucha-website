@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import Image from 'next/image'
 
 import { useState, useEffect } from 'react'
 import Navigation from '@/components/Navigation'
@@ -160,9 +161,11 @@ export default function VillasPage() {
                 {sortedVillas.map((villa) => (
                   <a key={villa.id} href={`/villas/${villa.slug}`} onClick={(e) => handleVillaClick(e, villa.id)} className={`group bg-white rounded-xl overflow-hidden editorial-shadow hover:shadow-2xl transition-shadow duration-500 block ${activeCard === villa.id ? 'mobile-active' : ''}`}>
                     <div className="relative overflow-hidden">
-                      <img
+                      <Image
                         alt={villa.name}
-                        className={`w-full h-48 sm:h-56 md:h-64 object-cover transition-all duration-700 ${
+                        fill
+                        sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                        className={`object-cover transition-all duration-700 ${
                           activeCard === villa.id
                             ? 'scale-105'
                             : 'sm:group-hover:scale-110'

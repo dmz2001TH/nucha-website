@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
+import Image from 'next/image'
 
 interface SessionUser {
   name?: string | null
@@ -30,33 +31,39 @@ export default function Navigation({ currentPage }: { currentPage?: string }) {
   const [openDropdown, setOpenDropdown] = useState<string | null>(null)
   const [sessionUser, setSessionUser] = useState<SessionUser | null>(null)
 
-  const fetchSession = async () => {
-    try {
-      const res = await fetch('/api/auth/session')
-      const data = await res.json()
-      if (data?.user) {
-        setSessionUser(data.user)
-      }
-    } catch {
-      // ไม่มี session
-    }
-  }
 
-  const fetchSettings = async () => {
-    try {
-      const res = await fetch('/api/settings')
-      const data = await res.json()
-      if (data.data) {
-        const settingsMap: Record<string, string> = {}
-        data.data.forEach((s: { key: string; value: string }) => {
-          settingsMap[s.key] = s.value
-        })
-        setSettings(settingsMap)
+  useEffect(() => {
+    const fetchSession = async () => {
+      try {
+        const res = await fetch('/api/auth/session')
+        const data = await res.json()
+        if (data?.user) {
+          setSessionUser(data.user)
+        }
+      } catch {
+        // no session
       }
-    } catch {
-      // ใช้ค่า default ถ้าดึงไม่ได้
     }
-  }
+
+    const fetchSettings = async () => {
+      try {
+        const res = await fetch('/api/settings')
+        const data = await res.json()
+        if (data.data) {
+          const settingsMap: Record<string, string> = {}
+          data.data.forEach((s: { key: string; value: string }) => {
+            settingsMap[s.key] = s.value
+          })
+          setSettings(settingsMap)
+        }
+      } catch {
+        // use default values
+      }
+    }
+
+    fetchSettings()
+    fetchSession()
+  }, [])
 
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 20)
@@ -72,11 +79,6 @@ export default function Navigation({ currentPage }: { currentPage?: string }) {
     }
     return () => { document.body.style.overflow = '' }
   }, [isMenuOpen])
-
-  useEffect(() => {
-    fetchSettings() // eslint-disable-line react-hooks/set-state-in-effect
-    fetchSession() // eslint-disable-line react-hooks/set-state-in-effect
-  }, [])
 
   const isActive = (href: string) => {
     if (href === '/') return currentPage === 'home'
@@ -130,14 +132,14 @@ export default function Navigation({ currentPage }: { currentPage?: string }) {
               href="/"
               className="flex items-center gap-3 hover:opacity-80 transition-opacity"
             >
-              <img
+              <Image
                 key={logoUrl}
                 src={logoUrl}
                 alt=""
                 width={200}
                 height={80}
                 className="h-10 sm:h-12 md:h-16 w-auto object-contain"
-                loading="eager"
+                priority
               />
             </Link>
           )}

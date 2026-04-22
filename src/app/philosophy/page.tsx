@@ -1,134 +1,40 @@
-'use client'
-
 import Link from 'next/link'
-
-import { useState, useEffect } from 'react'
+import prisma from '@/lib/prisma'
 import Navigation from '@/components/Navigation'
 import Footer from '@/components/Footer'
 
-interface Page {
-  id: string
-  title: string
-  titleEn?: string
-  content: string
-  contentEn?: string
-  coverImage?: string
+async function getPage() {
+  try {
+    const data = await prisma.page.findFirst({ where: { slug: 'philosophy', status: 'PUBLISHED' } })
+    return data
+  } catch { return null }
 }
 
-interface Setting {
-  key: string
-  value: string
-  label: string
-  group: string
+async function getSettings() {
+  try {
+    const data = await prisma.setting.findMany({ where: { group: { in: ['philosophy', 'about', 'general'] } } })
+    const map: Record<string, string> = {}
+    data.forEach(s => { map[s.key] = s.value })
+    return map
+  } catch { return {} }
 }
 
-export default function PhilosophyPage() {
-  const [page, setPage] = useState<Page | null>(null)
-  const [settings, setSettings] = useState<Record<string, string>>({})
-  const [loading, setLoading] = useState(true)
+const defaultPrinciples = [
+  { number: '01', title: 'ความเป็นเลิศทางสถาปัตยกรรม', titleEn: 'Architectural Excellence', description: 'เราออกแบบด้วยความใส่ใจในทุกรายละเอียด ตั้งแต่การเลือกใช้วัสดุระดับพรีเมียม ไปจนถึงการจัดวางพื้นที่ที่คำนึงถึงการใช้ชีวิตจริง', icon: 'architecture' },
+  { number: '02', title: 'นวัตกรรมที่ยั่งยืน', titleEn: 'Sustainable Innovation', description: 'เราผสานเทคโนโลยีสมัยใหม่เข้ากับหลักการออกแบบที่เป็นมิตรต่อสิ่งแวดล้อม เพื่ออนาคตที่ดีกว่า', icon: 'eco' },
+  { number: '03', title: 'เอกลักษณ์เฉพาะตัว', titleEn: 'Unique Identity', description: 'แต่ละโครงการของเราไม่เหมือนใคร เพราะเราเชื่อว่าบ้านควรสะท้อนตัวตนและค่านิยมของผู้อยู่อาศัย', icon: 'fingerprint' },
+  { number: '04', title: 'คุณภาพระดับสากล', titleEn: 'International Standards', description: 'เรายึดมั่นในมาตรฐานระดับสากล ตั้งแต่การออกแบบไปจนถึงการก่อสร้างและการบริการหลังการขาย', icon: 'verified' }
+]
 
-  useEffect(() => {
-    fetchData()
-  }, [])
-
-  const fetchData = async () => {
-    try {
-      const [pageRes, settingsRes] = await Promise.all([
-        fetch('/api/pages?slug=philosophy&status=PUBLISHED'),
-        fetch('/api/settings?group=philosophy,about,general')
-      ])
-
-      const pageData = await pageRes.json()
-      const settingsData = await settingsRes.json()
-
-      if (pageData.data && pageData.data.length > 0) {
-        setPage(pageData.data[0])
-      }
-
-      if (settingsData.data) {
-        const settingsMap: Record<string, string> = {}
-        settingsData.data.forEach((s: Setting) => {
-          settingsMap[s.key] = s.value
-        })
-        setSettings(settingsMap)
-      }
-    } catch (error) {
-      console.error('Error fetching data:', error)
-    } finally {
-      setLoading(false)
-    }
-  }
+export default async function PhilosophyPage() {
+  const [page, settings] = await Promise.all([getPage(), getSettings()])
 
   const principles = [
-    settings['principle_1'] ? {
-      parts: settings['principle_1'].split('||'),
-      icon: settings['principle_1'].split('||')[3] || 'architecture'
-    } : null,
-    settings['principle_2'] ? {
-      parts: settings['principle_2'].split('||'),
-      icon: settings['principle_2'].split('||')[3] || 'eco'
-    } : null,
-    settings['principle_3'] ? {
-      parts: settings['principle_3'].split('||'),
-      icon: settings['principle_3'].split('||')[3] || 'fingerprint'
-    } : null,
-    settings['principle_4'] ? {
-      parts: settings['principle_4'].split('||'),
-      icon: settings['principle_4'].split('||')[3] || 'verified'
-    } : null,
+    settings['principle_1'] ? { parts: settings['principle_1'].split('||'), icon: settings['principle_1'].split('||')[3] || 'architecture' } : null,
+    settings['principle_2'] ? { parts: settings['principle_2'].split('||'), icon: settings['principle_2'].split('||')[3] || 'eco' } : null,
+    settings['principle_3'] ? { parts: settings['principle_3'].split('||'), icon: settings['principle_3'].split('||')[3] || 'fingerprint' } : null,
+    settings['principle_4'] ? { parts: settings['principle_4'].split('||'), icon: settings['principle_4'].split('||')[3] || 'verified' } : null,
   ].filter(Boolean)
-
-  const defaultPrinciples = [
-    {
-      number: '01',
-      title: 'ความเป็นเลิศทางสถาปัตยกรรม',
-      titleEn: 'Architectural Excellence',
-      description: 'เราออกแบบด้วยความใส่ใจในทุกรายละเอียด ตั้งแต่การเลือกใช้วัสดุระดับพรีเมียม ไปจนถึงการจัดวางพื้นที่ที่คำนึงถึงการใช้ชีวิตจริง',
-      icon: 'architecture'
-    },
-    {
-      number: '02',
-      title: 'นวัตกรรมที่ยั่งยืน',
-      titleEn: 'Sustainable Innovation',
-      description: 'เราผสานเทคโนโลยีสมัยใหม่เข้ากับหลักการออกแบบที่เป็นมิตรต่อสิ่งแวดล้อม เพื่ออนาคตที่ดีกว่า',
-      icon: 'eco'
-    },
-    {
-      number: '03',
-      title: 'เอกลักษณ์เฉพาะตัว',
-      titleEn: 'Unique Identity',
-      description: 'แต่ละโครงการของเราไม่เหมือนใคร เพราะเราเชื่อว่าบ้านควรสะท้อนตัวตนและค่านิยมของผู้อยู่อาศัย',
-      icon: 'fingerprint'
-    },
-    {
-      number: '04',
-      title: 'คุณภาพระดับสากล',
-      titleEn: 'International Standards',
-      description: 'เรายึดมั่นในมาตรฐานระดับสากล ตั้งแต่การออกแบบไปจนถึงการก่อสร้างและการบริการหลังการขาย',
-      icon: 'verified'
-    }
-  ]
-
-  if (loading) {
-    return (
-      <>
-        <Navigation currentPage="philosophy" />
-        <main className="pt-20 sm:pt-24 md:pt-32 min-h-screen">
-          <div className="max-w-[1400px] mx-auto px-5 sm:px-8 md:px-12">
-            <div className="animate-pulse space-y-6">
-              <div className="h-12 bg-gray-200 rounded w-1/3"></div>
-              <div className="h-6 bg-gray-200 rounded w-1/2"></div>
-              <div className="grid grid-cols-2 gap-8 h-[400px]">
-                <div className="bg-gray-200 rounded-xl"></div>
-                <div className="bg-gray-200 rounded-xl"></div>
-              </div>
-            </div>
-          </div>
-        </main>
-        <Footer />
-      </>
-    )
-  }
 
   return (
     <>
@@ -291,7 +197,6 @@ export default function PhilosophyPage() {
                   ผู้เชี่ยวชาญที่พร้อมสร้างสรรค์บ้านในฝันของคุณ
                 </p>
               </div>
-
               <div className="bg-white p-6 sm:p-8 rounded-xl editorial-shadow">
                 <div className="prose prose-lg max-w-none text-gray-600 font-body">
                   {settings['team_content']}

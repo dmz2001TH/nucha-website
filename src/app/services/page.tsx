@@ -1,109 +1,59 @@
-'use client'
-
 import Link from 'next/link'
-
-import { useState, useEffect } from 'react'
+import prisma from '@/lib/prisma'
 import Navigation from '@/components/Navigation'
 import Footer from '@/components/Footer'
 
-interface Service {
-  id: string
-  title: string
-  titleEn: string | null
-  description: string | null
-  icon: string | null
-  coverImage: string | null
+async function getServices() {
+  try {
+    const data = await prisma.service.findMany({
+      where: { status: 'PUBLISHED' },
+      orderBy: { sortOrder: 'asc' }
+    })
+    if (data.length > 0) return data.map(s => ({
+      id: s.id, title: s.title, titleEn: s.titleEn,
+      description: s.description || '', icon: s.icon,
+      coverImage: s.coverImage
+    }))
+  } catch {}
+  // Fallback
+  return [
+    { id: '1', title: 'รับเหมาก่อสร้าง', titleEn: 'Construction', description: 'บริการรับเหมาก่อสร้างครบวงจร สำหรับบ้าน วิลล่า และโครงการพาณิชย์ ด้วยทีมงานมืออาชีพและมาตรฐานการก่อสร้างระดับสากล', icon: 'construction', coverImage: 'https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=800' },
+    { id: '2', title: 'งานเฟอร์นิเจอร์ built-in', titleEn: 'Built-in Furniture', description: 'ออกแบบและติดตั้งเฟอร์นิเจอร์ built-in ตามความต้องการ ไม่ว่าจะเป็นครัว ตู้เสื้อผ้า ชั้นวาง ด้วยวัสดุคุณภาพสูง', icon: 'chair', coverImage: 'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=800' },
+    { id: '3', title: 'งานผ้าม่าน วอลเปเปอร์', titleEn: 'Curtains & Wallpaper', description: 'บริการติดตั้งผ้าม่านและวอลเปเปอร์หลากหลายลาย พร้อมให้คำปรึกษาการเลือกแบบฟรี', icon: 'curtains', coverImage: 'https://images.unsplash.com/photo-1522771739844-6a9f6d5f56d0?w=800' },
+    { id: '4', title: 'งานปูกระเบื้อง', titleEn: 'Tiling', description: 'บริการปูกระเบื้องทุกประเภท ทั้งกระเบื้องยาง หินอ่อน หินแกรนิต ด้วยช่างผู้เชี่ยวชาญ', icon: 'grid_on', coverImage: 'https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=800' },
+    { id: '5', title: 'ทำโครงการขาย', titleEn: 'Sales Projects', description: 'พัฒนาและบริหารโครงการอสังหาริมทรัพย์ ตั้งแต่ขั้นตอนการวางแผน ออกแบบ จนถึงการขาย', icon: 'trending_up', coverImage: 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=800' },
+    { id: '6', title: 'รับบริหารงานขายโครงการ', titleEn: 'Sales Project Management', description: 'บริหารจัดการทีมขายและการตลาดสำหรับโครงการอสังหาริมทรัพย์', icon: 'business', coverImage: 'https://images.unsplash.com/photo-1551434678-e076c223a692?w=800' },
+    { id: '7', title: 'งานออกแบบ งานก่อสร้าง ครบวงจร', titleEn: 'Comprehensive Design & Construction', description: 'บริการออกแบบและก่อสร้างครบวงจร ตั้งแต่ไอเดียจนถึงสิ่งที่คุณได้รับ', icon: 'architecture', coverImage: 'https://images.unsplash.com/photo-1487958449943-2429e8be8625?w=800' },
+    { id: '8', title: 'งานกราฟิกดีไซน์', titleEn: 'Graphic Design', description: 'บริการออกแบบกราฟิกสำหรับธุรกิจ ไม่ว่าจะเป็นโลโก้ แบรนด์ สื่อสิ่งพิมพ์', icon: 'design_services', coverImage: 'https://images.unsplash.com/photo-1626785774573-4b799315345d?w=800' },
+    { id: '9', title: 'งานออกแบบภายใน-ภายนอก ตกแต่ง', titleEn: 'Interior & Exterior Design', description: 'ออกแบบตกแต่งภายในและภายนอก สร้างสรรค์พื้นที่ที่สวยงามและใช้งานได้จริง', icon: 'interior_design', coverImage: 'https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?w=800' }
+  ]
 }
 
-export default function ServicesPage() {
-  const [_activeService] = useState(0)
-  const [services, setServices] = useState<Service[]>([])
-  const [loading, setLoading] = useState(true)
+const defaultFeatures: Record<string, string[]> = {
+  'รับเหมาก่อสร้าง': ['รับเหมาก่อสร้างบ้านเดี่ยว วิลล่า', 'ควบคุมคุณภาพตามมาตรฐาน', 'บริหารงบประมาณและเวลา', 'ทีมงานมืออาชีพ'],
+  'งานเฟอร์นิเจอร์ built-in': ['ออกแบบตามสั่ง', 'ใช้วัสดุคุณภาพสูง', 'ผลิตด้วยเครื่องจักร CNC', 'รับประกัน 1 ปี'],
+  'งานผ้าม่าน วอลเปเปอร์': ['ผ้าม่านทุกประเภท', 'วอลเปเปอร์หลากหลายลาย', 'ให้คำปรึกษาฟรี', 'วัดและติดตั้งที่บ้าน'],
+  'งานปูกระเบื้อง': ['กระเบื้องทุกประเภท', 'ช่างผู้เชี่ยวชาญ', 'วางแผนให้สวยงาม', 'รับประกัน 1 ปี'],
+  'ทำโครงการขาย': ['วางแผนโครงการ', 'ออกแบบและก่อสร้าง', 'วางแผนการตลาด', 'บริหารจัดการครบวงจร'],
+  'รับบริหารงานขายโครงการ': ['บริหารทีมขาย', 'วางกลยุทธ์การขาย', 'ฝึกอบรมทีม', 'ติดตามและรายงานผล'],
+  'งานออกแบบ งานก่อสร้าง ครบวงจร': ['ออกแบบครบวงจร', 'รับเหมาก่อสร้าง', 'ควบคุมคุณภาพ', 'ส่งมอบพร้อมใช้งาน'],
+  'งานกราฟิกดีไซน์': ['ออกแบบโลโก้', 'สื่อสิ่งพิมพ์', 'สื่อดิจิทัล', 'แก้ไขจนพอใจ'],
+  'งานออกแบบภายใน-ภายนอก ตกแต่ง': ['ออกแบบภายใน', 'ออกแบบภายนอก', 'จัดหาเฟอร์นิเจอร์', '3D ภาพจำลอง']
+}
 
-  useEffect(() => {
-    fetchServices()
-  }, [])
+const defaultProcess = [
+  { step: '01', title: 'ปรึกษา', desc: 'พูดคุยความต้องการ' },
+  { step: '02', title: 'ออกแบบ', desc: 'สร้าง concept design' },
+  { step: '03', title: 'พัฒนา', desc: 'พัฒนาแบบให้สมบูรณ์' },
+  { step: '04', title: 'ดำเนินการ', desc: 'ติดตั้งและควบคุมคุณภาพ' }
+]
 
-  const fetchServices = async () => {
-    try {
-      const res = await fetch('/api/services?status=PUBLISHED')
-      const data = await res.json()
-      if (data.data && data.data.length > 0) {
-        setServices(data.data)
-      } else {
-        // Fallback to default services
-        setServices([
-          { id: '1', title: 'รับเหมาก่อสร้าง', titleEn: 'Construction', description: 'บริการรับเหมาก่อสร้างครบวงจร สำหรับบ้าน วิลล่า และโครงการพาณิชย์ ด้วยทีมงานมืออาชีพและมาตรฐานการก่อสร้างระดับสากล', icon: 'construction', coverImage: 'https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=800' },
-          { id: '2', title: 'งานเฟอร์นิเจอร์ built-in', titleEn: 'Built-in Furniture', description: 'ออกแบบและติดตั้งเฟอร์นิเจอร์ built-in ตามความต้องการ ไม่ว่าจะเป็นครัว ตู้เสื้อผ้า ชั้นวาง ด้วยวัสดุคุณภาพสูง', icon: 'chair', coverImage: 'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=800' },
-          { id: '3', title: 'งานผ้าม่าน วอลเปเปอร์', titleEn: 'Curtains & Wallpaper', description: 'บริการติดตั้งผ้าม่านและวอลเปเปอร์หลากหลายลาย พร้อมให้คำปรึกษาการเลือกแบบฟรี', icon: 'curtains', coverImage: 'https://images.unsplash.com/photo-1522771739844-6a9f6d5f56d0?w=800' },
-          { id: '4', title: 'งานปูกระเบื้อง', titleEn: 'Tiling', description: 'บริการปูกระเบื้องทุกประเภท ทั้งกระเบื้องยาง หินอ่อน หินแกรนิต ด้วยช่างผู้เชี่ยวชาญ', icon: 'grid_on', coverImage: 'https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=800' },
-          { id: '5', title: 'ทำโครงการขาย', titleEn: 'Sales Projects', description: 'พัฒนาและบริหารโครงการอสังหาริมทรัพย์ ตั้งแต่ขั้นตอนการวางแผน ออกแบบ จนถึงการขาย', icon: 'trending_up', coverImage: 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=800' },
-          { id: '6', title: 'รับบริหารงานขายโครงการ', titleEn: 'Sales Project Management', description: 'บริหารจัดการทีมขายและการตลาดสำหรับโครงการอสังหาริมทรัพย์', icon: 'business', coverImage: 'https://images.unsplash.com/photo-1551434678-e076c223a692?w=800' },
-          { id: '7', title: 'งานออกแบบ งานก่อสร้าง ครบวงจร', titleEn: 'Comprehensive Design & Construction', description: 'บริการออกแบบและก่อสร้างครบวงจร ตั้งแต่ไอเดียจนถึงสิ่งที่คุณได้รับ', icon: 'architecture', coverImage: 'https://images.unsplash.com/photo-1487958449943-2429e8be8625?w=800' },
-          { id: '8', title: 'งานกราฟิกดีไซน์', titleEn: 'Graphic Design', description: 'บริการออกแบบกราฟิกสำหรับธุรกิจ ไม่ว่าจะเป็นโลโก้ แบรนด์ สื่อสิ่งพิมพ์', icon: 'design_services', coverImage: 'https://images.unsplash.com/photo-1626785774573-4b799315345d?w=800' },
-          { id: '9', title: 'งานออกแบบภายใน-ภายนอก ตกแต่ง', titleEn: 'Interior & Exterior Design', description: 'ออกแบบตกแต่งภายในและภายนอก สร้างสรรค์พื้นที่ที่สวยงามและใช้งานได้จริง', icon: 'interior_design', coverImage: 'https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?w=800' }
-        ])
-      }
-    } catch {
-      setServices([
-        { id: '1', title: 'รับเหมาก่อสร้าง', titleEn: 'Construction', description: 'บริการรับเหมาก่อสร้างครบวงจร สำหรับบ้าน วิลล่า และโครงการพาณิชย์ ด้วยทีมงานมืออาชีพและมาตรฐานการก่อสร้างระดับสากล', icon: 'construction', coverImage: 'https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=800' },
-        { id: '2', title: 'งานเฟอร์นิเจอร์ built-in', titleEn: 'Built-in Furniture', description: 'ออกแบบและติดตั้งเฟอร์นิเจอร์ built-in ตามความต้องการ ไม่ว่าจะเป็นครัว ตู้เสื้อผ้า ชั้นวาง ด้วยวัสดุคุณภาพสูง', icon: 'chair', coverImage: 'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=800' },
-        { id: '3', title: 'งานผ้าม่าน วอลเปเปอร์', titleEn: 'Curtains & Wallpaper', description: 'บริการติดตั้งผ้าม่านและวอลเปเปอร์หลากหลายลาย พร้อมให้คำปรึกษาการเลือกแบบฟรี', icon: 'curtains', coverImage: 'https://images.unsplash.com/photo-1522771739844-6a9f6d5f56d0?w=800' },
-        { id: '4', title: 'งานปูกระเบื้อง', titleEn: 'Tiling', description: 'บริการปูกระเบื้องทุกประเภท ทั้งกระเบื้องยาง หินอ่อน หินแกรนิต ด้วยช่างผู้เชี่ยวชาญ', icon: 'grid_on', coverImage: 'https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=800' },
-        { id: '5', title: 'ทำโครงการขาย', titleEn: 'Sales Projects', description: 'พัฒนาและบริหารโครงการอสังหาริมทรัพย์ ตั้งแต่ขั้นตอนการวางแผน ออกแบบ จนถึงการขาย', icon: 'trending_up', coverImage: 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=800' },
-        { id: '6', title: 'รับบริหารงานขายโครงการ', titleEn: 'Sales Project Management', description: 'บริหารจัดการทีมขายและการตลาดสำหรับโครงการอสังหาริมทรัพย์', icon: 'business', coverImage: 'https://images.unsplash.com/photo-1551434678-e076c223a692?w=800' },
-        { id: '7', title: 'งานออกแบบ งานก่อสร้าง ครบวงจร', titleEn: 'Comprehensive Design & Construction', description: 'บริการออกแบบและก่อสร้างครบวงจร ตั้งแต่ไอเดียจนถึงสิ่งที่คุณได้รับ', icon: 'architecture', coverImage: 'https://images.unsplash.com/photo-1487958449943-2429e8be8625?w=800' },
-        { id: '8', title: 'งานกราฟิกดีไซน์', titleEn: 'Graphic Design', description: 'บริการออกแบบกราฟิกสำหรับธุรกิจ ไม่ว่าจะเป็นโลโก้ แบรนด์ สื่อสิ่งพิมพ์', icon: 'design_services', coverImage: 'https://images.unsplash.com/photo-1626785774573-4b799315345d?w=800' },
-        { id: '9', title: 'งานออกแบบภายใน-ภายนอก ตกแต่ง', titleEn: 'Interior & Exterior Design', description: 'ออกแบบตกแต่งภายในและภายนอก สร้างสรรค์พื้นที่ที่สวยงามและใช้งานได้จริง', icon: 'interior_design', coverImage: 'https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?w=800' }
-      ])
-    } finally {
-      setLoading(false)
-    }
-  }
+type Service = { id: string; title: string; titleEn: string | null; description: string; icon: string | null; coverImage: string | null }
 
-  const defaultFeatures: Record<string, string[]> = {
-    'รับเหมาก่อสร้าง': ['รับเหมาก่อสร้างบ้านเดี่ยว วิลล่า', 'ควบคุมคุณภาพตามมาตรฐาน', 'บริหารงบประมาณและเวลา', 'ทีมงานมืออาชีพ'],
-    'งานเฟอร์นิเจอร์ built-in': ['ออกแบบตามสั่ง', 'ใช้วัสดุคุณภาพสูง', 'ผลิตด้วยเครื่องจักร CNC', 'รับประกัน 1 ปี'],
-    'งานผ้าม่าน วอลเปเปอร์': ['ผ้าม่านทุกประเภท', 'วอลเปเปอร์หลากหลายลาย', 'ให้คำปรึกษาฟรี', 'วัดและติดตั้งที่บ้าน'],
-    'งานปูกระเบื้อง': ['กระเบื้องทุกประเภท', 'ช่างผู้เชี่ยวชาญ', 'วางแผนให้สวยงาม', 'รับประกัน 1 ปี'],
-    'ทำโครงการขาย': ['วางแผนโครงการ', 'ออกแบบและก่อสร้าง', 'วางแผนการตลาด', 'บริหารจัดการครบวงจร'],
-    'รับบริหารงานขายโครงการ': ['บริหารทีมขาย', 'วางกลยุทธ์การขาย', 'ฝึกอบรมทีม', 'ติดตามและรายงานผล'],
-    'งานออกแบบ งานก่อสร้าง ครบวงจร': ['ออกแบบครบวงจร', 'รับเหมาก่อสร้าง', 'ควบคุมคุณภาพ', 'ส่งมอบพร้อมใช้งาน'],
-    'งานกราฟิกดีไซน์': ['ออกแบบโลโก้', 'สื่อสิ่งพิมพ์', 'สื่อดิจิทัล', 'แก้ไขจนพอใจ'],
-    'งานออกแบบภายใน-ภายนอก ตกแต่ง': ['ออกแบบภายใน', 'ออกแบบภายนอก', 'จัดหาเฟอร์นิเจอร์', '3D ภาพจำลอง']
-  }
-
-  const defaultProcess = [
-    { step: '01', title: 'ปรึกษา', desc: 'พูดคุยความต้องการ' },
-    { step: '02', title: 'ออกแบบ', desc: 'สร้าง concept design' },
-    { step: '03', title: 'พัฒนา', desc: 'พัฒนาแบบให้สมบูรณ์' },
-    { step: '04', title: 'ดำเนินการ', desc: 'ติดตั้งและควบคุมคุณภาพ' }
-  ]
-
-  if (loading) {
-    return (
-      <>
-        <Navigation currentPage="services" />
-        <main className="pt-20 sm:pt-24 md:pt-32">
-          <div className="max-w-[1400px] mx-auto px-5 sm:px-8 md:px-12">
-            <div className="animate-pulse space-y-6">
-              <div className="h-12 bg-gray-200 rounded w-1/4"></div>
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                <div className="h-[400px] bg-gray-200 rounded-xl"></div>
-                <div className="space-y-4">
-                  <div className="h-8 bg-gray-200 rounded w-3/4"></div>
-                  <div className="h-4 bg-gray-200 rounded w-full"></div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </main>
-      </>
-    )
-  }
-
-  const currentService = services[activeService] || services[0]
-  const features = defaultFeatures[currentService?.title] || defaultFeatures['ออกแบบภายใน'] || []
+export default async function ServicesPage() {
+  const services = await getServices()
+  const currentService = services[0]
+  const features = currentService ? (defaultFeatures[currentService.title] || defaultFeatures['ออกแบบภายใน'] || []) : []
 
   return (
     <>
@@ -124,7 +74,7 @@ export default function ServicesPage() {
           </div>
         </section>
 
-          {/* Service Tabs */}
+        {/* Service Tabs */}
         <section className="px-5 sm:px-8 md:px-12 mb-12 sm:mb-16">
           <div className="max-w-[1400px] mx-auto">
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -155,7 +105,6 @@ export default function ServicesPage() {
           <section className="px-5 sm:px-8 md:px-12 mb-12 sm:mb-16">
             <div className="max-w-[1400px] mx-auto">
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 sm:gap-12">
-                {/* Image */}
                 <div className="relative overflow-hidden rounded-xl editorial-shadow">
                   <img
                     src={currentService.coverImage || 'https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?w=800'}
@@ -174,7 +123,6 @@ export default function ServicesPage() {
                   </div>
                 </div>
 
-                {/* Content */}
                 <div>
                   <span className="text-primary text-[0.6rem] sm:text-xs tracking-[0.3em] sm:tracking-[0.4em] uppercase font-bold mb-3 sm:mb-4 block font-headline">
                     บริการของเรา
@@ -186,7 +134,6 @@ export default function ServicesPage() {
                     {currentService.description}
                   </p>
 
-                  {/* Features */}
                   <div className="mb-6 sm:mb-8">
                     <h4 className="text-xs sm:text-sm tracking-[0.2em] sm:tracking-[0.3em] uppercase font-bold text-gray-500 mb-3 sm:mb-4 font-headline">
                       สิ่งที่คุณจะได้รับ

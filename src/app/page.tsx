@@ -1,28 +1,59 @@
-'use client'
-
 import Link from 'next/link'
-
-import { useState, useEffect } from 'react'
+import prisma from '@/lib/prisma'
 import Navigation from '@/components/Navigation'
 import Footer from '@/components/Footer'
 
+// Server-side data fetching
+async function getHeroSettings() {
+  try {
+    const settings = await prisma.setting.findMany({ where: { group: 'hero' } })
+    const map: Record<string, string> = {}
+    settings.forEach(s => { map[s.key] = s.value })
+    return map
+  } catch { return {} }
+}
+
+async function getServices() {
+  try {
+    const data = await prisma.service.findMany({
+      where: { status: 'PUBLISHED' },
+      orderBy: { sortOrder: 'asc' },
+      take: 4
+    })
+    return data.map(s => ({
+      title: s.title,
+      slug: s.slug,
+      description: s.description || '',
+      image: s.coverImage || 'https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?w=800'
+    }))
+  } catch { return [] }
+}
+
+async function getPortfolios() {
+  try {
+    const data = await prisma.portfolio.findMany({
+      where: { status: 'PUBLISHED' },
+      orderBy: { sortOrder: 'asc' },
+      take: 4
+    })
+    const gridStyles = [
+      { gridColumn: 'span 4', gridRow: 'span 2' },
+      { gridColumn: 'span 8', gridRow: 'span 1' },
+      { gridColumn: 'span 4', gridRow: 'span 1' },
+      { gridColumn: 'span 4', gridRow: 'span 1' },
+    ]
+    return data.map((p, i) => ({
+      title: p.title,
+      location: `${p.location}, ${p.year}`,
+      image: p.coverImage,
+      slug: p.slug,
+      gridStyle: gridStyles[i] || { gridColumn: 'span 4', gridRow: 'span 1' }
+    }))
+  } catch { return [] }
+}
+
 // Hero Section
-function HeroSection() {
-  const [heroSettings, setHeroSettings] = useState<Record<string, string>>({})
-
-  useEffect(() => {
-    fetch('/api/settings?group=hero')
-      .then(r => r.json())
-      .then(data => {
-        if (data.data) {
-          const map: Record<string, string> = {}
-          data.data.forEach((s: { key: string; value: string }) => { map[s.key] = s.value })
-          setHeroSettings(map)
-        }
-      })
-      .catch(() => {})
-  }, [])
-
+function HeroSection({ heroSettings }: { heroSettings: Record<string, string> }) {
   const heroBrand = heroSettings.hero_brand || 'NUCHA VILL.'
   const heroBrandHighlight = heroSettings.hero_brand_highlight || 'VILL.'
   const heroBrandPrefix = heroBrand.replace(heroBrandHighlight, '').trim()
@@ -95,38 +126,7 @@ function HeroSection() {
 }
 
 // Services Accordion Section
-function ServicesSection() {
-  const [services, setServices] = useState<Array<{ title: string; description: string; image: string; slug: string }>>([])
-  const [loading, setLoading] = useState(true)
-  const [activeCard, setActiveCard] = useState<number | null>(null)
-
-  useEffect(() => {
-    fetchServices()
-  }, [])
-
-  const fetchServices = async () => {
-    try {
-      const res = await fetch('/api/services?status=PUBLISHED')
-      const data = await res.json()
-      if (data.data && data.data.length > 0) {
-        setServices(data.data.slice(0, 4).map((s: { title: string; slug: string; description: string | null; coverImage: string | null }) => ({
-          title: s.title,
-          slug: s.slug,
-          description: s.description || '',
-          image: s.coverImage || 'https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?w=800'
-        })))
-      }
-    } catch (error) {
-      console.error('Error fetching services:', error)
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  const handleCardClick = (index: number) => {
-    setActiveCard(activeCard === index ? null : index)
-  }
-
+function ServicesSection({ services }: { services: Array<{ title: string; description: string; image: string; slug: string }> }) {
   return (
     <section className="bg-white pt-8 sm:pt-12 md:pt-16 pb-8 sm:pb-12 px-5 sm:px-8 md:px-12 overflow-hidden">
       <div className="max-w-[1400px] mx-auto">
@@ -140,43 +140,28 @@ function ServicesSection() {
         </div>
 
         <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 h-[300px] sm:h-[400px] md:h-[500px] lg:h-[600px]">
-          {loading ? (
-            [1, 2, 3, 4].map((i) => (
-              <div key={i} className="flex-1 animate-pulse bg-gray-200 rounded-xl"></div>
-            ))
-          ) : services.length > 0 ? (
+          {services.length > 0 ? (
             services.map((service, index) => (
               <div
                 key={index}
-                onClick={() => handleCardClick(index)}
-                className={`accordion-item group relative overflow-hidden rounded-xl bg-gray-100 cursor-pointer ${activeCard === index ? 'active' : ''}`}
+                className="accordion-item group relative overflow-hidden rounded-xl bg-gray-100 cursor-pointer"
               >
                 <img
                   alt={service.title}
-                  className={`absolute inset-0 w-full h-full object-cover transition-all duration-500 ${
-                    activeCard === index 
-                      ? 'opacity-100' 
-                      : 'opacity-70 sm:group-hover:opacity-100'
-                  }`}
+                  className="absolute inset-0 w-full h-full object-cover transition-all duration-500 opacity-70 sm:group-hover:opacity-100"
                   src={service.image}
                 />
-                {/* Always-visible gradient + title */}
                 <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent" />
                 <div className="absolute bottom-3 left-3 right-3" style={{textShadow: '0 1px 6px rgba(0,0,0,0.9)'}}>
-                  {/* Title: hidden on mobile until tap, always visible on desktop */}
                   <h3 className="text-sm sm:text-base font-headline font-black text-white drop-shadow-lg leading-tight">
                     {service.title}
                   </h3>
-                  {/* Description + button: tap on mobile, hover on desktop */}
-                  <div className={`overflow-hidden transition-all duration-500 ${
-                    activeCard === index ? 'max-h-40 opacity-100 mt-2' : 'max-h-0 opacity-0 sm:group-hover:max-h-40 sm:group-hover:opacity-100 sm:group-hover:mt-2'
-                  }`}>
+                  <div className="overflow-hidden transition-all duration-500 max-h-0 opacity-0 sm:group-hover:max-h-40 sm:group-hover:opacity-100 sm:group-hover:mt-2">
                     <p className="text-xs text-white/90 leading-relaxed line-clamp-2 drop-shadow-md">
                       {service.description}
                     </p>
-                    <a 
+                    <a
                       href={`/services/${encodeURIComponent(service.slug)}`}
-                      onClick={e => e.stopPropagation()}
                       className="mt-2 inline-block font-headline text-[0.6rem] tracking-[0.2em] uppercase font-bold transition-all duration-300 px-3 py-1.5 border rounded text-white border-white hover:bg-white hover:text-primary"
                     >
                       เรียนรู้เพิ่มเติม
@@ -206,45 +191,7 @@ function ServicesSection() {
 }
 
 // Portfolio Section
-function PortfolioSection() {
-  const [projects, setProjects] = useState<Array<{ title: string; location: string; image: string; gridStyle: { gridColumn: string; gridRow: string }; slug: string }>>([])
-  const [loading, setLoading] = useState(true)
-  const [activeCard, setActiveCard] = useState<number | null>(null)
-
-  useEffect(() => {
-    fetchPortfolios()
-  }, [])
-
-  const fetchPortfolios = async () => {
-    try {
-      const res = await fetch('/api/portfolio?status=PUBLISHED')
-      const data = await res.json()
-      if (data.data && data.data.length > 0) {
-        const gridStyles = [
-          { gridColumn: 'span 4', gridRow: 'span 2' },
-          { gridColumn: 'span 8', gridRow: 'span 1' },
-          { gridColumn: 'span 4', gridRow: 'span 1' },
-          { gridColumn: 'span 4', gridRow: 'span 1' },
-        ]
-        setProjects(data.data.slice(0, 4).map((p: { title: string; location: string; year: number; coverImage: string; slug: string }, i: number) => ({
-          title: p.title,
-          location: `${p.location}, ${p.year}`,
-          image: p.coverImage,
-          slug: p.slug,
-          gridStyle: gridStyles[i] || { gridColumn: 'span 4', gridRow: 'span 1' }
-        })))
-      }
-    } catch (error) {
-      console.error('Error fetching portfolios:', error)
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  const handleCardClick = (index: number) => {
-    setActiveCard(activeCard === index ? null : index)
-  }
-
+function PortfolioSection({ projects }: { projects: Array<{ title: string; location: string; image: string; gridStyle: { gridColumn: string; gridRow: string }; slug: string }> }) {
   return (
     <section className="bg-white pt-0 sm:pt-4 md:pt-8 pb-8 sm:pb-12 px-5 sm:px-8 md:px-12">
       <div className="max-w-[1400px] mx-auto">
@@ -263,44 +210,28 @@ function PortfolioSection() {
         </div>
 
         <div className="flex flex-col sm:flex-row lg:grid lg:grid-cols-12 gap-4 sm:gap-4 lg:gap-6 lg:auto-rows-[300px]">
-          {loading ? (
-            [1, 2, 3, 4].map((i) => (
-              <div key={i} className="flex-1 lg:col-span-4 lg:row-span-1 animate-pulse bg-gray-200 rounded-xl"></div>
-            ))
-          ) : projects.length > 0 ? (
+          {projects.length > 0 ? (
             projects.map((project, index) => (
               <div
                 key={index}
-                onClick={() => handleCardClick(index)}
-                className={`accordion-item group relative overflow-hidden rounded-xl editorial-shadow cursor-pointer ${activeCard === index ? 'active' : ''}`}
-                style={{ ['--lg-grid-col' as string]: project.gridStyle.gridColumn, ['--lg-grid-row' as string]: project.gridStyle.gridRow }}
+                className="accordion-item group relative overflow-hidden rounded-xl editorial-shadow cursor-pointer"
               >
                 <img
                   alt={project.title}
-                  className={`w-full h-full object-cover transition-all duration-700 ${
-                    activeCard === index
-                      ? 'grayscale-0 scale-105'
-                      : 'grayscale-0 sm:opacity-70 sm:grayscale-[40%] sm:group-hover:opacity-100 sm:group-hover:grayscale-0 sm:group-hover:scale-110'
-                  }`}
+                  className="w-full h-full object-cover transition-all duration-700 grayscale-0 sm:opacity-70 sm:grayscale-[40%] sm:group-hover:opacity-100 sm:group-hover:grayscale-0 sm:group-hover:scale-110"
                   src={project.image}
                 />
-                {/* Always-visible gradient + title */}
                 <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent" />
                 <div className="absolute bottom-3 left-3 right-3" style={{textShadow: '0 1px 6px rgba(0,0,0,0.9)'}}>
-                  {/* Title: hidden on mobile until tap, always visible on desktop */}
                   <h4 className="text-sm sm:text-base font-headline font-black text-white drop-shadow-lg leading-tight">
                     {project.title}
                   </h4>
-                  {/* Location + button: tap on mobile, hover on desktop */}
-                  <div className={`overflow-hidden transition-all duration-500 ${
-                    activeCard === index ? 'max-h-40 opacity-100 mt-2' : 'max-h-0 opacity-0 sm:group-hover:max-h-40 sm:group-hover:opacity-100 sm:group-hover:mt-2'
-                  }`}>
+                  <div className="overflow-hidden transition-all duration-500 max-h-0 opacity-0 sm:group-hover:max-h-40 sm:group-hover:opacity-100 sm:group-hover:mt-2">
                     <span className="text-white/80 text-[0.6rem] tracking-widest font-bold font-headline block mb-1">
                       {project.location}
                     </span>
-                    <a 
+                    <a
                       href={`/portfolio/${project.slug}`}
-                      onClick={e => e.stopPropagation()}
                       className="mt-1 w-fit inline-block font-headline text-[0.6rem] tracking-[0.2em] uppercase font-bold transition-all duration-300 px-3 py-1.5 border rounded text-white border-white hover:bg-white hover:text-primary"
                     >
                       ดูรายละเอียด
@@ -348,7 +279,7 @@ function ContactSection() {
           </div>
 
           <div className="flex flex-col justify-center gap-6">
-            <form className="space-y-6" onSubmit={(e) => e.preventDefault()}>
+            <div className="space-y-6">
               <div className="space-y-2">
                 <label className="text-[0.65rem] tracking-widest text-primary font-bold uppercase font-headline">ชื่อ-นามสกุล</label>
                 <input
@@ -365,13 +296,12 @@ function ContactSection() {
                   <option className="bg-white">ปรึกษาออกแบบภายใน</option>
                 </select>
               </div>
-              <button
-                type="submit"
-                className="w-full bg-primary text-white font-headline font-bold py-3.5 sm:py-4 uppercase tracking-[0.2em] rounded-lg hover:bg-primary-dark transition-all shadow-xl shadow-red-500/20 text-sm sm:text-base"
+              <Link href="/booking"
+                className="block w-full bg-primary text-white font-headline font-bold py-3.5 sm:py-4 uppercase tracking-[0.2em] rounded-lg hover:bg-primary-dark transition-all shadow-xl shadow-red-500/20 text-sm sm:text-base text-center"
               >
                 จองคิวปรึกษา
-              </button>
-            </form>
+              </Link>
+            </div>
           </div>
         </div>
 
@@ -385,15 +315,21 @@ function ContactSection() {
   )
 }
 
-// Main Home Page
-export default function Home() {
+// Main Home Page - Server Component
+export default async function Home() {
+  const [heroSettings, services, projects] = await Promise.all([
+    getHeroSettings(),
+    getServices(),
+    getPortfolios()
+  ])
+
   return (
     <>
       <Navigation currentPage="home" />
       <main>
-        <HeroSection />
-        <ServicesSection />
-        <PortfolioSection />
+        <HeroSection heroSettings={heroSettings} />
+        <ServicesSection services={services} />
+        <PortfolioSection projects={projects} />
         <ContactSection />
       </main>
       <Footer />

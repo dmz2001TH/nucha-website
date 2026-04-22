@@ -49,7 +49,9 @@ export async function GET(request: NextRequest) {
     const existingKeySet = new Set(existingKeys.map(s => s.key))
     const missing = defaultSettings.filter(s => !existingKeySet.has(s.key))
     if (missing.length > 0) {
-      await prisma.setting.createMany({ data: missing, skipDuplicates: true })
+      for (const setting of missing) {
+        await prisma.setting.create({ data: setting })
+      }
     }
 
     // Initialize notification settings if not exists

@@ -1,1 +1,25 @@
-{}
+{
+  "/api/settings/route": "app/api/settings/route.js",
+  "/api/auth/[...nextauth]/route": "app/api/auth/[...nextauth]/route.js",
+  "/api/dashboard/route": "app/api/dashboard/route.js",
+  "/_not-found/page": "app/_not-found/page.js",
+  "/page": "app/page.js",
+  "/villas/page": "app/villas/page.js",
+  "/contact/page": "app/contact/page.js",
+  "/services/page": "app/services/page.js",
+  "/portfolio/page": "app/portfolio/page.js",
+  "/booking/page": "app/booking/page.js",
+  "/map/page": "app/map/page.js",
+  "/philosophy/page": "app/philosophy/page.js",
+  "/admin/page": "app/admin/page.js",
+  "/admin/page-preview/page": "app/admin/page-preview/page.js",
+  "/admin/villas/page": "app/admin/villas/page.js",
+  "/admin/services/page": "app/admin/services/page.js",
+  "/admin/portfolio/page": "app/admin/portfolio/page.js",
+  "/admin/bookings/page": "app/admin/bookings/page.js",
+  "/admin/inquiries/page": "app/admin/inquiries/page.js",
+  "/admin/users/page": "app/admin/users/page.js",
+  "/admin/pages/page": "app/admin/pages/page.js",
+  "/admin/settings/page": "app/admin/settings/page.js",
+  "/admin/media/page": "app/admin/media/page.js"
+}

@@ -73,8 +73,14 @@ export function middleware(request: NextRequest) {
   // Security headers
   const response = NextResponse.next()
 
-  // ป้องกัน clickjacking
-  response.headers.set('X-Frame-Options', 'DENY')
+  // ป้องกัน clickjacking (ยกเว้นสำหรับ page-preview)
+  const referer = request.headers.get('referer')
+  const isFromPagePreview = referer?.includes('/admin/page-preview')
+  if (!isFromPagePreview) {
+    response.headers.set('X-Frame-Options', 'DENY')
+  } else {
+    response.headers.set('X-Frame-Options', 'SAMEORIGIN')
+  }
 
   // ป้องกัน MIME sniffing
   response.headers.set('X-Content-Type-Options', 'nosniff')

@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
+import { generateDashboardPDF } from '@/lib/pdf-generator'
 
 interface DashboardStats {
   totals: {
@@ -119,9 +120,30 @@ export default function AdminDashboard() {
 
   return (
     <div>
-      <div className="mb-8">
-        <h1 className="text-3xl font-headline font-black text-gray-900">แดชบอร์ด</h1>
-        <p className="text-gray-500 font-body mt-1">ภาพรวมระบบจัดการเว็บไซต์</p>
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
+        <div>
+          <h1 className="text-3xl font-headline font-black text-gray-900">แดชบอร์ด</h1>
+          <p className="text-gray-500 font-body mt-1">ภาพรวมระบบจัดการเว็บไซต์</p>
+        </div>
+        <button
+          onClick={() => {
+            if (!stats) return
+            generateDashboardPDF({
+              totalVillas: stats.totals.villas,
+              availableVillas: stats.villas.byStatus?.AVAILABLE || 0,
+              totalBookings: stats.totals.bookings,
+              pendingBookings: stats.bookings.byStatus?.PENDING || 0,
+              totalInquiries: stats.totals.inquiries,
+              newInquiries: stats.inquiries.newThisMonth,
+              totalPortfolios: stats.totals.portfolios,
+              totalSubscribers: 0
+            })
+          }}
+          className="bg-white border border-gray-200 text-gray-700 px-5 py-3 font-headline font-bold text-sm rounded-lg hover:bg-gray-50 transition-all flex items-center gap-2 shadow-sm"
+        >
+          <span className="material-symbols-outlined text-[20px]">picture_as_pdf</span>
+          ส่งออกรายงาน PDF
+        </button>
       </div>
 
       {/* Stats Cards */}
@@ -282,7 +304,7 @@ export default function AdminDashboard() {
       {/* Export Section */}
       <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 mb-8">
         <h2 className="text-lg font-headline font-bold text-gray-900 mb-4">ส่งออกข้อมูล</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           <Link href="/api/export?type=bookings"
             className="flex items-center gap-4 p-4 bg-gray-50 rounded-lg hover:bg-primary hover:text-white transition-all group"
           >
@@ -290,10 +312,10 @@ export default function AdminDashboard() {
               <span className="material-symbols-outlined text-primary group-hover:text-white">event</span>
             </div>
             <div>
-              <p className="font-headline font-bold">ส่งออกการจองคิว</p>
-              <p className="text-sm text-gray-500 group-hover:text-white/80">ดาวน์โหลดเป็น Excel</p>
+              <p className="font-headline font-bold text-sm">จองคิว Excel</p>
+              <p className="text-xs text-gray-500 group-hover:text-white/80">.xlsx</p>
             </div>
-            <span className="material-symbols-outlined ml-auto">download</span>
+            <span className="material-symbols-outlined ml-auto text-[18px]">download</span>
           </Link>
           <Link href="/api/export?type=inquiries"
             className="flex items-center gap-4 p-4 bg-gray-50 rounded-lg hover:bg-primary hover:text-white transition-all group"
@@ -302,11 +324,51 @@ export default function AdminDashboard() {
               <span className="material-symbols-outlined text-primary group-hover:text-white">mail</span>
             </div>
             <div>
-              <p className="font-headline font-bold">ส่งออกคำถาม</p>
-              <p className="text-sm text-gray-500 group-hover:text-white/80">ดาวน์โหลดเป็น Excel</p>
+              <p className="font-headline font-bold text-sm">คำถาม Excel</p>
+              <p className="text-xs text-gray-500 group-hover:text-white/80">.xlsx</p>
             </div>
-            <span className="material-symbols-outlined ml-auto">download</span>
+            <span className="material-symbols-outlined ml-auto text-[18px]">download</span>
           </Link>
+          <button
+            onClick={async () => {
+              try {
+                const res = await fetch('/api/bookings')
+                const data = await res.json()
+                const { generateBookingsPDF } = await import('@/lib/pdf-generator')
+                await generateBookingsPDF(data.data || [])
+              } catch (e) { console.error(e) }
+            }}
+            className="flex items-center gap-4 p-4 bg-red-50 rounded-lg hover:bg-red-600 hover:text-white transition-all group text-left"
+          >
+            <div className="w-12 h-12 bg-red-100 group-hover:bg-white/20 rounded-lg flex items-center justify-center">
+              <span className="material-symbols-outlined text-red-600 group-hover:text-white">picture_as_pdf</span>
+            </div>
+            <div>
+              <p className="font-headline font-bold text-sm">จองคิว PDF</p>
+              <p className="text-xs text-gray-500 group-hover:text-white/80">รายงานสำหรับนำเสนอ</p>
+            </div>
+            <span className="material-symbols-outlined ml-auto text-[18px]">download</span>
+          </button>
+          <button
+            onClick={async () => {
+              try {
+                const res = await fetch('/api/inquiries')
+                const data = await res.json()
+                const { generateInquiriesPDF } = await import('@/lib/pdf-generator')
+                await generateInquiriesPDF(data.data || [])
+              } catch (e) { console.error(e) }
+            }}
+            className="flex items-center gap-4 p-4 bg-red-50 rounded-lg hover:bg-red-600 hover:text-white transition-all group text-left"
+          >
+            <div className="w-12 h-12 bg-red-100 group-hover:bg-white/20 rounded-lg flex items-center justify-center">
+              <span className="material-symbols-outlined text-red-600 group-hover:text-white">picture_as_pdf</span>
+            </div>
+            <div>
+              <p className="font-headline font-bold text-sm">คำถาม PDF</p>
+              <p className="text-xs text-gray-500 group-hover:text-white/80">รายงานสำหรับนำเสนอ</p>
+            </div>
+            <span className="material-symbols-outlined ml-auto text-[18px]">download</span>
+          </button>
         </div>
       </div>
 

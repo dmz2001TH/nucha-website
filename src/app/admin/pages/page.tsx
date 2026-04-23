@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import Image from 'next/image'
 
 interface Page {
   id: string
@@ -34,6 +35,7 @@ export default function AdminPagesPage() {
   const [formData, setFormData] = useState(emptyForm)
   const [editData, setEditData] = useState(emptyForm)
   const [submitting, setSubmitting] = useState(false)
+  const [previewPage, setPreviewPage] = useState<Page | null>(null)
 
   useEffect(() => {
     fetchPages()
@@ -278,79 +280,184 @@ export default function AdminPagesPage() {
         ))}
       </div>
 
-      <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-        <table className="w-full">
-          <thead className="bg-gray-50 border-b border-gray-100">
-            <tr>
-              <th className="text-left px-6 py-4 text-xs font-headline font-bold text-gray-500 uppercase tracking-wider">Title</th>
-              <th className="text-left px-6 py-4 text-xs font-headline font-bold text-gray-500 uppercase tracking-wider">Slug</th>
-              <th className="text-left px-6 py-4 text-xs font-headline font-bold text-gray-500 uppercase tracking-wider">Status</th>
-              <th className="text-left px-6 py-4 text-xs font-headline font-bold text-gray-500 uppercase tracking-wider">Updated</th>
-              <th className="text-right px-6 py-4 text-xs font-headline font-bold text-gray-500 uppercase tracking-wider">Actions</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-gray-100">
-            {filteredPages.map((page) => (
-              <tr key={page.id} className="hover:bg-gray-50">
-                <td className="px-6 py-4">
-                  <p className="font-bold text-gray-900">{page.title}</p>
-                  {page.titleEn && (
-                    <p className="text-xs text-gray-500">{page.titleEn}</p>
-                  )}
-                </td>
-                <td className="px-6 py-4">
-                  <span className="text-sm text-gray-600 bg-gray-100 px-2 py-1 rounded font-mono">{page.slug}</span>
-                </td>
-                <td className="px-6 py-4">
-                  <span className={`px-2 py-1 rounded text-xs font-bold ${statusColors[page.status]}`}>
-                    {page.status}
-                  </span>
-                </td>
-                <td className="px-6 py-4 text-sm text-gray-500">
-                  {new Date(page.updatedAt).toLocaleDateString('th-TH', {
-                    year: 'numeric',
-                    month: 'short',
-                    day: 'numeric'
-                  })}
-                </td>
-                <td className="px-6 py-4">
-                  <div className="flex justify-end gap-2">
-                    <button
-                      onClick={() => startEdit(page)}
-                      className="text-gray-400 hover:text-primary p-1"
-                    >
-                      <span className="material-symbols-outlined">edit</span>
-                    </button>
-                    <button
-                      onClick={() => handleDelete(page.id)}
-                      className="text-gray-400 hover:text-red-600 p-1"
-                    >
-                      <span className="material-symbols-outlined">delete</span>
-                    </button>
-                  </div>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-
-        {filteredPages.length === 0 && (
-          <div className="text-center py-16">
-            <span className="material-symbols-outlined text-6xl text-gray-300 mb-4 block">description</span>
-            <p className="text-gray-500 font-body">ยังไม่มี Page</p>
-            <button
-              onClick={() => {
-                setShowAddForm(true)
-                setEditingId(null)
-                setFormData(emptyForm)
-              }}
-              className="inline-block mt-4 text-primary font-headline font-bold hover:underline"
-            >
-              เพิ่ม Page แรก →
-            </button>
+      {/* Card Grid with Image Preview */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {filteredPages.map((page) => (
+          <div key={page.id} className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden group hover:shadow-md transition-shadow">
+            {/* Cover Image Preview */}
+            <div className="relative h-44 bg-gradient-to-br from-gray-100 to-gray-200 overflow-hidden">
+              {page.coverImage ? (
+                <Image
+                  src={page.coverImage}
+                  alt={page.title}
+                  fill
+                  className="object-cover group-hover:scale-105 transition-transform duration-500"
+                  sizes="(max-width: 768px)100vw, (max-width: 1200px) 50vw, 33vw"
+                  unoptimized
+                />
+              ) : (
+                <div className="w-full h-full flex items-center justify-center">
+                  <span className="material-symbols-outlined text-5xl text-gray-300">description</span>
+                </div>
+              )}
+              <div className="absolute top-3 left-3">
+                <span className={`px-2.5 py-1 rounded-full text-xs font-bold shadow-sm ${statusColors[page.status]}`}>
+                  {page.status}
+                </span>
+              </div>
+              <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors flex items-center justify-center opacity-0 group-hover:opacity-100">
+                <button
+                  onClick={() => setPreviewPage(page)}
+                  className="bg-white/90 backdrop-blur-sm text-gray-900 px-4 py-2 rounded-lg font-headline font-bold text-sm hover:bg-white transition-all flex items-center gap-2 shadow-lg"
+                >
+                  <span className="material-symbols-outlined text-[18px]">visibility</span>
+                  ดูตัวอย่าง
+                </button>
+              </div>
+            </div>
+            <div className="p-4">
+              <h3 className="font-headline font-bold text-gray-900 mb-1 line-clamp-1">{page.title}</h3>
+              {page.titleEn && (
+                <p className="text-xs text-gray-500 mb-2 line-clamp-1">{page.titleEn}</p>
+              )}
+              <div className="flex items-center justify-between">
+                <span className="text-xs bg-gray-100 px-2 py-1 rounded font-mono text-gray-600">/{page.slug}</span>
+                <span className="text-xs text-gray-400">
+                  {new Date(page.updatedAt).toLocaleDateString('th-TH', { day: 'numeric', month: 'short' })}
+                </span>
+              </div>
+              <div className="flex items-center justify-end gap-2 mt-3 pt-3 border-t border-gray-100">
+                <button
+                  onClick={() => setPreviewPage(page)}
+                  className="text-gray-400 hover:text-blue-600 p-1.5 rounded-lg hover:bg-blue-50 transition-all"
+                  title="ดูตัวอย่าง"
+                >
+                  <span className="material-symbols-outlined text-[20px]">visibility</span>
+                </button>
+                <button
+                  onClick={() => startEdit(page)}
+                  className="text-gray-400 hover:text-primary p-1.5 rounded-lg hover:bg-red-50 transition-all"
+                  title="แก้ไข"
+                >
+                  <span className="material-symbols-outlined text-[20px]">edit</span>
+                </button>
+                <button
+                  onClick={() => handleDelete(page.id)}
+                  className="text-gray-400 hover:text-red-600 p-1.5 rounded-lg hover:bg-red-50 transition-all"
+                  title="ลบ"
+                >
+                  <span className="material-symbols-outlined text-[20px]">delete</span>
+                </button>
+              </div>
+            </div>
           </div>
-        )}
+        ))}
       </div>
+
+      {filteredPages.length === 0 && (
+        <div className="text-center py-16">
+          <span className="material-symbols-outlined text-6xl text-gray-300 mb-4 block">description</span>
+          <p className="text-gray-500 font-body">ยังไม่มี Page</p>
+          <button
+            onClick={() => {
+              setShowAddForm(true)
+              setEditingId(null)
+              setFormData(emptyForm)
+            }}
+            className="inline-block mt-4 text-primary font-headline font-bold hover:underline"
+          >
+            เพิ่ม Page แรก →
+          </button>
+        </div>
+      )}
+
+      {/* Preview Modal */}
+      {previewPage && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4" onClick={() => setPreviewPage(null)}>
+          <div className="bg-white rounded-2xl shadow-2xl max-w-3xl w-full max-h-[90vh] overflow-hidden" onClick={(e) => e.stopPropagation()}>
+            {/* Modal Header */}
+            <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">
+              <div>
+                <h2 className="font-headline font-bold text-gray-900 text-lg">{previewPage.title}</h2>
+                {previewPage.titleEn && <p className="text-sm text-gray-500">{previewPage.titleEn}</p>}
+              </div>
+              <div className="flex items-center gap-3">
+                <span className={`px-3 py-1 rounded-full text-xs font-bold ${statusColors[previewPage.status]}`}>
+                  {previewPage.status}
+                </span>
+                <button
+                  onClick={() => { startEdit(previewPage); setPreviewPage(null); }}
+                  className="text-gray-500 hover:text-primary flex items-center gap-1 text-sm font-headline font-bold"
+                >
+                  <span className="material-symbols-outlined text-[18px]">edit</span>
+                  แก้ไข
+                </button>
+                <button
+                  onClick={() => setPreviewPage(null)}
+                  className="text-gray-400 hover:text-gray-600 p-1"
+                >
+                  <span className="material-symbols-outlined">close</span>
+                </button>
+              </div>
+            </div>
+
+            {/* Modal Content */}
+            <div className="overflow-y-auto max-h-[calc(90vh-120px)]">
+              {previewPage.coverImage && (
+                <div className="relative h-64 bg-gray-100">
+                  <Image
+                    src={previewPage.coverImage}
+                    alt={previewPage.title}
+                    fill
+                    className="object-cover"
+                    unoptimized
+                  />
+                </div>
+              )}
+              <div className="p-6">
+                <div className="flex items-center gap-4 text-sm text-gray-500 mb-4">
+                  <span className="flex items-center gap-1">
+                    <span className="material-symbols-outlined text-[16px]">link</span>
+                    /{previewPage.slug}
+                  </span>
+                  <span className="flex items-center gap-1">
+                    <span className="material-symbols-outlined text-[16px]">calendar_today</span>
+                    {new Date(previewPage.updatedAt).toLocaleDateString('th-TH', {
+                      year: 'numeric',
+                      month: 'long',
+                      day: 'numeric'
+                    })}
+                  </span>
+                </div>
+
+                {previewPage.content ? (
+                  <div className="prose prose-sm max-w-none text-gray-700">
+                    {previewPage.content.split('\n').map((paragraph, i) => (
+                      <p key={i} className="mb-3">{paragraph}</p>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-gray-400 italic">ไม่มีเนื้อหา</p>
+                )}
+
+                {previewPage.contentEn && (
+                  <div className="mt-6 pt-6 border-t border-gray-100">
+                    <h3 className="text-sm font-headline font-bold text-gray-500 mb-3 flex items-center gap-2">
+                      <span className="material-symbols-outlined text-[16px]">translate</span>
+                      English Content
+                    </h3>
+                    <div className="prose prose-sm max-w-none text-gray-600">
+                      {previewPage.contentEn.split('\n').map((paragraph, i) => (
+                        <p key={i} className="mb-3">{paragraph}</p>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

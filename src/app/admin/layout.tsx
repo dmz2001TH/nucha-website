@@ -27,7 +27,7 @@ function AdminLayoutContent({ children }: { children: React.ReactNode }) {
     }
   }, [status, pathname, router])
 
-  const menuItems = [
+  const menuItems: ({ href: string; label: string; icon: string; external?: boolean; divider?: false } | { divider: true })[] = [
     { href: '/admin', label: 'แดชบอร์ด', icon: 'dashboard' },
     { href: '/admin/portfolio', label: 'ผลงาน', icon: 'photo_library' },
     { href: '/admin/villas', label: 'วิลล่า', icon: 'home' },
@@ -37,7 +37,9 @@ function AdminLayoutContent({ children }: { children: React.ReactNode }) {
     { href: '/admin/inquiries', label: 'คำถาม', icon: 'mail' },
     { href: '/admin/media', label: 'มีเดีย', icon: 'perm_media' },
     { href: '/admin/users', label: 'ผู้ใช้งาน', icon: 'group' },
-    { href: '/admin/settings', label: 'ตั้งค่า', icon: 'settings' }
+    { href: '/admin/settings', label: 'ตั้งค่า', icon: 'settings' },
+    { divider: true },
+    { href: '/', label: 'ดูเว็บไซต์', icon: 'open_in_new', external: true }
   ]
 
   if (pathname === '/admin/login' || pathname === '/admin/register') {
@@ -76,22 +78,34 @@ function AdminLayoutContent({ children }: { children: React.ReactNode }) {
         </div>
 
         <nav className="flex-1 px-4 py-6 space-y-1 overflow-y-auto">
-          {menuItems.map((item) => {
-            const isActive = pathname === item.href || 
-              (item.href !== '/admin' && pathname.startsWith(item.href))
+          {menuItems.map((item, index) => {
+            if ('divider' in item && item.divider) {
+              return <div key={`divider-${index}`} className="my-3 border-t border-gray-100" />
+            }
+
+            const href = 'href' in item ? item.href : ''
+            const label = 'label' in item ? item.label : ''
+            const icon = 'icon' in item ? item.icon : ''
+            const external = 'external' in item ? item.external : false
+            const isActive = !external && (pathname === href || 
+              (href !== '/admin' && pathname.startsWith(href)))
             
             return (
               <Link
-                key={item.href}
-                href={item.href}
+                key={href}
+                href={href}
+                target={external ? '_blank' : undefined}
                 className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-all ${
                   isActive
                     ? 'bg-primary text-white shadow-lg shadow-red-500/20'
+                    : external
+                    ? 'text-gray-500 hover:bg-gray-50 hover:text-gray-700 border border-dashed border-gray-200'
                     : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
                 }`}
               >
-                <span className="material-symbols-outlined text-xl">{item.icon}</span>
-                <span className="font-headline text-sm font-bold">{item.label}</span>
+                <span className="material-symbols-outlined text-xl">{icon}</span>
+                <span className="font-headline text-sm font-bold">{label}</span>
+                {external && <span className="material-symbols-outlined text-[14px] ml-auto">north_east</span>}
               </Link>
             )
           })}

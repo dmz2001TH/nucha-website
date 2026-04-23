@@ -22,20 +22,11 @@ const nextConfig: NextConfig = {
     optimizeCss: true,
   },
 
-  // Headers for caching
+  // Headers for caching (production only - no /_next/static to avoid dev warning)
   async headers() {
     return [
       {
         source: '/uploads/:path*',
-        headers: [
-          {
-            key: 'Cache-Control',
-            value: 'public, max-age=31536000, immutable',
-          },
-        ],
-      },
-      {
-        source: '/_next/static/:path*',
         headers: [
           {
             key: 'Cache-Control',

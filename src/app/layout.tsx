@@ -119,7 +119,7 @@ export default function RootLayout({
   };
 
   return (
-    <html lang="th" className="antialiased" suppressHydrationWarning>
+    <html lang="th" className="antialiased" data-scroll-behavior="smooth" suppressHydrationWarning>
       <head>
         <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
         <link rel="manifest" href="/manifest.json" />

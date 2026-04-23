@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { generateInquiriesPDF } from '@/lib/pdf-generator'
 
 interface Inquiry {
   id: string
@@ -61,6 +62,14 @@ export default function AdminInquiriesPage() {
     return matchFilter && matchSearch
   })
 
+  const handleExportPDF = async () => {
+    try {
+      await generateInquiriesPDF(filteredInquiries)
+    } catch (err) {
+      console.error('PDF export error:', err)
+    }
+  }
+
   const statusColors: Record<string, string> = {
     'NEW': 'bg-blue-100 text-blue-800',
     'CONTACTED': 'bg-yellow-100 text-yellow-800',
@@ -101,9 +110,18 @@ export default function AdminInquiriesPage() {
 
   return (
     <div>
-      <div className="mb-8">
-        <h1 className="text-3xl font-headline font-black text-gray-900">คำถาม</h1>
-        <p className="text-gray-500 font-body mt-1">จัดการคำขอปรึกษาจากลูกค้า</p>
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
+        <div>
+          <h1 className="text-3xl font-headline font-black text-gray-900">คำถาม</h1>
+          <p className="text-gray-500 font-body mt-1">จัดการคำขอปรึกษาจากลูกค้า</p>
+        </div>
+        <button
+          onClick={handleExportPDF}
+          className="bg-white border border-gray-200 text-gray-700 px-5 py-3 font-headline font-bold text-sm rounded-lg hover:bg-gray-50 transition-all flex items-center gap-2 shadow-sm"
+        >
+          <span className="material-symbols-outlined text-[20px]">picture_as_pdf</span>
+          ส่งออก PDF
+        </button>
       </div>
 
       <div className="flex flex-col md:flex-row gap-4 mb-6">

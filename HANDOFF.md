@@ -1,70 +1,137 @@
-# Handoff — Nucha Website Performance Fix
-**Date:** 2026-04-22  
-**Branch:** `master`  
-**Commit:** `4e0fd15`
+# HANDOFF.md — Nucha Website Project
+
+> อัปเดตล่าสุด: 2026-04-23 19:08 GMT+8
+> Branch: `master` | Commit: `e9c5188`
+> Repo: https://github.com/dmz2001TH/nucha-website
 
 ---
 
-## ปัญหา
-Website ช้ามาก — แต่ละหน้าใช้เวลาโหลด **5-10 วินาที**
+## 📋 โครงสร้างโปรเจค
 
-## สาเหตุ
-ทุกหน้า public เป็น `'use client'` (Client Component) ที่:
-1. Render ว่างๆ มาก่อน (ไม่มีข้อมูล)
-2. Browser ค่อย fetch API แต่ละตัว (`/api/services`, `/api/portfolio`, `/api/settings` ฯลฯ)
-3. แต่ละ API ต้อง query Neon PostgreSQL (serverless → cold start 1-3 วินาที)
-4. ทำแบบ sequential = 2-3 fetch ต่อหน้า = 5-10 วินาที
+- **Framework:** Next.js 16.2.2 (App Router)
+- **DB:** Prisma + PostgreSQL (Neon)
+- **Auth:** NextAuth v5 (beta)
+- **Styling:** Tailwind CSS v4
+- **Language:** TypeScript, React 19
+- **Export:** Excel (xlsx) + PDF (jsPDF + jspdf-autotable)
 
-## วิธีแก้
-แปลงหน้า public ทั้งหมดเป็น **Server Components** ที่ดึงข้อมูลจาก Prisma โดยตรง ข้าม API layer
+## 🏗️ โครงสร้างไฟล์หลัก
 
-### ไฟล์ที่เปลี่ยน
-| ไฟล์ | สิ่งที่เปลี่ยน |
-|---|---|
-| `src/app/page.tsx` (Home) | `'use client'` → Server Component, ดึง hero settings + services + portfolios พร้อมกัน |
-| `src/app/services/page.tsx` | `'use client'` → Server Component, ดึง services ตรงจาก Prisma |
-| `src/app/philosophy/page.tsx` | `'use client'` → Server Component, ดึง page + settings ตรง |
-| `src/app/portfolio/page.tsx` | Server Component wrapper ดึงข้อมูล, ส่งให้ Client Component filter |
-| `src/app/portfolio/PortfolioClient.tsx` | **ใหม่** — Client Component สำหรับ category filter |
-| `src/app/villas/page.tsx` | แบบเดียวกับ portfolio |
-| `src/app/villas/VillasClient.tsx` | **ใหม่** — Client Component สำหรับ filter + sort |
-| `src/app/map/page.tsx` | Server Component wrapper ดึง villas + portfolios |
-| `src/app/map/MapClient.tsx` | **ใหม่** — Client Component + dynamic import Leaflet |
-
-### หน้าที่ไม่ได้แก้
-- **Contact** — ฟอร์มอย่างเดียว ไม่มี fetch ข้อมูลมาแสดง โหลดเร็วอยู่แล้ว (~50ms)
-- **Booking** — แบบเดียวกับ Contact (~30ms)
-- **Admin pages** — ต้อง login อยู่แล้ว ไม่ critical
-
-## ผลลัพธ์
-| Page | ก่อน | หลัง | เร็วขึ้น |
-|---|---|---|---|
-| Home | ~5,000ms | ~370ms | **13x** |
-| Services | ~2,100ms | ~280ms | **7.5x** |
-| Portfolio | ~2,300ms | ~500ms | **4.6x** |
-| Villas | ~1,880ms | ~500ms | **3.8x** |
-| Philosophy | ~2,000ms | ~275ms | **7.3x** |
-| Map | ~2,000ms | ~350ms | **5.7x** |
-| Contact | ~1,850ms | ~35ms | **53x** |
-| Booking | ~1,000ms | ~30ms | **33x** |
-
-## สิ่งที่ควรทำต่อ
-1. **Email notifications** — SMTP credentials ไม่ถูกต้อง (`Missing credentials for "PLAIN"`) → ตั้งค่า SMTP_HOST, SMTP_USER, SMTP_PASS
-2. **LINE Notify** — token ยังไม่ตั้งค่า → ใส่ LINE_NOTIFY_TOKEN
-3. **Domain mismatch** — Sitemap ใช้ `nucha-innovation.com` แต่ NEXTAUTH_URL คือ `nucha.shop` → แก้ให้ตรง
-4. **⚠️ .env อยู่ใน repo** — มี database password + NextAuth secret → rotate credentials แล้ว add `.env` ใน `.gitignore`
-5. **Register page** (`/admin/register`) เปิด public → ควรมี protection
-6. **npm audit fix** — 5 vulnerabilities (2 moderate, 3 high)
-
-## Pattern ที่ใช้ (สำหรับ reference)
 ```
-Server Component (page.tsx)
-  → async function ดึงข้อมูลจาก prisma
-  → render HTML พร้อมข้อมูล
-  → ส่ง props ให้ Client Component ถ้าต้องการ interactivity
-
-Client Component (XxxClient.tsx)
-  → 'use client'
-  → รับ data เป็น props
-  → จัดการ filter, sort, click handlers
+src/
+├── app/
+│   ├── admin/           # หน้าแอดมินทั้งหมด
+│   │   ├── layout.tsx   # Sidebar + Auth guard
+│   │   ├── page.tsx     # Dashboard
+│   │   ├── bookings/    # จองคิว
+│   │   ├── inquiries/   # คำถาม
+│   │   ├── pages/       # จัดการ Pages (มี image preview + modal)
+│   │   ├── portfolio/   # ผลงาน
+│   │   ├── villas/      # วิลล่า
+│   │   ├── services/    # บริการ
+│   │   ├── media/       # มีเดีย
+│   │   ├── users/       # ผู้ใช้
+│   │   ├── settings/    # ตั้งค่า
+│   │   ├── login/       # เข้าสู่ระบบ
+│   │   └── register/    # สมัครสมาชิก
+│   ├── api/             # API routes ทั้งหมด
+│   ├── portfolio/       # หน้าเว็บผลงาน
+│   ├── villas/          # หน้าเว็บวิลล่า
+│   ├── services/        # หน้าเว็บบริการ
+│   ├── booking/         # หน้าจองคิว
+│   ├── contact/         # หน้าติดต่อ
+│   └── page.tsx         # หน้าแรก
+├── components/          # Shared components
+├── lib/
+│   ├── prisma.ts        # Prisma client
+│   ├── auth.ts          # NextAuth config
+│   ├── email.ts         # Email service
+│   ├── pdf-generator.ts # PDF report generator ⭐ ใหม่
+│   └── i18n/            # Translations (th/en)
+└── middleware.ts
 ```
+
+---
+
+## ✅ สิ่งที่เสร็จแล้ว (2026-04-23)
+
+### 1. Performance Optimization
+- **ไฟล์:** `next.config.ts`
+- เพิ่ม caching headers สำหรับ `/uploads/*` และ `/_next/static/*` (1 year, immutable)
+- เปิด `compress: true` สำหรับ response compression
+- เปิด `experimental.optimizeCss`
+- ปิด `poweredByHeader` เพื่อความปลอดภัย
+- กำหนด `deviceSizes` และ `imageSizes` ให้เหมาะสม
+- **หมายเหตุ:** `images.unoptimized: true` ยัง保留อยู่ เพราะ deploy ไม่ใช้ Vercel Image Optimization — ถ้าใช้ Vercel หรือมี image proxy สามารถลบออกได้
+
+### 2. Page Preview with Images
+- **ไฟล์:** `src/app/admin/pages/page.tsx`
+- เปลี่ยนจากตารางเป็น **Card Grid** แสดง cover image thumbnail
+- เพิ่ม **Preview Modal** — คลิก "ดูตัวอย่าง" เพื่อดูรูป + เนื้อหาเต็มใน modal
+- แสดงทั้ง Thai/English content
+- รองรับ status badge, slug, วันที่อัปเดต
+
+### 3. Professional PDF Export
+- **ไฟล์ใหม่:** `src/lib/pdf-generator.ts`
+- 依赖: `jspdf` + `jspdf-autotable` (ติดตั้งแล้ว)
+- **3 รายงาน:**
+  - `generateBookingsPDF()` — รายงานจองคิว: summary cards, status bar chart, ตาราง + detail cards
+  - `generateInquiriesPDF()` — รายงานคำถาม: summary cards, interest distribution bar, ตาราง
+  - `generateDashboardPDF()` — รายงานสรุปภาพรวม: key metrics + insights
+- **ดีไซน์:** แบรนด์ NUCHA สีแดง #C41E3A, header/footer, page numbers, ตาราง alternating rows
+- **ปุ่ม Export:**
+  - หน้า Dashboard: ปุ่ม "ส่งออกรายงาน PDF" + ปุ่ม PDF bookings/inquiries ใน export section
+  - หน้าจองคิว: ปุ่ม "ส่งออก PDF"
+  - หน้าคำถาม: ปุ่ม "ส่งออก PDF"
+- Excel export เดิมยัง保留อยู่
+
+### 4. Admin Sidebar Update
+- **ไฟล์:** `src/app/admin/layout.tsx`
+- เพิ่มเมนู **"ดูเว็บไซต์"** (open_in_new icon) ท้าย sidebar — เปิดเว็บจริงใน tab ใหม่
+- เพิ่ม divider เส้นแบ่งระหว่างเมนูหลักกับลิงก์ภายนอก
+- ปรับ type definition รองรับ mixed menu items (ปกติ + divider + external)
+
+---
+
+## 📌 สิ่งที่ควรทำต่อ (ถ้าต้องการ)
+
+### 🔴 ควรทำ (มีผลกระทบต่อ UX/Performance)
+1. **Replace `images.unoptimized: true`** — ถ้า deploy บน Vercel หรือมี image CDN/proxy ควรลบออกเพื่อให้ Next.js optimize รูปอัตโนมัติ
+2. **Add `<Image>` component** แทน `<img>` ทั่วไป — หลายหน้า (portfolio, villas) ยังใช้ `<img>` ธรรมดา ควรเปลี่ยนเป็น `next/image` เพื่อ lazy loading + responsive sizing
+3. **Font optimization** — ยังโหลด Google Fonts (Material Symbols) แบบ `<link>` ควรใช้ `next/font` เพื่อ self-host และลด layout shift
+4. **Database query optimization** — ตรวจสอบ N+1 queries ใน API routes, เพิ่ม `select` เฉพาะ fields ที่จำเป็น
+
+### 🟡 ควรทำ (คุณภาพโค้ด)
+5. **Add loading states** — บางหน้า (services, media) ยังไม่มี skeleton loading
+6. **Error boundaries** — ควเพิ่ม error.tsx ในแต่ละ route group
+7. **Form validation** — หลายฟอร์มยังไม่มี client-side validation ด้วย zod (มี zod ใน dependencies แล้ว)
+8. **Image upload to cloud** — ปัจจุบันเก็บใน `/public/uploads/` ควรย้ายไป cloud storage (S3, Cloudflare R2, etc.)
+
+### 🟢 ถ้าต้องการเพิ่ม
+9. **Page Preview ใน sidebar** — ถ้าต้องการเมนู "ดูตัวอย่างเว็บ" แบบ live preview (iframe) แทนที่จะเปิด tab ใหม่
+10. **PDF export สำหรับ Villas/Portfolio** — ยังไม่มี สามารถเพิ่มฟังก์ชัน `generateVillasPDF()` / `generatePortfolioPDF()` ใน pdf-generator.ts
+11. **i18n สำหรับ PDF** — ปัจจุบัน PDF เป็นภาษาไทยเท่านั้น อาจเพิ่ม English version
+12. **Scheduled reports** — ตั้ง cron job ส่งรายงาน PDF ทางอีเมลอัตโนมัติ
+
+---
+
+## 🔧 วิธี Run
+
+```bash
+# Setup
+npm install
+npx prisma generate
+npx prisma db push
+
+# Dev
+npm run dev
+
+# Build
+npm run build
+npm start
+```
+
+## 📝 Notes
+- Prisma schema อยู่ที่ `prisma/schema.prisma` — ใช้ PostgreSQL (Neon)
+- PDF generator ใช้ jsPDF (client-side) — ไม่ต้องติดตั้ง server-side dependencies เพิ่ม
+- ทุก export (Excel + PDF) ทำงาน client-side — ดาวน์โหลดทันทีไม่ต้องรอ server

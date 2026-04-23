@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { useToast } from '@/components/Toast'
+import { generateBookingsPDF } from '@/lib/pdf-generator'
 
 interface Booking {
   id: string
@@ -89,6 +90,16 @@ export default function AdminBookingsPage() {
     return filter === 'all' || b.status === filter
   })
 
+  const handleExportPDF = async () => {
+    try {
+      await generateBookingsPDF(filteredBookings)
+      toast.success('ส่งออก PDF สำเร็จ')
+    } catch (err) {
+      console.error('PDF export error:', err)
+      toast.error('ส่งออก PDF ไม่สำเร็จ')
+    }
+  }
+
   if (loading) {
     return (
       <div className="animate-pulse space-y-6">
@@ -103,9 +114,20 @@ export default function AdminBookingsPage() {
 
   return (
     <div>
-      <div className="mb-8">
-        <h1 className="text-3xl font-headline font-black text-gray-900">จองคิว</h1>
-        <p className="text-gray-500 font-body mt-1">จัดการการจองคิวปรึกษาจากลูกค้า</p>
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
+        <div>
+          <h1 className="text-3xl font-headline font-black text-gray-900">จองคิว</h1>
+          <p className="text-gray-500 font-body mt-1">จัดการการจองคิวปรึกษาจากลูกค้า</p>
+        </div>
+        <div className="flex gap-3">
+          <button
+            onClick={handleExportPDF}
+            className="bg-white border border-gray-200 text-gray-700 px-5 py-3 font-headline font-bold text-sm rounded-lg hover:bg-gray-50 transition-all flex items-center gap-2 shadow-sm"
+          >
+            <span className="material-symbols-outlined text-[20px]">picture_as_pdf</span>
+            ส่งออก PDF
+          </button>
+        </div>
       </div>
 
       {/* Filters */}

@@ -1,7 +1,7 @@
 # HANDOFF.md — Nucha Website Project
 
-> อัปเดตล่าสุด: 2026-04-23 19:08 GMT+8
-> Branch: `master` | Commit: `e9c5188`
+> อัปเดตล่าสุด: 2026-04-23 19:32 GMT+8
+> Branch: `master` | Commit: `672cbd9`
 > Repo: https://github.com/dmz2001TH/nucha-website
 
 ---
@@ -90,6 +90,11 @@ src/
 - เพิ่มเมนู **"ดูเว็บไซต์"** (open_in_new icon) ท้าย sidebar — เปิดเว็บจริงใน tab ใหม่
 - เพิ่ม divider เส้นแบ่งระหว่างเมนูหลักกับลิงก์ภายนอก
 - ปรับ type definition รองรับ mixed menu items (ปกติ + divider + external)
+
+### 5. Bug Fixes (2026-04-23 19:32)
+- **`/api/auth/status` 400 error** — เพิ่ม endpoint `src/app/api/auth/status/route.ts` ที่ return 200 OK เพื่อจัดการ requests จาก browser extensions ที่เรียก `/api/auth/status` (ไม่มีในโค้ด แต่ NextAuth catch-all พยายาม parse แล้ว throw UnknownAction)
+- **`sw.js` 404** — เพิ่ม `public/sw.js` placeholder เพื่อป้องกัน 404 จาก browser ที่พยายาม load service worker จาก manifest.json
+- **Cache header warning** — ลบ `/_next/static/:path*` cache header ออกจาก next.config.ts เพราะขัดกับ Next.js dev mode behavior
 
 ---
 

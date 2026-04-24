@@ -10,11 +10,8 @@ import {
   ExternalLink,
   Check,
   RefreshCw,
-  Globe,
   Maximize2,
   X,
-  Layers,
-  ChevronDown,
   LayoutGrid,
 } from 'lucide-react'
 
@@ -143,7 +140,6 @@ export default function PagePreviewPage() {
   const [fullscreenPage, setFullscreenPage] = useState<PageEntry | null>(null)
   const [fullscreenDevice, setFullscreenDevice] = useState<'desktop' | 'mobile'>('desktop')
   const [iframeKeys, setIframeKeys] = useState(0)
-  const [selectionOpen, setSelectionOpen] = useState(false)
   const iframeRefs = useRef<Map<string, HTMLIFrameElement>>(new Map())
   const previewContainerRefs = useRef<Map<string, HTMLDivElement>>(new Map())
   const [containerWidths, setContainerWidths] = useState<Map<string, number>>(new Map())
@@ -685,124 +681,89 @@ export default function PagePreviewPage() {
   }, [selectedPages])
 
   return (
-    <div className="space-y-0">
-      {/* ─── Professional Header ─── */}
-      <div className="relative -mx-6 -mt-6 mb-6 overflow-hidden bg-gradient-to-br from-zinc-900 via-zinc-800 to-zinc-900 px-8 py-8">
-        {/* Decorative background pattern */}
-        <div className="absolute inset-0 opacity-[0.03]" style={{
-          backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
-        }} />
-        <div className="relative flex flex-col lg:flex-row lg:items-end lg:justify-between gap-6">
-          <div>
-            <div className="flex items-center gap-3 mb-3">
-              <div className="flex items-center justify-center w-11 h-11 rounded-2xl bg-white/10 backdrop-blur-sm ring-1 ring-white/20">
-                <Eye className="w-5 h-5 text-white" />
-              </div>
-              <div>
-                <h1 className="text-2xl font-bold text-white tracking-tight">
-                  Page Preview
-                </h1>
-                <p className="text-sm text-zinc-400">
-                  ดูตัวอย่างหน้าเว็บทั้งหมดและส่งออกเป็น PDF
-                </p>
-              </div>
-            </div>
-            {/* Stats row */}
-            <div className="flex items-center gap-3 mt-4">
-              <div className="flex items-center gap-2 rounded-xl bg-white/10 backdrop-blur-sm px-4 py-2 ring-1 ring-white/10">
-                <Layers className="w-4 h-4 text-zinc-300" />
-                <span className="text-sm font-semibold text-white">{ALL_PAGES.length}</span>
-                <span className="text-xs text-zinc-400">หน้าทั้งหมด</span>
-              </div>
-              <div className="flex items-center gap-2 rounded-xl bg-emerald-500/20 backdrop-blur-sm px-4 py-2 ring-1 ring-emerald-400/20">
-                <Check className="w-4 h-4 text-emerald-400" />
-                <span className="text-sm font-semibold text-emerald-300">{selectedPages.size}</span>
-                <span className="text-xs text-emerald-400/70">เลือกแล้ว</span>
-              </div>
-              <div className="flex items-center gap-2 rounded-xl bg-white/10 backdrop-blur-sm px-4 py-2 ring-1 ring-white/10">
-                <Globe className="w-4 h-4 text-zinc-300" />
-                <span className="text-xs text-zinc-400">{CATEGORIES.length} หมวดหมู่</span>
-              </div>
-            </div>
-          </div>
+    <div className="space-y-5">
+      {/* ─── Clean Header ─── */}
+      <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 pb-4 border-b border-gray-200">
+        <div>
+          <h1 className="text-xl font-semibold text-gray-900 flex items-center gap-2">
+            <Eye className="w-5 h-5 text-gray-500" />
+            Page Preview
+          </h1>
+          <p className="text-sm text-gray-500 mt-0.5">
+            {selectedPages.size} หน้าที่เลือก · {ALL_PAGES.length} หน้าทั้งหมด
+          </p>
+        </div>
 
-          {/* Header actions */}
-          <div className="flex items-center gap-2">
-            {/* Device toggle */}
-            <div className="flex rounded-xl bg-white/10 backdrop-blur-sm p-1 ring-1 ring-white/10">
-              <button
-                onClick={() => setViewMode('desktop')}
-                className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium transition-all ${
-                  viewMode === 'desktop'
-                    ? 'bg-white text-zinc-900 shadow-sm'
-                    : 'text-zinc-400 hover:text-white'
-                }`}
-              >
-                <Monitor className="w-3.5 h-3.5" />
-                Desktop
-              </button>
-              <button
-                onClick={() => setViewMode('mobile')}
-                className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium transition-all ${
-                  viewMode === 'mobile'
-                    ? 'bg-white text-zinc-900 shadow-sm'
-                    : 'text-zinc-400 hover:text-white'
-                }`}
-              >
-                <Smartphone className="w-3.5 h-3.5" />
-                Mobile
-              </button>
-            </div>
-
+        <div className="flex items-center gap-2">
+          {/* Device toggle */}
+          <div className="flex rounded-lg border border-gray-200 bg-white overflow-hidden">
             <button
-              onClick={refreshAll}
-              className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-white/10 text-zinc-300 hover:bg-white/20 hover:text-white text-xs font-medium ring-1 ring-white/10 transition-all"
+              onClick={() => setViewMode('desktop')}
+              className={`flex items-center gap-1.5 px-3 py-2 text-xs font-medium transition-colors ${
+                viewMode === 'desktop'
+                  ? 'bg-gray-900 text-white'
+                  : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50'
+              }`}
             >
-              <RefreshCw className="w-3.5 h-3.5" />
-              รีเฟรช
+              <Monitor className="w-3.5 h-3.5" />
+              Desktop
             </button>
-
             <button
-              onClick={handleExportPDF}
-              disabled={exporting || selectedPages.size === 0}
-              className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-white text-zinc-900 text-sm font-semibold hover:bg-zinc-100 disabled:opacity-40 disabled:cursor-not-allowed transition-all shadow-lg shadow-black/20"
+              onClick={() => setViewMode('mobile')}
+              className={`flex items-center gap-1.5 px-3 py-2 text-xs font-medium transition-colors ${
+                viewMode === 'mobile'
+                  ? 'bg-gray-900 text-white'
+                  : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50'
+              }`}
             >
-              {exporting ? (
-                <>
-                  <Loader2 className="w-4 h-4 animate-spin" />
-                  <span>กำลังส่งออก...</span>
-                </>
-              ) : (
-                <>
-                  <Download className="w-4 h-4" />
-                  <span>ส่งออก PDF</span>
-                  <span className="ml-1 px-1.5 py-0.5 rounded-md bg-zinc-900 text-white text-[10px] font-bold">
-                    {selectedPages.size}
-                  </span>
-                </>
-              )}
+              <Smartphone className="w-3.5 h-3.5" />
+              Mobile
             </button>
           </div>
+
+          <button
+            onClick={refreshAll}
+            className="flex items-center gap-1.5 px-3 py-2 rounded-lg border border-gray-200 text-xs font-medium text-gray-500 hover:bg-gray-50 hover:text-gray-700 transition-colors bg-white"
+          >
+            <RefreshCw className="w-3.5 h-3.5" />
+            รีเฟรช
+          </button>
+
+          <button
+            onClick={handleExportPDF}
+            disabled={exporting || selectedPages.size === 0}
+            className="flex items-center gap-2 px-4 py-2 rounded-lg bg-gray-900 text-white text-xs font-medium hover:bg-gray-800 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+          >
+            {exporting ? (
+              <>
+                <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                กำลังส่งออก...
+              </>
+            ) : (
+              <>
+                <Download className="w-3.5 h-3.5" />
+                ส่งออก PDF ({selectedPages.size})
+              </>
+            )}
+          </button>
         </div>
       </div>
 
       {/* ─── Export Progress Overlay ─── */}
       {exporting && (
-        <div className="fixed inset-0 z-[60] bg-black/60 backdrop-blur-sm flex items-center justify-center">
-          <div className="bg-white rounded-2xl shadow-2xl p-8 w-full max-w-md mx-4">
+        <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center">
+          <div className="bg-white rounded-xl shadow-lg p-6 w-full max-w-sm mx-4">
             <div className="flex flex-col items-center text-center">
-              <div className="w-14 h-14 rounded-2xl bg-zinc-900 flex items-center justify-center mb-5">
-                <Loader2 className="w-7 h-7 text-white animate-spin" />
-              </div>
-              <h3 className="text-lg font-bold text-zinc-900 mb-1">กำลังสร้าง PDF</h3>
-              <p className="text-sm text-zinc-500 mb-5">{exportProgress}</p>
-              <div className="w-full bg-zinc-100 rounded-full h-2.5 mb-3 overflow-hidden">
+              <Loader2 className="w-6 h-6 text-gray-900 animate-spin mb-3" />
+              <h3 className="text-base font-medium text-gray-900">กำลังสร้าง PDF</h3>
+              <p className="text-sm text-gray-500 mt-1 mb-4">{exportProgress}</p>
+              <div className="w-full bg-gray-100 rounded-full h-2 mb-2">
                 <div
-                  className="bg-gradient-to-r from-zinc-700 to-zinc-900 h-2.5 rounded-full transition-all duration-500 ease-out"
+                  className="bg-gray-900 h-2 rounded-full transition-all duration-300"
                   style={{ width: exportTotal > 0 ? `${(exportCurrent / exportTotal) * 100}%` : '0%' }}
                 />
               </div>
-              <p className="text-xs text-zinc-400 font-medium">
+              <p className="text-xs text-gray-400">
                 {exportCurrent} / {exportTotal} หน้า
               </p>
             </div>
@@ -810,95 +771,53 @@ export default function PagePreviewPage() {
         </div>
       )}
 
-      {/* ─── Selection Panel (collapsible) ─── */}
-      <div className="bg-white rounded-2xl border border-zinc-200/80 shadow-sm overflow-hidden">
-        <button
-          onClick={() => setSelectionOpen(!selectionOpen)}
-          className="w-full flex items-center justify-between px-5 py-3.5 hover:bg-zinc-50 transition-colors"
-        >
-          <div className="flex items-center gap-3">
-            <LayoutGrid className="w-4 h-4 text-zinc-400" />
-            <span className="text-sm font-semibold text-zinc-700">เลือกหน้าที่ต้องการแสดง</span>
-            <span className="text-xs font-medium text-zinc-400 bg-zinc-100 px-2 py-0.5 rounded-full">
-              {selectedPages.size}/{ALL_PAGES.length}
-            </span>
+      {/* ─── Selection Bar ─── */}
+      <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
+        <div className="flex items-center justify-between mb-3">
+          <div className="flex items-center gap-2">
+            <LayoutGrid className="w-4 h-4 text-gray-400" />
+            <span className="text-sm font-medium text-gray-700">เลือกหน้าที่ต้องการแสดง</span>
           </div>
-          <ChevronDown className={`w-4 h-4 text-zinc-400 transition-transform duration-200 ${selectionOpen ? 'rotate-180' : ''}`} />
-        </button>
-
-        {selectionOpen && (
-          <div className="px-5 pb-5 border-t border-zinc-100">
-            {/* Quick actions */}
-            <div className="flex items-center gap-2 pt-3 pb-4">
-              <button
-                onClick={selectAll}
-                className="text-xs font-medium text-zinc-500 hover:text-zinc-900 border border-zinc-200 hover:border-zinc-300 rounded-lg px-3 py-1.5 transition-colors"
-              >
-                เลือกทั้งหมด
-              </button>
-              <button
-                onClick={deselectAll}
-                className="text-xs font-medium text-zinc-500 hover:text-zinc-900 border border-zinc-200 hover:border-zinc-300 rounded-lg px-3 py-1.5 transition-colors"
-              >
-                ยกเลิกทั้งหมด
-              </button>
-            </div>
-
-            {/* Category groups */}
-            <div className="space-y-4">
-              {CATEGORIES.map((cat) => {
-                const pagesInCat = ALL_PAGES.filter((p) => p.category === cat)
-                const allInCatSelected = pagesInCat.every((p) => selectedPages.has(p.path))
-                const someInCatSelected = pagesInCat.some((p) => selectedPages.has(p.path))
-                return (
-                  <div key={cat}>
-                    <div className="flex items-center gap-2 mb-2">
-                      <button
-                        onClick={() => toggleCategory(cat)}
-                        className={`w-4 h-4 rounded flex items-center justify-center border transition-colors ${
-                          allInCatSelected
-                            ? 'bg-zinc-900 border-zinc-900'
-                            : someInCatSelected
-                            ? 'bg-zinc-300 border-zinc-300'
-                            : 'border-zinc-300 hover:border-zinc-400'
-                        }`}
-                      >
-                        {(allInCatSelected || someInCatSelected) && (
-                          <Check className="w-3 h-3 text-white" />
-                        )}
-                      </button>
-                      <span className="text-xs font-semibold text-zinc-500 uppercase tracking-wider">{cat}</span>
-                      <span className="text-[10px] text-zinc-400">({pagesInCat.filter((p) => selectedPages.has(p.path)).length}/{pagesInCat.length})</span>
-                    </div>
-                    <div className="flex flex-wrap gap-1.5 pl-6">
-                      {pagesInCat.map((page) => {
-                        const selected = selectedPages.has(page.path)
-                        return (
-                          <button
-                            key={page.path}
-                            onClick={() => togglePage(page.path)}
-                            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium border transition-all duration-150 ${
-                              selected
-                                ? 'bg-zinc-900 text-white border-zinc-900 shadow-sm'
-                                : 'bg-zinc-50 text-zinc-500 border-zinc-200 hover:border-zinc-300 hover:bg-zinc-100'
-                            }`}
-                          >
-                            {selected && <Check className="w-3 h-3" />}
-                            {page.nameTh}
-                          </button>
-                        )
-                      })}
-                    </div>
-                  </div>
-                )
-              })}
-            </div>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={selectAll}
+              className="text-xs text-gray-500 hover:text-gray-900 px-2 py-1 rounded hover:bg-white transition-colors"
+            >
+              เลือกทั้งหมด
+            </button>
+            <span className="text-gray-300">|</span>
+            <button
+              onClick={deselectAll}
+              className="text-xs text-gray-500 hover:text-gray-900 px-2 py-1 rounded hover:bg-white transition-colors"
+            >
+              ยกเลิกทั้งหมด
+            </button>
           </div>
-        )}
+        </div>
+
+        <div className="flex flex-wrap gap-1.5">
+          {ALL_PAGES.map((page) => {
+            const selected = selectedPages.has(page.path)
+            return (
+              <button
+                key={page.path}
+                onClick={() => togglePage(page.path)}
+                className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-xs font-medium transition-colors ${
+                  selected
+                    ? 'bg-gray-900 text-white'
+                    : 'bg-white text-gray-500 border border-gray-200 hover:border-gray-300 hover:text-gray-700'
+                }`}
+              >
+                {selected && <Check className="w-3 h-3" />}
+                {page.nameTh}
+              </button>
+            )
+          })}
+        </div>
       </div>
 
       {/* ─── Category Tabs ─── */}
-      <div className="flex items-center gap-1.5 pt-5 pb-1 overflow-x-auto scrollbar-none">
+      <div className="flex items-center gap-1 overflow-x-auto">
         {[CATEGORY_ALL, ...CATEGORIES].map((cat) => {
           const count = categoryCount[cat] ?? 0
           const isActive = activeCategory === cat
@@ -906,15 +825,15 @@ export default function PagePreviewPage() {
             <button
               key={cat}
               onClick={() => setActiveCategory(cat)}
-              className={`flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition-all duration-150 ${
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium whitespace-nowrap transition-colors ${
                 isActive
-                  ? 'bg-zinc-900 text-white shadow-md shadow-zinc-900/20'
-                  : 'bg-white text-zinc-500 border border-zinc-200 hover:border-zinc-300 hover:text-zinc-700'
+                  ? 'bg-gray-900 text-white'
+                  : 'text-gray-500 hover:text-gray-700 hover:bg-gray-100'
               }`}
             >
               {cat}
-              <span className={`px-1.5 py-0.5 rounded-md text-[10px] font-bold ${
-                isActive ? 'bg-white/20 text-white' : 'bg-zinc-100 text-zinc-400'
+              <span className={`text-[10px] px-1.5 py-0.5 rounded ${
+                isActive ? 'bg-white/20 text-white' : 'bg-gray-100 text-gray-400'
               }`}>
                 {count}
               </span>
@@ -925,7 +844,7 @@ export default function PagePreviewPage() {
 
       {/* ─── Page Preview Grid ─── */}
       <div
-        className={`grid gap-5 pt-4 ${
+        className={`grid gap-4 ${
           viewMode === 'desktop'
             ? 'grid-cols-1 xl:grid-cols-2'
             : 'grid-cols-2 md:grid-cols-3 lg:grid-cols-4'
@@ -934,29 +853,18 @@ export default function PagePreviewPage() {
         {visiblePages.map((page) => (
           <div
             key={page.path}
-            className="group bg-white rounded-2xl border border-zinc-200/80 overflow-hidden shadow-sm hover:shadow-xl hover:shadow-zinc-200/50 hover:border-zinc-300 transition-all duration-300"
+            className="group bg-white rounded-lg border border-gray-200 overflow-hidden hover:shadow-md hover:border-gray-300 transition-all"
           >
-            {/* Browser-style chrome header */}
-            <div className="flex items-center justify-between px-4 py-2.5 bg-gradient-to-b from-zinc-50 to-zinc-100/50 border-b border-zinc-200/60">
-              <div className="flex items-center gap-3">
-                {/* Traffic lights */}
-                <div className="flex items-center gap-1.5">
-                  <span className="w-2.5 h-2.5 rounded-full bg-red-400" />
-                  <span className="w-2.5 h-2.5 rounded-full bg-amber-400" />
-                  <span className="w-2.5 h-2.5 rounded-full bg-emerald-400" />
-                </div>
-                {/* URL bar */}
-                <div className="flex items-center gap-1.5 bg-white/80 rounded-lg px-3 py-1 border border-zinc-200/80 min-w-0">
-                  <Globe className="w-3 h-3 text-zinc-400 flex-shrink-0" />
-                  <span className="text-[11px] text-zinc-500 font-medium truncate">
-                    nucha-villa.com{page.path === '/' ? '' : page.path}
-                  </span>
-                </div>
+            {/* Clean card header */}
+            <div className="px-3 py-2.5 border-b border-gray-100 flex items-center justify-between">
+              <div className="min-w-0">
+                <p className="text-sm font-medium text-gray-900 truncate">{page.nameTh}</p>
+                <p className="text-[11px] text-gray-400 truncate">{page.path}</p>
               </div>
-              <div className="flex items-center gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+              <div className="flex items-center gap-1 flex-shrink-0">
                 <button
                   onClick={() => { setFullscreenPage(page); setFullscreenDevice(viewMode) }}
-                  className="p-1.5 rounded-lg hover:bg-white text-zinc-400 hover:text-zinc-700 transition-colors"
+                  className="p-1 rounded text-gray-400 hover:text-gray-700 hover:bg-gray-100 transition-colors"
                   title="ดูแบบเต็มจอ"
                 >
                   <Maximize2 className="w-3.5 h-3.5" />
@@ -965,7 +873,7 @@ export default function PagePreviewPage() {
                   href={page.path}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="p-1.5 rounded-lg hover:bg-white text-zinc-400 hover:text-zinc-700 transition-colors"
+                  className="p-1 rounded text-gray-400 hover:text-gray-700 hover:bg-gray-100 transition-colors"
                   title="เปิดในแท็บใหม่"
                 >
                   <ExternalLink className="w-3.5 h-3.5" />
@@ -973,32 +881,7 @@ export default function PagePreviewPage() {
               </div>
             </div>
 
-            {/* Page info strip */}
-            <div className="px-4 py-2.5 bg-white border-b border-zinc-100">
-              <div className="flex items-center justify-between mb-1">
-                <div className="min-w-0">
-                  <p className="text-sm font-semibold text-zinc-800 truncate">{page.nameTh}</p>
-                  <p className="text-[11px] text-zinc-400">{page.name}</p>
-                </div>
-                <span className="text-[10px] font-medium text-zinc-400 bg-zinc-50 border border-zinc-100 rounded-md px-2 py-0.5 flex-shrink-0">
-                  {page.category}
-                </span>
-              </div>
-              {page.description && (
-                <p className="text-[11px] text-zinc-500 mt-1.5 leading-relaxed">{page.description}</p>
-              )}
-              {page.features && page.features.length > 0 && (
-                <div className="flex flex-wrap gap-1 mt-2">
-                  {page.features.map((f, fi) => (
-                    <span key={fi} className="inline-flex items-center px-1.5 py-0.5 rounded bg-zinc-100 text-[10px] font-medium text-zinc-500">
-                      {f}
-                    </span>
-                  ))}
-                </div>
-              )}
-            </div>
-
-            {/* Iframe preview — dynamically scaled to fill card width */}
+            {/* Iframe preview */}
             {(() => {
               const cw = containerWidths.get(page.path) || 0
               const iframeW = viewMode === 'desktop' ? 1440 : 390
@@ -1009,8 +892,8 @@ export default function PagePreviewPage() {
                 <div
                   ref={setPreviewRef(page.path)}
                   data-page-path={page.path}
-                  className="relative bg-gradient-to-b from-zinc-50 to-zinc-100/30 overflow-hidden"
-                  style={{ height: `${Math.min(visibleH, viewMode === 'desktop' ? 420 : 520)}px` }}
+                  className="relative bg-gray-50 overflow-hidden"
+                  style={{ height: `${Math.min(visibleH, viewMode === 'desktop' ? 360 : 420)}px` }}
                 >
                   <div
                     style={{
@@ -1031,105 +914,84 @@ export default function PagePreviewPage() {
                     />
                   </div>
 
-                  {/* Hover overlay */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
-                  <div className="absolute bottom-0 left-0 right-0 p-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center gap-2 z-10">
+                  {/* Subtle hover overlay with actions */}
+                  <div className="absolute inset-0 bg-black/50 flex items-center justify-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
                     <button
                       onClick={() => { setFullscreenPage(page); setFullscreenDevice(viewMode) }}
-                      className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-white/95 backdrop-blur-sm text-zinc-800 text-xs font-semibold shadow-lg hover:bg-white transition-colors"
+                      className="flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-white text-gray-900 text-xs font-medium hover:bg-gray-50"
                     >
                       <Maximize2 className="w-3.5 h-3.5" />
-                      ดูแบบเต็มจอ
+                      ดูเต็มจอ
                     </button>
                     <a
                       href={page.path}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-zinc-900/90 backdrop-blur-sm text-white text-xs font-semibold shadow-lg hover:bg-zinc-900 transition-colors"
+                      className="flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-gray-900 text-white text-xs font-medium hover:bg-gray-800"
                     >
                       <ExternalLink className="w-3.5 h-3.5" />
-                      เปิดหน้าเว็บ
+                      เปิดหน้า
                     </a>
                   </div>
                 </div>
               )
             })()}
+
+            {/* Card footer - minimal info */}
+            {page.description && (
+              <div className="px-3 py-2 bg-gray-50 border-t border-gray-100">
+                <p className="text-[11px] text-gray-500 line-clamp-1">{page.description}</p>
+              </div>
+            )}
           </div>
         ))}
       </div>
 
       {/* ─── Empty State ─── */}
       {visiblePages.length === 0 && (
-        <div className="flex flex-col items-center justify-center py-24">
-          <div className="w-20 h-20 rounded-3xl bg-zinc-100 flex items-center justify-center mb-5">
-            <Eye className="w-9 h-9 text-zinc-300" />
-          </div>
-          <h3 className="text-lg font-bold text-zinc-700 mb-1">
+        <div className="flex flex-col items-center justify-center py-16 text-center">
+          <Eye className="w-8 h-8 text-gray-300 mb-3" />
+          <p className="text-sm font-medium text-gray-600">
             {selectedPages.size === 0 ? 'ยังไม่ได้เลือกหน้า' : 'ไม่มีหน้าในหมวดนี้'}
-          </h3>
-          <p className="text-sm text-zinc-400 mb-5 text-center max-w-xs">
+          </p>
+          <p className="text-xs text-gray-400 mt-1">
             {selectedPages.size === 0
-              ? 'กรุณาเลือกหน้าที่ต้องการดูตัวอย่างจากด้านบน'
-              : 'ลองเลือกหมวดหมู่อื่น หรือเลือกหน้าเพิ่มเติม'
+              ? 'เลือกหน้าที่ต้องการดูตัวอย่างจากด้านบน'
+              : 'ลองเลือกหมวดหมู่อื่น'
             }
           </p>
-          <div className="flex items-center gap-2">
-            {selectedPages.size === 0 && (
-              <button
-                onClick={selectAll}
-                className="px-5 py-2.5 bg-zinc-900 text-white rounded-xl text-sm font-semibold hover:bg-zinc-800 transition-colors shadow-lg shadow-zinc-900/20"
-              >
-                เลือกทั้งหมด
-              </button>
-            )}
-            {activeCategory !== CATEGORY_ALL && (
-              <button
-                onClick={() => setActiveCategory(CATEGORY_ALL)}
-                className="px-5 py-2.5 bg-white text-zinc-700 border border-zinc-200 rounded-xl text-sm font-semibold hover:bg-zinc-50 transition-colors"
-              >
-                ดูทั้งหมด
-              </button>
-            )}
-          </div>
         </div>
       )}
 
       {/* ─── Fullscreen Modal ─── */}
       {fullscreenPage && (
-        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl w-full max-w-7xl h-[92vh] flex flex-col overflow-hidden shadow-2xl">
-            {/* Modal header */}
-            <div className="flex items-center justify-between px-6 py-3 border-b border-zinc-200 bg-gradient-to-b from-zinc-50 to-white">
-              <div className="flex items-center gap-4">
-                {/* Traffic lights */}
-                <div className="flex items-center gap-1.5">
-                  <span className="w-3 h-3 rounded-full bg-red-400 hover:bg-red-500 transition-colors cursor-pointer" onClick={() => setFullscreenPage(null)} />
-                  <span className="w-3 h-3 rounded-full bg-amber-400" />
-                  <span className="w-3 h-3 rounded-full bg-emerald-400" />
-                </div>
+        <div className="fixed inset-0 z-50 bg-black/70 flex items-center justify-center p-4">
+          <div className="bg-white rounded-lg w-full max-w-6xl h-[90vh] flex flex-col overflow-hidden shadow-xl">
+            {/* Clean modal header */}
+            <div className="flex items-center justify-between px-4 py-3 border-b border-gray-200 bg-gray-50">
+              <div className="flex items-center gap-3">
                 <div>
-                  <h3 className="text-sm font-bold text-zinc-800">
+                  <h3 className="text-sm font-medium text-gray-900">
                     {fullscreenPage.nameTh}
-                    <span className="font-normal text-zinc-400 ml-2">— {fullscreenPage.name}</span>
+                    <span className="text-gray-400 ml-2 text-xs">{fullscreenPage.name}</span>
                   </h3>
-                  <p className="text-xs text-zinc-400">{fullscreenPage.path}</p>
+                  <p className="text-[11px] text-gray-400">{fullscreenPage.path}</p>
                 </div>
               </div>
               <div className="flex items-center gap-2">
-                {/* Device toggle in modal */}
-                <div className="flex rounded-lg bg-zinc-100 p-0.5">
+                <div className="flex rounded border border-gray-200 overflow-hidden bg-white">
                   <button
                     onClick={() => setFullscreenDevice('desktop')}
-                    className={`p-1.5 rounded-md transition-colors ${
-                      fullscreenDevice === 'desktop' ? 'bg-white text-zinc-800 shadow-sm' : 'text-zinc-400 hover:text-zinc-600'
+                    className={`p-1.5 transition-colors ${
+                      fullscreenDevice === 'desktop' ? 'bg-gray-900 text-white' : 'text-gray-500 hover:text-gray-700'
                     }`}
                   >
                     <Monitor className="w-4 h-4" />
                   </button>
                   <button
                     onClick={() => setFullscreenDevice('mobile')}
-                    className={`p-1.5 rounded-md transition-colors ${
-                      fullscreenDevice === 'mobile' ? 'bg-white text-zinc-800 shadow-sm' : 'text-zinc-400 hover:text-zinc-600'
+                    className={`p-1.5 transition-colors ${
+                      fullscreenDevice === 'mobile' ? 'bg-gray-900 text-white' : 'text-gray-500 hover:text-gray-700'
                     }`}
                   >
                     <Smartphone className="w-4 h-4" />
@@ -1139,23 +1001,23 @@ export default function PagePreviewPage() {
                   href={fullscreenPage.path}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center gap-1.5 px-3 py-1.5 bg-white border border-zinc-200 rounded-lg text-xs font-medium text-zinc-600 hover:text-zinc-900 hover:border-zinc-300 transition-colors"
+                  className="flex items-center gap-1 px-2.5 py-1.5 rounded border border-gray-200 text-xs font-medium text-gray-600 hover:bg-gray-50 bg-white"
                 >
                   <ExternalLink className="w-3.5 h-3.5" />
-                  เปิดในแท็บใหม่
+                  เปิด
                 </a>
                 <button
                   onClick={() => setFullscreenPage(null)}
-                  className="p-2 hover:bg-zinc-100 rounded-lg text-zinc-400 hover:text-zinc-700 transition-colors"
+                  className="p-1.5 hover:bg-gray-200 rounded text-gray-400 hover:text-gray-700 transition-colors"
                 >
-                  <X className="w-5 h-5" />
+                  <X className="w-4 h-4" />
                 </button>
               </div>
             </div>
             {/* Modal iframe */}
-            <div className="flex-1 overflow-hidden bg-zinc-100 flex items-start justify-center">
-              <div className={`bg-white h-full transition-all duration-300 shadow-xl ${
-                fullscreenDevice === 'desktop' ? 'w-full' : 'w-[420px] rounded-b-xl border-x border-b border-zinc-200'
+            <div className="flex-1 overflow-hidden bg-gray-100 flex items-start justify-center">
+              <div className={`bg-white h-full transition-all ${
+                fullscreenDevice === 'desktop' ? 'w-full' : 'w-[390px] border-x border-gray-200'
               }`}>
                 <iframe
                   src={fullscreenPage.path}

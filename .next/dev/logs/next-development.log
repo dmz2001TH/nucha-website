@@ -6,3 +6,5 @@
 {"timestamp":"00:02:26.493","source":"Server","level":"LOG","message":"○ Compiling /contact ..."}
 {"timestamp":"01:25:10.574","source":"Server","level":"LOG","message":"○ Compiling / ..."}
 {"timestamp":"01:25:25.192","source":"Server","level":"LOG","message":"○ Compiling /api/auth/[...nextauth] ..."}
+{"timestamp":"01:32:10.411","source":"Server","level":"LOG","message":"○ Compiling /admin/login ..."}
+{"timestamp":"01:32:18.551","source":"Server","level":"LOG","message":"○ Compiling /admin ..."}

@@ -170,20 +170,20 @@ export default function Navigation({ currentPage }: { currentPage?: string }) {
                       >
                         <div className="bg-white rounded-xl shadow-xl border border-gray-100 py-2 min-w-[220px]">
                           {link.children.map((child) => (
-                            <a
+                            <Link
                               key={child.href}
                               href={child.href}
                               className="block px-4 py-2.5 text-sm font-body text-gray-700 hover:bg-primary/5 hover:text-primary transition-colors"
                             >
                               {child.label}
-                            </a>
+                            </Link>
                           ))}
                         </div>
                       </div>
                     )}
                   </>
                 ) : (
-                  <a
+                  <Link
                     href={link.href}
                     className={`font-headline text-xs xl:text-sm tracking-[0.1em] font-bold transition-colors h-10 flex items-center ${
                       isActive(link.href)
@@ -192,7 +192,7 @@ export default function Navigation({ currentPage }: { currentPage?: string }) {
                     }`}
                   >
                     {link.label}
-                  </a>
+                  </Link>
                 )}
               </div>
             ))}
@@ -269,7 +269,7 @@ export default function Navigation({ currentPage }: { currentPage?: string }) {
               <div className="flex-1 overflow-y-auto py-6 px-6">
                 <div className="space-y-1">
                   {navLinks.map((link) => (
-                    <a
+                    <Link
                       key={link.href}
                       href={link.href}
                       onClick={() => setIsMenuOpen(false)}
@@ -280,7 +280,7 @@ export default function Navigation({ currentPage }: { currentPage?: string }) {
                       }`}
                     >
                       {link.label}
-                    </a>
+                    </Link>
                   ))}
                   <Link href="/booking"
                     onClick={() => setIsMenuOpen(false)}

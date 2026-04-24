@@ -97,12 +97,12 @@ export default function Footer() {
                 { href: '/contact', label: 'ติดต่อ' },
               ].map((link) => (
                 <li key={link.href + link.label}>
-                  <a
+                  <Link
                     href={link.href}
                     className="font-body text-sm text-gray-400 hover:text-primary transition-colors"
                   >
                     {link.label}
-                  </a>
+                  </Link>
                 </li>
               ))}
             </ul>

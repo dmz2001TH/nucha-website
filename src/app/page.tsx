@@ -216,12 +216,12 @@ function PortfolioSection({ projects }: { projects: Array<{ title: string; locat
           </Link>
         </div>
 
-        <div className="flex flex-col sm:flex-row lg:grid lg:grid-cols-12 gap-4 sm:gap-4 lg:gap-6 lg:auto-rows-[300px]">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-4 sm:gap-4 lg:gap-6 auto-rows-[250px] sm:auto-rows-[280px] lg:auto-rows-[300px]">
           {projects.length > 0 ? (
             projects.map((project, index) => (
               <div
                 key={index}
-                className="accordion-item group relative overflow-hidden rounded-xl editorial-shadow cursor-pointer"
+                className="portfolio-item group relative overflow-hidden rounded-xl editorial-shadow cursor-pointer"
                 style={{
                   gridColumn: project.gridStyle?.gridColumn || 'span 4',
                   gridRow: project.gridStyle?.gridRow || 'span 1',
@@ -254,7 +254,7 @@ function PortfolioSection({ projects }: { projects: Array<{ title: string; locat
               </div>
             ))
           ) : (
-            <div className="col-span-full text-center py-16">
+            <div className="col-span-1 sm:col-span-2 lg:col-span-12 text-center py-16">
               <span className="material-symbols-outlined text-6xl text-gray-300 mb-4 block">photo_library</span>
               <p className="text-gray-500">ยังไม่มีผลงาน</p>
             </div>

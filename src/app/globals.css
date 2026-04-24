@@ -140,6 +140,11 @@ html {
   }
 }
 
+/* Portfolio grid items */
+.portfolio-item {
+  min-height: 0;
+}
+
 /* Grayscale hover */
 .grayscale-hover {
   filter: grayscale(100%);

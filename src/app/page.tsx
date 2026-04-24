@@ -222,6 +222,10 @@ function PortfolioSection({ projects }: { projects: Array<{ title: string; locat
               <div
                 key={index}
                 className="accordion-item group relative overflow-hidden rounded-xl editorial-shadow cursor-pointer"
+                style={{
+                  gridColumn: project.gridStyle?.gridColumn || 'span 4',
+                  gridRow: project.gridStyle?.gridRow || 'span 1',
+                }}
               >
                 <img
                   alt={project.title}

@@ -125,14 +125,17 @@ html {
 }
 
 @media (min-width: 1024px) {
-  .accordion-item[style*="--lg-grid-col"] {
+  .accordion-item[style*="--lg-grid-col"],
+  .accordion-item[style*="gridColumn"] {
     grid-column: var(--lg-grid-col);
     grid-row: var(--lg-grid-row);
     flex: unset;
     transition: none;
   }
   .accordion-item[style*="--lg-grid-col"]:hover,
-  .accordion-item[style*="--lg-grid-col"].active {
+  .accordion-item[style*="--lg-grid-col"].active,
+  .accordion-item[style*="gridColumn"]:hover,
+  .accordion-item[style*="gridColumn"].active {
     flex: unset;
   }
 }

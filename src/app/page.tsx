@@ -52,6 +52,9 @@ async function getPortfolios() {
   } catch { return [] }
 }
 
+// ISR cache: revalidate every 1 hour (3600s)
+export const revalidate = 3600
+
 // Hero Section
 function HeroSection({ heroSettings }: { heroSettings: Record<string, string> }) {
   const heroBrand = heroSettings.hero_brand || 'NUCHA VILL.'
@@ -74,6 +77,8 @@ function HeroSection({ heroSettings }: { heroSettings: Record<string, string> })
           alt="Luxury Villa Architectural View"
           className="w-full h-full object-cover opacity-50 sm:opacity-55 grayscale"
           src={heroImage}
+          loading="eager"
+          decoding="async"
         />
         <div className="absolute inset-0 bg-gradient-to-r from-red-500/30 via-white/80 sm:via-white/70 to-transparent" />
       </div>
@@ -150,6 +155,8 @@ function ServicesSection({ services }: { services: Array<{ title: string; descri
                   alt={service.title}
                   className="absolute inset-0 w-full h-full object-cover transition-all duration-500 opacity-70 sm:group-hover:opacity-100"
                   src={service.image}
+                  loading="lazy"
+                  decoding="async"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent" />
                 <div className="absolute bottom-3 left-3 right-3" style={{textShadow: '0 1px 6px rgba(0,0,0,0.9)'}}>
@@ -220,6 +227,8 @@ function PortfolioSection({ projects }: { projects: Array<{ title: string; locat
                   alt={project.title}
                   className="w-full h-full object-cover transition-all duration-700 grayscale-0 sm:opacity-70 sm:grayscale-[40%] sm:group-hover:opacity-100 sm:group-hover:grayscale-0 sm:group-hover:scale-110"
                   src={project.image}
+                  loading="lazy"
+                  decoding="async"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent" />
                 <div className="absolute bottom-3 left-3 right-3" style={{textShadow: '0 1px 6px rgba(0,0,0,0.9)'}}>

@@ -1,5 +1,13 @@
 @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Thai+Looped:wght@300;400;500;600;700;800&display=swap');
 
+/* Font face for faster initial paint */
+@font-face {
+  font-family: 'Noto Sans Thai Looped';
+  font-style: swap;
+  font-display: swap;
+  src: local('Noto Sans Thai Looped');
+}
+
 @import "tailwindcss";
 
 :root {

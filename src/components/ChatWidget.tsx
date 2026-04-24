@@ -16,8 +16,8 @@ export default function ChatWidget() {
   const fetchConfig = async () => {
     try {
       const [lineRes, whatsappRes] = await Promise.all([
-        fetch('/api/settings?key=line_id'),
-        fetch('/api/settings?key=whatsapp_number')
+        fetch('/api/settings?key=line_id', { next: { revalidate: 3600 }, cache: 'force-cache' }),
+        fetch('/api/settings?key=whatsapp_number', { next: { revalidate: 3600 }, cache: 'force-cache' })
       ])
       const lineData = await lineRes.json()
       const whatsappData = await whatsappRes.json()

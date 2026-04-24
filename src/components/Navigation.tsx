@@ -44,7 +44,10 @@ export default function Navigation({ currentPage }: { currentPage?: string }) {
 
   const fetchSettings = async () => {
     try {
-      const res = await fetch('/api/settings')
+      const res = await fetch('/api/settings', {
+        next: { revalidate: 3600 },
+        cache: 'force-cache'
+      })
       const data = await res.json()
       if (data.data) {
         const settingsMap: Record<string, string> = {}
@@ -138,6 +141,7 @@ export default function Navigation({ currentPage }: { currentPage?: string }) {
                 height={80}
                 className="h-10 sm:h-12 md:h-16 w-auto object-contain"
                 loading="eager"
+                decoding="async"
               />
             </Link>
           )}

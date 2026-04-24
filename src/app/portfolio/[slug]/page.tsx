@@ -294,7 +294,7 @@ export default function PortfolioDetailPage() {
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6">
                 {related.map((p) => (
-                  <a key={p.id} href={`/portfolio/${encodeURIComponent(p.slug)}`} className="group relative overflow-hidden rounded-xl editorial-shadow block">
+                  <Link key={p.id} href={`/portfolio/${encodeURIComponent(p.slug)}`} className="group relative overflow-hidden rounded-xl editorial-shadow block">
                     <img
                       src={p.coverImage}
                       alt={p.title}
@@ -306,7 +306,7 @@ export default function PortfolioDetailPage() {
                       <h3 className="text-white font-headline font-black text-base sm:text-lg">{p.title}</h3>
                       <p className="text-white/60 text-xs font-headline mt-0.5">{p.location}, {p.year}</p>
                     </div>
-                  </a>
+                  </Link>
                 ))}
               </div>
             </div>

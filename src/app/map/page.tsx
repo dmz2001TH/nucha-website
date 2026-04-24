@@ -1,4 +1,5 @@
 import prisma from '@/lib/prisma'
+import Link from 'next/link'
 import Navigation from '@/components/Navigation'
 import Footer from '@/components/Footer'
 import MapClient from './MapClient'
@@ -90,12 +91,12 @@ export default async function MapPage() {
             </h2>
             <p className="text-gray-600 font-body mb-6 sm:mb-8 text-sm sm:text-base">ติดต่อเราเพื่อนัดชมสถานที่จริง</p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <a href="/villas" className="inline-flex items-center justify-center gap-2 bg-primary text-white px-8 py-4 font-headline font-bold text-sm tracking-widest rounded-lg hover:bg-primary-dark transition-all shadow-xl shadow-red-500/20">
+              <Link href="/villas" className="inline-flex items-center justify-center gap-2 bg-primary text-white px-8 py-4 font-headline font-bold text-sm tracking-widest rounded-lg hover:bg-primary-dark transition-all shadow-xl shadow-red-500/20">
                 <span className="material-symbols-outlined text-lg">home</span>ดูวิลล่าทั้งหมด
-              </a>
-              <a href="/booking" className="inline-flex items-center justify-center gap-2 border border-gray-300 text-gray-700 px-8 py-4 font-headline font-bold text-sm tracking-widest rounded-lg hover:border-primary hover:text-primary transition-all">
+              </Link>
+              <Link href="/booking" className="inline-flex items-center justify-center gap-2 border border-gray-300 text-gray-700 px-8 py-4 font-headline font-bold text-sm tracking-widest rounded-lg hover:border-primary hover:text-primary transition-all">
                 <span className="material-symbols-outlined text-lg">event</span>จองคิวนัดชม
-              </a>
+              </Link>
             </div>
           </div>
         </section>

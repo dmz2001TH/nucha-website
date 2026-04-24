@@ -74,7 +74,7 @@ export default function VillasClient({ villas }: { villas: Villa[] }) {
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 md:gap-8">
               {sortedVillas.map((villa) => (
-                <a key={villa.id} href={`/villas/${villa.slug}`} onClick={(e) => handleVillaClick(e, villa.id)}
+                <Link key={villa.id} href={`/villas/${villa.slug}`} onClick={(e) => handleVillaClick(e, villa.id)}
                   className={`group bg-white rounded-xl overflow-hidden editorial-shadow hover:shadow-2xl transition-shadow duration-500 block ${activeCard === villa.id ? 'mobile-active' : ''}`}
                 >
                   <div className="relative overflow-hidden">
@@ -130,7 +130,7 @@ export default function VillasClient({ villas }: { villas: Villa[] }) {
                       </span>
                     </div>
                   </div>
-                </a>
+                </Link>
               ))}
             </div>
           )}

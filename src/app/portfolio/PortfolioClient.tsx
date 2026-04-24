@@ -56,7 +56,7 @@ export default function PortfolioClient({ projects }: { projects: Portfolio[] })
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5 md:gap-6">
               {filteredProjects.map((project) => (
-                <a key={project.id} href={`/portfolio/${encodeURIComponent(project.slug)}`}
+                <Link key={project.id} href={`/portfolio/${encodeURIComponent(project.slug)}`}
                   onClick={(e) => handleProjectClick(e, project.id)}
                   className={`group relative overflow-hidden rounded-xl editorial-shadow cursor-pointer block ${activeCard === project.id ? 'mobile-active' : ''}`}
                 >
@@ -86,7 +86,7 @@ export default function PortfolioClient({ projects }: { projects: Portfolio[] })
                       </span>
                     </div>
                   </div>
-                </a>
+                </Link>
               ))}
             </div>
           )}

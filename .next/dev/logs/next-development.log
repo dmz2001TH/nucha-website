@@ -3,3 +3,7 @@
 {"timestamp":"00:00:09.539","source":"Server","level":"LOG","message":"  ✓ optimizeCss"}
 {"timestamp":"00:00:09.540","source":"Server","level":"LOG","message":""}
 {"timestamp":"00:00:52.246","source":"Server","level":"LOG","message":"○ Compiling / ..."}
+{"timestamp":"01:14:34.274","source":"Server","level":"LOG","message":"○ Compiling /portfolio ..."}
+{"timestamp":"01:15:36.894","source":"Server","level":"LOG","message":"○ Compiling /philosophy ..."}
+{"timestamp":"01:15:53.036","source":"Server","level":"LOG","message":"○ Compiling /contact ..."}
+{"timestamp":"01:16:20.820","source":"Server","level":"LOG","message":"○ Compiling /map ..."}

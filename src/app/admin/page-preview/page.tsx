@@ -513,17 +513,18 @@ export default function PagePreviewPage() {
       setExportProgress('กำลังเตรียมจับภาพหน้าเว็บ...')
       const captureContainer = document.createElement('div')
       captureContainer.style.cssText =
-        'position:fixed;top:0;left:0;width:1440px;height:900px;z-index:-9999;opacity:0;pointer-events:none;overflow:hidden;'
+        'position:fixed;top:0;left:0;width:1440px;height:900px;z-index:-9999;pointer-events:none;overflow:hidden;'
       document.body.appendChild(captureContainer)
-
-      const captureIframeEl = document.createElement('iframe')
-      captureIframeEl.style.cssText = 'width:1440px;height:900px;border:none;'
-      captureContainer.appendChild(captureIframeEl)
 
       for (let i = 0; i < pagesToExport.length; i++) {
         const page = pagesToExport[i]
         setExportCurrent(i + 1)
         setExportProgress(`กำลังจับภาพ: ${page.nameTh} (${i + 1}/${pagesToExport.length})`)
+
+        // Create fresh iframe for each page to avoid state contamination
+        const captureIframeEl = document.createElement('iframe')
+        captureIframeEl.style.cssText = 'width:1440px;height:900px;border:none;'
+        captureContainer.appendChild(captureIframeEl)
 
         // Wait for page to fully load with smart detection
         await new Promise<void>((resolve) => {
@@ -567,14 +568,14 @@ export default function PagePreviewPage() {
               
               // Initial check
               checkReady()
-            }, 1500) // Initial delay after onload
+            }, 2000) // Increased initial delay to 2s for React hydration
           }
           
           // Fallback in case onload doesn't fire
           setTimeout(() => {
             clearInterval(checkInterval)
             resolve()
-          }, 20000) // Max 20 seconds total wait
+          }, 25000) // Max 25 seconds total wait
           
           captureIframeEl.src = page.path
         })
@@ -896,9 +897,12 @@ export default function PagePreviewPage() {
           }
           drawPageFooter()
         }
+
+        // Clean up iframe after each capture to prevent state contamination
+        captureContainer.removeChild(captureIframeEl)
       }
 
-      // Cleanup
+      // Cleanup container
       document.body.removeChild(captureContainer)
       setExportProgress('กำลังสร้าง PDF...')
       pdf.save(`nucha-website-preview-${new Date().toISOString().slice(0, 10)}.pdf`)

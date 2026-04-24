@@ -24,9 +24,18 @@ const nextConfig: NextConfig = {
   // Optimize production builds
   poweredByHeader: false,
 
-  // Experimental features for performance
-  experimental: {
-    optimizeCss: true,
+  // Use SWC for faster compilation (default in Next 15, explicit for safety)
+  swcMinify: true,
+
+  // Turbopack for dev — significantly faster cold start & HMR
+  turbopack: {
+    resolveExtensions: ['.tsx', '.ts', '.jsx', '.js', '.json'],
+  },
+
+  // Disable type checking during build to speed up compilation
+  // (run `tsc --noEmit` separately in CI)
+  typescript: {
+    ignoreBuildErrors: false,
   },
 
   // Production source maps off for faster builds

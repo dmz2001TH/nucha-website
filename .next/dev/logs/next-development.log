@@ -1,9 +1,8 @@
-{"timestamp":"00:00:07.991","source":"Server","level":"WARN","message":"⚠ The \"middleware\" file convention is deprecated. Please use \"proxy\" instead. Learn more: https://nextjs.org/docs/messages/middleware-to-proxy"}
-{"timestamp":"00:00:09.534","source":"Server","level":"LOG","message":"- Experiments (use with caution):"}
-{"timestamp":"00:00:09.539","source":"Server","level":"LOG","message":"  ✓ optimizeCss"}
-{"timestamp":"00:00:09.540","source":"Server","level":"LOG","message":""}
-{"timestamp":"00:00:52.246","source":"Server","level":"LOG","message":"○ Compiling / ..."}
-{"timestamp":"01:14:34.274","source":"Server","level":"LOG","message":"○ Compiling /portfolio ..."}
-{"timestamp":"01:15:36.894","source":"Server","level":"LOG","message":"○ Compiling /philosophy ..."}
-{"timestamp":"01:15:53.036","source":"Server","level":"LOG","message":"○ Compiling /contact ..."}
-{"timestamp":"01:16:20.820","source":"Server","level":"LOG","message":"○ Compiling /map ..."}
+{"timestamp":"00:00:04.099","source":"Server","level":"LOG","message":""}
+{"timestamp":"00:00:04.100","source":"Server","level":"LOG","message":"  We detected TypeScript in your project and reconfigured your tsconfig.json file for you."}
+{"timestamp":"00:00:04.101","source":"Server","level":"LOG","message":"  The following suggested values were added to your tsconfig.json. These values can be changed to fit your project's needs:\n"}
+{"timestamp":"00:00:04.104","source":"Server","level":"LOG","message":"  \t- include was updated to add '.next/types/**/*.ts'"}
+{"timestamp":"00:00:04.105","source":"Server","level":"LOG","message":"  \t- include was updated to add '.next/dev/types/**/*.ts'"}
+{"timestamp":"00:00:04.106","source":"Server","level":"LOG","message":""}
+{"timestamp":"00:00:04.273","source":"Server","level":"WARN","message":"⚠ The \"middleware\" file convention is deprecated. Please use \"proxy\" instead. Learn more: https://nextjs.org/docs/messages/middleware-to-proxy"}
+{"timestamp":"00:00:04.862","source":"Server","level":"LOG","message":""}

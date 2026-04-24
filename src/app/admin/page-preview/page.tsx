@@ -473,6 +473,9 @@ export default function PagePreviewPage() {
 
         pdf.addPage()
 
+        const totalContentPages = pagesToExport.length
+        const currentPageNum = i + 1
+
         // ── Helper to draw page header bar ──
         const drawPageHeader = () => {
           pdf.setFillColor(24, 24, 27)
@@ -490,19 +493,41 @@ export default function PagePreviewPage() {
           pdf.setTextColor(140, 140, 150)
           pdf.text(page.path, 8, 12.5)
 
-          // Page number
-          pdf.setFontSize(8)
-          pdf.setTextColor(100, 100, 110)
-          pdf.text(`${i + 1} / ${pagesToExport.length}`, W - 8, 9, { align: 'right' })
-
           // Category badge
           pdf.setFillColor(50, 50, 55)
           const catText = page.category
           const catBadgeW = pdf.getTextWidth(catText) + 6
-          pdf.roundedRect(W - 8 - catBadgeW, 10.5, catBadgeW, 4.5, 1, 1, 'F')
+          pdf.roundedRect(W - 8 - catBadgeW, 2.5, catBadgeW, 4.5, 1, 1, 'F')
           pdf.setFontSize(6)
           pdf.setTextColor(180, 180, 190)
-          pdf.text(catText, W - 8 - catBadgeW + 3, 13.5)
+          pdf.text(catText, W - 8 - catBadgeW + 3, 5.5)
+        }
+
+        // ── Helper to draw page footer ──
+        const drawPageFooter = () => {
+          // Top border line of footer
+          pdf.setDrawColor(220, 220, 225)
+          pdf.setLineWidth(0.2)
+          pdf.line(8, H - 10, W - 8, H - 10)
+
+          // Left: branding
+          setFont('normal')
+          pdf.setFontSize(7)
+          pdf.setTextColor(150, 150, 160)
+          pdf.text('NUCHA VILLA — Website Preview Report', 8, H - 5)
+
+          // Center: date
+          const footerDate = new Date().toLocaleDateString('th-TH', {
+            year: 'numeric', month: 'short', day: 'numeric'
+          })
+          pdf.setFontSize(7)
+          pdf.setTextColor(150, 150, 160)
+          pdf.text(footerDate, W / 2, H - 5, { align: 'center' })
+
+          // Right: page number
+          pdf.setFontSize(8)
+          pdf.setTextColor(100, 100, 110)
+          pdf.text(`${currentPageNum} / ${totalContentPages}`, W - 8, H - 5, { align: 'right' })
         }
 
         if (canvasImg) {
@@ -513,7 +538,7 @@ export default function PagePreviewPage() {
           const hasDesc = page.description || (page.features && page.features.length > 0)
           const margin = 6
           const contentTop = 16
-          const contentH = H - contentTop - margin
+          const contentH = H - contentTop - margin - 10 // Leave space for footer
 
           if (hasDesc) {
             // Layout: screenshot on left, description on right
@@ -615,6 +640,7 @@ export default function PagePreviewPage() {
             pdf.setLineWidth(0.3)
             pdf.roundedRect(drawX, drawY, drawW, drawH, 1, 1, 'S')
           }
+          drawPageFooter()
         } else {
           // Fallback if capture failed
           drawPageHeader()
@@ -662,6 +688,7 @@ export default function PagePreviewPage() {
               }
             }
           }
+          drawPageFooter()
         }
       }
 

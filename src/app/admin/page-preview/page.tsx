@@ -276,6 +276,17 @@ export default function PagePreviewPage() {
       const W = pdf.internal.pageSize.getWidth()   // 297mm
       const H = pdf.internal.pageSize.getHeight()   // 210mm
 
+      // ═══════════════════════════════════════════════
+      // PDF METADATA — Professional document properties
+      // ═══════════════════════════════════════════════
+      pdf.setProperties({
+        title: 'NUCHA VILLA Website Preview Report',
+        subject: 'Website Screenshot Documentation',
+        author: 'Nucha Villa Admin System',
+        keywords: 'website, preview, screenshot, nucha villa, documentation',
+        creator: 'Nucha Villa Admin Panel v2.0'
+      })
+
       // Load Thai font
       const hasThai = await loadThaiFont(pdf)
       const setFont = (style: 'normal' | 'bold') => {
@@ -283,61 +294,130 @@ export default function PagePreviewPage() {
       }
 
       // ═══════════════════════════════════════════════
-      // COVER PAGE — Professional dark design
+      // COVER PAGE — Premium Professional Design
       // ═══════════════════════════════════════════════
-      // Background
-      pdf.setFillColor(24, 24, 27)
+      // Background gradient simulation (layered rectangles)
+      pdf.setFillColor(18, 18, 22)
       pdf.rect(0, 0, W, H, 'F')
+      
+      // Subtle gradient overlay
+      for (let i = 0; i < 20; i++) {
+        pdf.setFillColor(18 + i * 0.3, 18 + i * 0.3, 22 + i * 0.5)
+        pdf.rect(0, i * (H / 20), W, H / 20 + 0.5, 'F')
+      }
 
-      // Accent line at top
-      pdf.setFillColor(145, 20, 34) // brand crimson
-      pdf.rect(0, 0, W, 1.5, 'F')
-
-      // Left decorative vertical bar
+      // Top accent bar with gradient effect
       pdf.setFillColor(145, 20, 34)
-      pdf.rect(20, 50, 1.2, 60, 'F')
+      pdf.rect(0, 0, W, 2, 'F')
+      pdf.setFillColor(180, 40, 50)
+      pdf.rect(0, 0, W / 2, 2, 'F')
 
-      // Title block
+      // Left vertical accent line
+      pdf.setFillColor(145, 20, 34)
+      pdf.rect(18, 55, 2, 80, 'F')
+      pdf.setFillColor(194, 143, 80)
+      pdf.rect(21, 55, 0.5, 80, 'F')
+
+      // Main title with shadow effect
       setFont('bold')
-      pdf.setFontSize(42)
+      pdf.setFontSize(46)
+      pdf.setTextColor(10, 10, 14)
+      pdf.text('Website Preview', 30, 77) // shadow
       pdf.setTextColor(255, 255, 255)
       pdf.text('Website Preview', 28, 75)
 
+      // Subtitle with brand colors
       setFont('normal')
-      pdf.setFontSize(16)
-      pdf.setTextColor(194, 143, 80) // brand gold
-      pdf.text('NUCHA VILLA — นุชา วิลล่า', 28, 90)
+      pdf.setFontSize(18)
+      pdf.setTextColor(194, 143, 80)
+      pdf.text('NUCHA VILLA', 28, 95)
+      setFont('bold')
+      pdf.setFontSize(14)
+      pdf.setTextColor(180, 180, 190)
+      pdf.text('นุชา วิลล่า — Luxury Villa & Interior Design', 28, 103)
 
-      // Divider line
-      pdf.setDrawColor(60, 60, 65)
+      // Decorative divider with gradient
+      pdf.setDrawColor(145, 20, 34)
+      pdf.setLineWidth(1)
+      pdf.line(28, 110, 80, 110)
+      pdf.setDrawColor(60, 60, 70)
       pdf.setLineWidth(0.3)
-      pdf.line(28, 98, 180, 98)
+      pdf.line(28, 112, 200, 112)
 
-      // Date
+      // Date section with icon-like styling
       setFont('normal')
+      pdf.setFontSize(10)
+      pdf.setTextColor(120, 120, 130)
+      pdf.text('Report Generated', 28, 125)
+      
       pdf.setFontSize(11)
-      pdf.setTextColor(140, 140, 150)
-      const dateStr = new Date().toLocaleDateString('th-TH', {
-        year: 'numeric', month: 'long', day: 'numeric',
-      })
+      pdf.setTextColor(200, 200, 210)
       const dateStrEn = new Date().toLocaleDateString('en-US', {
         year: 'numeric', month: 'long', day: 'numeric',
       })
-      pdf.text(dateStrEn, 28, 108)
-      pdf.text(dateStr, 28, 115)
+      pdf.text(dateStrEn, 28, 132)
+      
+      const dateStr = new Date().toLocaleDateString('th-TH', {
+        year: 'numeric', month: 'long', day: 'numeric',
+      })
+      pdf.setTextColor(160, 160, 170)
+      pdf.setFontSize(9)
+      pdf.text(dateStr, 28, 138)
 
-      // Page count badge
-      pdf.setFillColor(40, 40, 45)
-      pdf.roundedRect(28, 125, 55, 12, 3, 3, 'F')
+      // Professional stats badges
+      const statsY = 148
+      
+      // Pages count badge
+      pdf.setFillColor(30, 30, 35)
+      pdf.roundedRect(28, statsY, 45, 14, 2, 2, 'F')
+      pdf.setDrawColor(145, 20, 34)
+      pdf.setLineWidth(0.5)
+      pdf.roundedRect(28, statsY, 45, 14, 2, 2, 'S')
+      pdf.setFontSize(8)
+      pdf.setTextColor(140, 140, 150)
+      pdf.text('TOTAL PAGES', 31, statsY + 4)
+      pdf.setFont('bold')
+      pdf.setFontSize(12)
+      pdf.setTextColor(255, 255, 255)
+      pdf.text(String(pagesToExport.length), 31, statsY + 11)
+
+      // Categories count badge
+      const uniqueCats = new Set(pagesToExport.map(p => p.category)).size
+      pdf.setFillColor(30, 30, 35)
+      pdf.roundedRect(78, statsY, 45, 14, 2, 2, 'F')
+      pdf.setDrawColor(194, 143, 80)
+      pdf.setLineWidth(0.5)
+      pdf.roundedRect(78, statsY, 45, 14, 2, 2, 'S')
+      pdf.setFont('normal')
+      pdf.setFontSize(8)
+      pdf.setTextColor(140, 140, 150)
+      pdf.text('CATEGORIES', 81, statsY + 4)
+      pdf.setFont('bold')
+      pdf.setFontSize(12)
+      pdf.setTextColor(255, 255, 255)
+      pdf.text(String(uniqueCats), 81, statsY + 11)
+
+      // Confidential watermark
+      pdf.setFontSize(60)
+      pdf.setTextColor(35, 35, 40)
+      pdf.text('CONFIDENTIAL', W / 2, H / 2 + 30, { align: 'center', angle: 45 })
+
+      // Bottom branding section
+      pdf.setFillColor(25, 25, 30)
+      pdf.rect(0, H - 25, W, 25, 'F')
+      pdf.setDrawColor(145, 20, 34)
+      pdf.setLineWidth(0.5)
+      pdf.line(0, H - 25, W, H - 25)
+
+      setFont('normal')
+      pdf.setFontSize(8)
+      pdf.setTextColor(100, 100, 110)
+      pdf.text('Generated from Nucha Villa Admin System', 15, H - 15)
+      pdf.text('Version 2.0 | Internal Use Only', 15, H - 8)
+      
       pdf.setFontSize(10)
       pdf.setTextColor(180, 180, 190)
-      pdf.text(`${pagesToExport.length} pages included`, 32, 133)
-
-      // Bottom right branding
-      pdf.setFontSize(9)
-      pdf.setTextColor(70, 70, 80)
-      pdf.text('Generated from Nucha Villa Admin Panel', W - 15, H - 12, { align: 'right' })
-      pdf.text('nucha-villa.com', W - 15, H - 7, { align: 'right' })
+      pdf.text('nucha-villa.com', W - 15, H - 12, { align: 'right' })
 
       // ═══════════════════════════════════════════════
       // TABLE OF CONTENTS
@@ -445,8 +525,57 @@ export default function PagePreviewPage() {
         setExportCurrent(i + 1)
         setExportProgress(`กำลังจับภาพ: ${page.nameTh} (${i + 1}/${pagesToExport.length})`)
 
+        // Wait for page to fully load with smart detection
         await new Promise<void>((resolve) => {
-          captureIframeEl.onload = () => setTimeout(resolve, 2000)
+          let loadTimeout: NodeJS.Timeout
+          let checkInterval: NodeJS.Timeout
+          
+          captureIframeEl.onload = () => {
+            // Give initial render time then check readyState
+            loadTimeout = setTimeout(() => {
+              const checkReady = () => {
+                try {
+                  const iframeDoc = captureIframeEl.contentDocument || captureIframeEl.contentWindow?.document
+                  const readyState = iframeDoc?.readyState
+                  const hasBody = iframeDoc?.body && iframeDoc.body.innerHTML.length > 100
+                  
+                  // Check if images are loaded
+                  const images = iframeDoc?.querySelectorAll('img')
+                  const imagesLoaded = Array.from(images || []).every((img: HTMLImageElement) => img.complete)
+                  
+                  if (readyState === 'complete' && hasBody && imagesLoaded) {
+                    clearInterval(checkInterval)
+                    resolve()
+                  }
+                } catch (e) {
+                  // Cross-origin or other error, just wait fixed time
+                  clearInterval(checkInterval)
+                  resolve()
+                }
+              }
+              
+              // Check every 500ms, max 15 seconds total
+              let attempts = 0
+              checkInterval = setInterval(() => {
+                attempts++
+                checkReady()
+                if (attempts > 30) {
+                  clearInterval(checkInterval)
+                  resolve() // fallback after 15s
+                }
+              }, 500)
+              
+              // Initial check
+              checkReady()
+            }, 1500) // Initial delay after onload
+          }
+          
+          // Fallback in case onload doesn't fire
+          setTimeout(() => {
+            clearInterval(checkInterval)
+            resolve()
+          }, 20000) // Max 20 seconds total wait
+          
           captureIframeEl.src = page.path
         })
 
@@ -476,58 +605,100 @@ export default function PagePreviewPage() {
         const totalContentPages = pagesToExport.length
         const currentPageNum = i + 1
 
-        // ── Helper to draw page header bar ──
+        // ── Helper to draw premium page header bar ──
         const drawPageHeader = () => {
-          pdf.setFillColor(24, 24, 27)
-          pdf.rect(0, 0, W, 14, 'F')
+          // Gradient header background
+          pdf.setFillColor(22, 22, 26)
+          pdf.rect(0, 0, W, 16, 'F')
+          
+          // Top accent line with brand colors
           pdf.setFillColor(145, 20, 34)
-          pdf.rect(0, 14, W, 0.5, 'F')
+          pdf.rect(0, 0, W, 1.5, 'F')
+          pdf.setFillColor(194, 143, 80)
+          pdf.rect(W - 80, 0, 80, 1.5, 'F')
 
+          // Page title
           setFont('bold')
           pdf.setFontSize(9)
           pdf.setTextColor(255, 255, 255)
-          pdf.text(`${page.nameTh}  —  ${page.name}`, 8, 9)
+          pdf.text(`${page.nameTh} — ${page.name}`, 10, 7)
 
+          // Path with muted color
           setFont('normal')
-          pdf.setFontSize(7)
-          pdf.setTextColor(140, 140, 150)
-          pdf.text(page.path, 8, 12.5)
+          pdf.setFontSize(6.5)
+          pdf.setTextColor(120, 120, 130)
+          const shortPath = page.path.length > 60 ? '...' + page.path.slice(-57) : page.path
+          pdf.text(shortPath, 10, 12)
 
-          // Category badge
-          pdf.setFillColor(50, 50, 55)
+          // Premium category badge
+          pdf.setFillColor(35, 35, 40)
+          pdf.roundedRect(W - 10, 3, 1, 10, 0.5, 0.5, 'F') // accent bar
+          pdf.setFillColor(145, 20, 34)
+          pdf.roundedRect(W - 8, 3, 1, 10, 0.5, 0.5, 'F') // accent bar
+          
           const catText = page.category
-          const catBadgeW = pdf.getTextWidth(catText) + 6
-          pdf.roundedRect(W - 8 - catBadgeW, 2.5, catBadgeW, 4.5, 1, 1, 'F')
+          const catBadgeW = pdf.getTextWidth(catText) + 10
+          pdf.setFillColor(40, 40, 48)
+          pdf.roundedRect(W - 8 - catBadgeW - 5, 3, catBadgeW, 5, 1.5, 1.5, 'F')
+          pdf.setDrawColor(60, 60, 70)
+          pdf.setLineWidth(0.2)
+          pdf.roundedRect(W - 8 - catBadgeW - 5, 3, catBadgeW, 5, 1.5, 1.5, 'S')
           pdf.setFontSize(6)
-          pdf.setTextColor(180, 180, 190)
-          pdf.text(catText, W - 8 - catBadgeW + 3, 5.5)
+          pdf.setTextColor(200, 200, 210)
+          pdf.text(catText, W - 8 - catBadgeW, 6.5)
         }
 
-        // ── Helper to draw page footer ──
+        // ── Helper to draw premium page footer ──
         const drawPageFooter = () => {
-          // Top border line of footer
-          pdf.setDrawColor(220, 220, 225)
-          pdf.setLineWidth(0.2)
-          pdf.line(8, H - 10, W - 8, H - 10)
+          // Footer background
+          pdf.setFillColor(250, 250, 252)
+          pdf.rect(0, H - 12, W, 12, 'F')
+          
+          // Top accent border
+          pdf.setDrawColor(220, 220, 230)
+          pdf.setLineWidth(0.3)
+          pdf.line(10, H - 12, W - 10, H - 12)
+          pdf.setFillColor(145, 20, 34)
+          pdf.rect(10, H - 12.5, 30, 0.5, 'F')
 
-          // Left: branding
-          setFont('normal')
+          // Left: Brand with icon-like styling
+          setFont('bold')
           pdf.setFontSize(7)
-          pdf.setTextColor(150, 150, 160)
-          pdf.text('NUCHA VILLA — Website Preview Report', 8, H - 5)
+          pdf.setTextColor(80, 80, 90)
+          pdf.text('NUCHA VILLA', 10, H - 6)
+          setFont('normal')
+          pdf.setFontSize(6)
+          pdf.setTextColor(140, 140, 150)
+          pdf.text('Website Preview Report', 10, H - 2.5)
 
-          // Center: date
+          // Center: Date and time
           const footerDate = new Date().toLocaleDateString('th-TH', {
             year: 'numeric', month: 'short', day: 'numeric'
           })
-          pdf.setFontSize(7)
-          pdf.setTextColor(150, 150, 160)
-          pdf.text(footerDate, W / 2, H - 5, { align: 'center' })
+          const footerTime = new Date().toLocaleTimeString('th-TH', {
+            hour: '2-digit', minute: '2-digit'
+          })
+          pdf.setFontSize(6.5)
+          pdf.setTextColor(120, 120, 130)
+          pdf.text(`${footerDate} · ${footerTime}`, W / 2, H - 5, { align: 'center' })
 
-          // Right: page number
-          pdf.setFontSize(8)
-          pdf.setTextColor(100, 100, 110)
-          pdf.text(`${currentPageNum} / ${totalContentPages}`, W - 8, H - 5, { align: 'right' })
+          // Right: Premium page counter with progress bar
+          const progressPct = currentPageNum / totalContentPages
+          const barW = 25
+          const barX = W - 10 - barW
+          
+          // Progress bar background
+          pdf.setFillColor(220, 220, 230)
+          pdf.roundedRect(barX, H - 9, barW, 4, 2, 2, 'F')
+          
+          // Progress bar fill
+          pdf.setFillColor(145, 20, 34)
+          pdf.roundedRect(barX, H - 9, barW * progressPct, 4, 2, 2, 'F')
+          
+          // Page number text
+          pdf.setFontSize(7)
+          pdf.setTextColor(80, 80, 90)
+          pdf.text(`${currentPageNum}/${totalContentPages}`, W - 10, H - 2.5, { align: 'right' })
         }
 
         if (canvasImg) {
@@ -610,7 +781,7 @@ export default function PagePreviewPage() {
               setFont('normal')
               pdf.setFontSize(6.5)
               for (const feat of page.features) {
-                if (descY > H - margin - 4) break
+                if (descY > H - margin - 30) break
                 // Bullet dot
                 pdf.setFillColor(145, 20, 34)
                 pdf.circle(descX + 4, descY - 0.8, 0.6, 'F')
@@ -619,6 +790,41 @@ export default function PagePreviewPage() {
                 pdf.text(feat, descX + 7, descY)
                 descY += 4
               }
+            }
+
+            // Technical Info Section
+            descY += 6
+            if (descY < H - margin - 20) {
+              // Divider
+              pdf.setDrawColor(220, 220, 225)
+              pdf.setLineWidth(0.2)
+              pdf.line(descX + 2, descY - 2, descX + descPanelW - 4, descY - 2)
+              
+              setFont('bold')
+              pdf.setFontSize(7)
+              pdf.setTextColor(100, 100, 110)
+              pdf.text('ข้อมูลเทคนิค', descX + 2, descY + 2)
+              descY += 6
+
+              setFont('normal')
+              pdf.setFontSize(6)
+              pdf.setTextColor(130, 130, 140)
+              
+              // Capture dimensions
+              pdf.text(`Viewport: 1440×900px`, descX + 2, descY)
+              descY += 3.5
+              pdf.text(`Captured: ${new Date().toLocaleTimeString('th-TH')}`, descX + 2, descY)
+              descY += 3.5
+              pdf.text(`Quality: High (85% JPEG)`, descX + 2, descY)
+              descY += 3.5
+              
+              // URL
+              pdf.setTextColor(100, 100, 110)
+              pdf.text('URL:', descX + 2, descY)
+              descY += 3.5
+              pdf.setTextColor(145, 20, 34)
+              const shortUrl = page.path.length > 35 ? page.path.substring(0, 32) + '...' : page.path
+              pdf.text(shortUrl, descX + 2, descY)
             }
           } else {
             // No description — full-width screenshot

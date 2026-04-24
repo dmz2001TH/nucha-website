@@ -6,3 +6,22 @@
 {"timestamp":"00:00:04.106","source":"Server","level":"LOG","message":""}
 {"timestamp":"00:00:04.273","source":"Server","level":"WARN","message":"⚠ The \"middleware\" file convention is deprecated. Please use \"proxy\" instead. Learn more: https://nextjs.org/docs/messages/middleware-to-proxy"}
 {"timestamp":"00:00:04.862","source":"Server","level":"LOG","message":""}
+{"timestamp":"00:14:13.550","source":"Server","level":"LOG","message":"○ Compiling / ..."}
+{"timestamp":"00:14:28.586","source":"Server","level":"LOG","message":"○ Compiling /admin ..."}
+{"timestamp":"00:28:29.818","source":"Server","level":"LOG","message":"○ Compiling /admin/portfolio ..."}
+{"timestamp":"00:28:39.484","source":"Server","level":"LOG","message":"○ Compiling /admin/page-preview ..."}
+{"timestamp":"00:28:49.419","source":"Server","level":"LOG","message":"○ Compiling /booking ..."}
+{"timestamp":"00:28:54.939","source":"Server","level":"LOG","message":"○ Compiling /admin/inquiries ..."}
+{"timestamp":"00:29:09.414","source":"Server","level":"LOG","message":"○ Compiling /api/settings ..."}
+{"timestamp":"00:29:12.377","source":"Server","level":"LOG","message":"✓ Finished writing to filesystem cache in 13.5s"}
+{"timestamp":"00:30:00.622","source":"Server","level":"LOG","message":"✓ Finished filesystem cache database compaction in 17.7s"}
+{"timestamp":"00:30:17.075","source":"Server","level":"LOG","message":"✓ Finished filesystem cache database compaction in 16.5s"}
+{"timestamp":"00:30:29.966","source":"Server","level":"LOG","message":"✓ Finished filesystem cache database compaction in 12.9s"}
+{"timestamp":"00:34:03.485","source":"Server","level":"LOG","message":"○ Compiling /admin/users ..."}
+{"timestamp":"00:35:08.274","source":"Server","level":"LOG","message":"✓ Finished filesystem cache database compaction in 10.2s"}
+{"timestamp":"00:36:19.939","source":"Server","level":"LOG","message":"○ Compiling /_not-found/page ..."}
+{"timestamp":"00:36:48.852","source":"Server","level":"LOG","message":"✓ Finished filesystem cache database compaction in 16.6s"}
+{"timestamp":"00:54:16.042","source":"Server","level":"LOG","message":"✓ Compiled in 1251ms"}
+{"timestamp":"00:55:16.195","source":"Server","level":"LOG","message":"✓ Compiled in 1355ms"}
+{"timestamp":"00:55:35.226","source":"Server","level":"LOG","message":"✓ Compiled in 423ms"}
+{"timestamp":"00:56:36.780","source":"Server","level":"LOG","message":"✓ Compiled in 1691ms"}

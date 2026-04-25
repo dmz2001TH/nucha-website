@@ -428,8 +428,8 @@ export default function PagePreviewPage() {
       // Cleanup container
       document.body.removeChild(captureContainer)
       
-      // Send to API for PDF generation with Puppeteer
-      setExportProgress('กำลังสร้าง PDF ด้วย Puppeteer...')
+      // Send to API for PDF generation with Playwright
+      setExportProgress('กำลังสร้าง PDF ด้วย Playwright...')
       const response = await fetch('/api/export/pdf', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },

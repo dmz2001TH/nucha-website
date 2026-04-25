@@ -313,151 +313,145 @@ export default function PagePreviewPage() {
       }
 
       // ═══════════════════════════════════════════════
-      // COVER PAGE — Premium Professional Design
+      // COVER PAGE — Ultra Modern Professional Design
       // ═══════════════════════════════════════════════
-      // Background gradient simulation (layered rectangles)
-      pdf.setFillColor(18, 18, 22)
+      // Clean white background
+      pdf.setFillColor(255, 255, 255)
       pdf.rect(0, 0, W, H, 'F')
+
+      // Top thin accent line
+      pdf.setFillColor(145, 20, 34)
+      pdf.rect(0, 0, W, 3, 'F')
+
+      // Large page number / document type indicator (top right)
+      setFont('bold')
+      pdf.setFontSize(72)
+      pdf.setTextColor(245, 245, 247)
+      pdf.text('WEB', W - 20, 50, { align: 'right' })
+
+      // Subtle geometric accent (top right corner block)
+      pdf.setFillColor(250, 250, 252)
+      pdf.rect(W - 80, 0, 80, H / 2, 'F')
       
-      // Subtle gradient overlay
-      for (let i = 0; i < 20; i++) {
-        pdf.setFillColor(18 + i * 0.3, 18 + i * 0.3, 22 + i * 0.5)
-        pdf.rect(0, i * (H / 20), W, H / 20 + 0.5, 'F')
-      }
-
-      // Top accent bar with gradient effect
+      // Vertical accent line near title
       pdf.setFillColor(145, 20, 34)
-      pdf.rect(0, 0, W, 2, 'F')
-      pdf.setFillColor(180, 40, 50)
-      pdf.rect(0, 0, W / 2, 2, 'F')
+      pdf.rect(30, 70, 3, 50, 'F')
 
-      // Left vertical accent line
-      pdf.setFillColor(145, 20, 34)
-      pdf.rect(18, 55, 2, 80, 'F')
-      pdf.setFillColor(194, 143, 80)
-      pdf.rect(21, 55, 0.5, 80, 'F')
-
-      // Main title with shadow effect
+      // Main title
       setFont('bold')
-      pdf.setFontSize(46)
-      pdf.setTextColor(10, 10, 14)
-      pdf.text('Website Preview', 30, 77) // shadow
-      pdf.setTextColor(255, 255, 255)
-      pdf.text('Website Preview', 28, 75)
+      pdf.setFontSize(36)
+      pdf.setTextColor(30, 30, 35)
+      pdf.text('Website Preview', 42, 90)
 
-      // Subtitle with brand colors
+      // Subtitle
       setFont('normal')
-      pdf.setFontSize(18)
-      pdf.setTextColor(194, 143, 80)
-      pdf.text('NUCHA VILLA', 28, 95)
-      setFont('bold')
       pdf.setFontSize(14)
-      pdf.setTextColor(180, 180, 190)
-      pdf.text('นุชา วิลล่า — Luxury Villa & Interior Design', 28, 103)
+      pdf.setTextColor(100, 100, 110)
+      pdf.text('รายงานภาพหน้าจอเว็บไซต์', 42, 105)
 
-      // Decorative divider with gradient
-      pdf.setDrawColor(145, 20, 34)
-      pdf.setLineWidth(1)
-      pdf.line(28, 110, 80, 110)
-      pdf.setDrawColor(60, 60, 70)
-      pdf.setLineWidth(0.3)
-      pdf.line(28, 112, 200, 112)
+      // Brand name
+      setFont('bold')
+      pdf.setFontSize(18)
+      pdf.setTextColor(145, 20, 34)
+      pdf.text('NUCHA VILLA', 42, 125)
+      setFont('normal')
+      pdf.setFontSize(11)
+      pdf.setTextColor(150, 150, 160)
+      pdf.text('นุชา วิลล่า — Luxury Villa & Interior Design', 42, 135)
 
-      // Date section with icon-like styling
+      // Elegant divider
+      pdf.setDrawColor(220, 220, 225)
+      pdf.setLineWidth(0.5)
+      pdf.line(42, 145, 150, 145)
+      pdf.setFillColor(145, 20, 34)
+      pdf.rect(42, 143.5, 25, 3, 'F')
+
+      // Date block
       setFont('normal')
       pdf.setFontSize(10)
       pdf.setTextColor(120, 120, 130)
-      pdf.text('Report Generated', 28, 125)
+      pdf.text('Generated', 42, 160)
       
       pdf.setFontSize(11)
-      pdf.setTextColor(200, 200, 210)
+      pdf.setTextColor(60, 60, 65)
       const dateStrEn = new Date().toLocaleDateString('en-US', {
         year: 'numeric', month: 'long', day: 'numeric',
       })
-      pdf.text(dateStrEn, 28, 132)
+      pdf.text(dateStrEn, 42, 168)
+
+      // Minimal stat boxes (bottom area)
+      const boxY = H - 60
       
-      const dateStr = new Date().toLocaleDateString('th-TH', {
-        year: 'numeric', month: 'long', day: 'numeric',
-      })
-      pdf.setTextColor(160, 160, 170)
+      // Total Pages
+      pdf.setFillColor(250, 250, 252)
+      pdf.roundedRect(30, boxY, 50, 30, 3, 3, 'F')
+      pdf.setDrawColor(230, 230, 235)
+      pdf.setLineWidth(0.3)
+      pdf.roundedRect(30, boxY, 50, 30, 3, 3, 'S')
       pdf.setFontSize(9)
-      pdf.text(dateStr, 28, 138)
+      pdf.setTextColor(130, 130, 140)
+      pdf.text('Total Pages', 35, boxY + 8)
+      setFont('bold')
+      pdf.setFontSize(16)
+      pdf.setTextColor(30, 30, 35)
+      pdf.text(String(pagesToExport.length), 35, boxY + 22)
 
-      // Professional stats badges
-      const statsY = 148
-      
-      // Pages count badge
-      pdf.setFillColor(30, 30, 35)
-      pdf.roundedRect(28, statsY, 45, 14, 2, 2, 'F')
-      pdf.setDrawColor(145, 20, 34)
-      pdf.setLineWidth(0.5)
-      pdf.roundedRect(28, statsY, 45, 14, 2, 2, 'S')
-      pdf.setFontSize(8)
-      pdf.setTextColor(140, 140, 150)
-      pdf.text('TOTAL PAGES', 31, statsY + 4)
-      pdf.setFont('bold')
-      pdf.setFontSize(12)
-      pdf.setTextColor(255, 255, 255)
-      pdf.text(String(pagesToExport.length), 31, statsY + 11)
-
-      // Categories count badge
+      // Categories
       const uniqueCats = new Set(pagesToExport.map(p => p.category)).size
-      pdf.setFillColor(30, 30, 35)
-      pdf.roundedRect(78, statsY, 45, 14, 2, 2, 'F')
-      pdf.setDrawColor(194, 143, 80)
-      pdf.setLineWidth(0.5)
-      pdf.roundedRect(78, statsY, 45, 14, 2, 2, 'S')
-      pdf.setFont('normal')
-      pdf.setFontSize(8)
-      pdf.setTextColor(140, 140, 150)
-      pdf.text('CATEGORIES', 81, statsY + 4)
-      pdf.setFont('bold')
-      pdf.setFontSize(12)
-      pdf.setTextColor(255, 255, 255)
-      pdf.text(String(uniqueCats), 81, statsY + 11)
+      pdf.setFillColor(250, 250, 252)
+      pdf.roundedRect(88, boxY, 50, 30, 3, 3, 'F')
+      pdf.setDrawColor(230, 230, 235)
+      pdf.roundedRect(88, boxY, 50, 30, 3, 3, 'S')
+      setFont('normal')
+      pdf.setFontSize(9)
+      pdf.setTextColor(130, 130, 140)
+      pdf.text('Categories', 93, boxY + 8)
+      setFont('bold')
+      pdf.setFontSize(16)
+      pdf.setTextColor(30, 30, 35)
+      pdf.text(String(uniqueCats), 93, boxY + 22)
 
-      // Confidential watermark
-      pdf.setFontSize(60)
-      pdf.setTextColor(35, 35, 40)
-      pdf.text('CONFIDENTIAL', W / 2, H / 2 + 30, { align: 'center', angle: 45 })
-
-      // Bottom branding section
-      pdf.setFillColor(25, 25, 30)
-      pdf.rect(0, H - 25, W, 25, 'F')
-      pdf.setDrawColor(145, 20, 34)
-      pdf.setLineWidth(0.5)
-      pdf.line(0, H - 25, W, H - 25)
-
+      // Bottom footer bar
+      pdf.setFillColor(250, 250, 252)
+      pdf.rect(0, H - 20, W, 20, 'F')
+      pdf.setDrawColor(230, 230, 235)
+      pdf.setLineWidth(0.3)
+      pdf.line(0, H - 20, W, H - 20)
+      
       setFont('normal')
       pdf.setFontSize(8)
-      pdf.setTextColor(100, 100, 110)
-      pdf.text('Generated from Nucha Villa Admin System', 15, H - 15)
-      pdf.text('Version 2.0 | Internal Use Only', 15, H - 8)
-      
-      pdf.setFontSize(10)
-      pdf.setTextColor(180, 180, 190)
-      pdf.text('nucha-villa.com', W - 15, H - 12, { align: 'right' })
+      pdf.setTextColor(150, 150, 160)
+      pdf.text('NUCHA VILLA Website Preview Report — Generated from Admin System', 30, H - 8)
+      pdf.text('nucha-villa.com', W - 30, H - 8, { align: 'right' })
 
       // ═══════════════════════════════════════════════
-      // TABLE OF CONTENTS
+      // TABLE OF CONTENTS — Modern Minimal Design
       // ═══════════════════════════════════════════════
       pdf.addPage()
-      pdf.setFillColor(250, 250, 252)
+      pdf.setFillColor(255, 255, 255)
       pdf.rect(0, 0, W, H, 'F')
 
-      // Header
-      pdf.setFillColor(24, 24, 27)
-      pdf.rect(0, 0, W, 22, 'F')
+      // Top accent line
       pdf.setFillColor(145, 20, 34)
-      pdf.rect(0, 22, W, 1, 'F')
+      pdf.rect(0, 0, W, 2, 'F')
 
+      // TOC Title
       setFont('bold')
-      pdf.setFontSize(14)
-      pdf.setTextColor(255, 255, 255)
-      pdf.text('Table of Contents — สารบัญหน้าเว็บ', 15, 15)
+      pdf.setFontSize(22)
+      pdf.setTextColor(30, 30, 35)
+      pdf.text('Contents', 30, 35)
+      
+      setFont('normal')
+      pdf.setFontSize(11)
+      pdf.setTextColor(130, 130, 140)
+      pdf.text('สารบัญหน้าเว็บไซต์ทั้งหมด', 30, 44)
+
+      // Decorative line under title
+      pdf.setFillColor(145, 20, 34)
+      pdf.rect(30, 50, 20, 2, 'F')
 
       // TOC entries
-      let tocY = 35
+      let tocY = 65
       const catGroups = CATEGORIES.map(cat => ({
         cat,
         pages: pagesToExport.filter(p => p.category === cat)
@@ -465,65 +459,64 @@ export default function PagePreviewPage() {
 
       let pageNum = 2 // start after cover + TOC
       for (const group of catGroups) {
-        // Category header
+        // Category header with background
+        pdf.setFillColor(250, 250, 252)
+        pdf.roundedRect(25, tocY - 5, W - 50, 12, 2, 2, 'F')
+        
         setFont('bold')
         pdf.setFontSize(10)
         pdf.setTextColor(145, 20, 34)
-        pdf.text(group.cat, 15, tocY)
-        pdf.setDrawColor(220, 220, 225)
-        pdf.setLineWidth(0.2)
-        pdf.line(15, tocY + 2, W - 15, tocY + 2)
-        tocY += 8
+        pdf.text(group.cat.toUpperCase(), 30, tocY + 2)
+        
+        // Small count badge
+        pdf.setFillColor(245, 245, 248)
+        pdf.roundedRect(W - 55, tocY - 3, 25, 8, 2, 2, 'F')
+        pdf.setFontSize(7)
+        pdf.setTextColor(130, 130, 140)
+        pdf.text(`${group.pages.length} pages`, W - 52, tocY + 2)
+        
+        tocY += 14
 
         for (const page of group.pages) {
           pageNum++
-          setFont('normal')
+          
+          // Page entry row
+          pdf.setFillColor(255, 255, 255)
+          pdf.roundedRect(28, tocY - 4, W - 56, 10, 1, 1, 'F')
+          
+          setFont('bold')
           pdf.setFontSize(9)
-          pdf.setTextColor(60, 60, 65)
-          pdf.text(`${page.nameTh}  (${page.name})`, 20, tocY)
+          pdf.setTextColor(50, 50, 55)
+          pdf.text(page.nameTh, 32, tocY + 2)
+          
+          setFont('normal')
+          pdf.setFontSize(8)
+          pdf.setTextColor(130, 130, 140)
+          pdf.text(page.name, 32 + pdf.getTextWidth(page.nameTh) + 5, tocY + 2)
 
-          // Dots leader
-          pdf.setTextColor(180, 180, 185)
-          const labelW = pdf.getTextWidth(`${page.nameTh}  (${page.name})`) + 22
+          // Page number (right aligned with accent)
           const pageNumStr = String(pageNum)
-          const pageNumW = pdf.getTextWidth(pageNumStr)
-          const dotsStart = labelW + 2
-          const dotsEnd = W - 15 - pageNumW - 2
-          if (dotsEnd > dotsStart) {
-            let dotsStr = ''
-            const dotW = pdf.getTextWidth('.')
-            const numDots = Math.floor((dotsEnd - dotsStart) / (dotW * 1.5))
-            for (let d = 0; d < numDots; d++) dotsStr += ' .'
-            pdf.text(dotsStr, dotsStart, tocY)
-          }
-
-          // Page number
+          const numW = pdf.getTextWidth(pageNumStr)
+          pdf.setFillColor(250, 250, 252)
+          pdf.roundedRect(W - 35 - numW, tocY - 2, numW + 8, 6, 2, 2, 'F')
+          pdf.setFontSize(8)
           pdf.setTextColor(100, 100, 110)
-          pdf.text(pageNumStr, W - 15, tocY, { align: 'right' })
+          pdf.text(pageNumStr, W - 31, tocY + 2, { align: 'right' })
 
-          // Path
-          pdf.setFontSize(7)
-          pdf.setTextColor(160, 160, 170)
-          pdf.text(page.path, 20, tocY + 4)
+          // Path (small, below)
+          pdf.setFontSize(6.5)
+          pdf.setTextColor(180, 180, 190)
+          pdf.text(page.path, 32, tocY + 8)
 
-          // Description in TOC
-          if (page.description) {
-            pdf.setFontSize(6.5)
-            pdf.setTextColor(130, 130, 140)
-            const tocDescLines = pdf.splitTextToSize(page.description, W - 45)
-            pdf.text(tocDescLines.slice(0, 2), 20, tocY + 7.5)
-            tocY += Math.min(tocDescLines.length, 2) * 3
-          }
-
-          tocY += 10
-          if (tocY > H - 15) {
+          tocY += 16
+          if (tocY > H - 25) {
             pdf.addPage()
-            pdf.setFillColor(250, 250, 252)
+            pdf.setFillColor(255, 255, 255)
             pdf.rect(0, 0, W, H, 'F')
-            tocY = 20
+            tocY = 30
           }
         }
-        tocY += 4
+        tocY += 6
       }
 
       // ═══════════════════════════════════════════════
@@ -551,21 +544,32 @@ export default function PagePreviewPage() {
           let checkInterval: NodeJS.Timeout
           
           captureIframeEl.onload = () => {
-            // Give initial render time then check readyState
+            // Give more time for React hydration and images to load
             loadTimeout = setTimeout(() => {
               const checkReady = () => {
                 try {
                   const iframeDoc = captureIframeEl.contentDocument || captureIframeEl.contentWindow?.document
                   const readyState = iframeDoc?.readyState
-                  const hasBody = iframeDoc?.body && iframeDoc.body.innerHTML.length > 100
+                  const hasBody = iframeDoc?.body && iframeDoc.body.innerHTML.length > 200
                   
-                  // Check if images are loaded
+                  // Check if images are loaded (including background images)
                   const images = iframeDoc?.querySelectorAll('img')
-                  const imagesLoaded = Array.from(images || []).every((img: HTMLImageElement) => img.complete)
+                  const imagesLoaded = Array.from(images || []).every((img: HTMLImageElement) => {
+                    if (img.complete) return true
+                    // Force lazy images to load by setting loading to eager
+                    img.setAttribute('loading', 'eager')
+                    return false
+                  })
                   
-                  if (readyState === 'complete' && hasBody && imagesLoaded) {
-                    clearInterval(checkInterval)
-                    resolve()
+                  // Check fonts loaded
+                  const fontsReady = iframeDoc?.fonts?.status === 'loaded'
+                  
+                  if (readyState === 'complete' && hasBody && (imagesLoaded || attempts > 20)) {
+                    // Give extra 500ms for any final renders
+                    setTimeout(() => {
+                      clearInterval(checkInterval)
+                      resolve()
+                    }, 500)
                   }
                 } catch (e) {
                   // Cross-origin or other error, just wait fixed time
@@ -574,20 +578,20 @@ export default function PagePreviewPage() {
                 }
               }
               
-              // Check every 500ms, max 15 seconds total
+              // Check every 500ms, max 25 seconds total
               let attempts = 0
               checkInterval = setInterval(() => {
                 attempts++
                 checkReady()
-                if (attempts > 30) {
+                if (attempts > 50) {
                   clearInterval(checkInterval)
-                  resolve() // fallback after 15s
+                  resolve() // fallback after 25s
                 }
               }, 500)
               
               // Initial check
               checkReady()
-            }, 2000) // Increased initial delay to 2s for React hydration
+            }, 3000) // Increased to 3s for React hydration + lazy images
           }
           
           // Fallback in case onload doesn't fire
@@ -668,100 +672,73 @@ export default function PagePreviewPage() {
         const totalContentPages = pagesToExport.length
         const currentPageNum = i + 1
 
-        // ── Helper to draw premium page header bar ──
+        // ── Helper to draw clean modern page header ──
         const drawPageHeader = () => {
-          // Gradient header background
-          pdf.setFillColor(22, 22, 26)
-          pdf.rect(0, 0, W, 16, 'F')
+          // Clean white background with subtle bottom border
+          pdf.setFillColor(255, 255, 255)
+          pdf.rect(0, 0, W, 20, 'F')
+          pdf.setDrawColor(240, 240, 245)
+          pdf.setLineWidth(0.5)
+          pdf.line(15, 20, W - 15, 20)
           
-          // Top accent line with brand colors
+          // Top accent line
           pdf.setFillColor(145, 20, 34)
-          pdf.rect(0, 0, W, 1.5, 'F')
-          pdf.setFillColor(194, 143, 80)
-          pdf.rect(W - 80, 0, 80, 1.5, 'F')
+          pdf.rect(0, 0, W, 2, 'F')
 
           // Page title
           setFont('bold')
-          pdf.setFontSize(9)
-          pdf.setTextColor(255, 255, 255)
-          pdf.text(`${page.nameTh} — ${page.name}`, 10, 7)
+          pdf.setFontSize(10)
+          pdf.setTextColor(40, 40, 45)
+          pdf.text(`${page.nameTh}`, 15, 10)
+          
+          // English name (smaller, muted)
+          setFont('normal')
+          pdf.setFontSize(7)
+          pdf.setTextColor(150, 150, 160)
+          pdf.text(page.name, 15, 15)
 
-          // Path with muted color
+          // Category badge (right side, minimal)
+          const catText = page.category
+          const catBadgeW = pdf.getTextWidth(catText) + 8
+          pdf.setFillColor(250, 250, 252)
+          pdf.roundedRect(W - 15 - catBadgeW, 5, catBadgeW, 10, 2, 2, 'F')
+          pdf.setDrawColor(230, 230, 235)
+          pdf.setLineWidth(0.3)
+          pdf.roundedRect(W - 15 - catBadgeW, 5, catBadgeW, 10, 2, 2, 'S')
           setFont('normal')
           pdf.setFontSize(6.5)
-          pdf.setTextColor(120, 120, 130)
-          const shortPath = page.path.length > 60 ? '...' + page.path.slice(-57) : page.path
-          pdf.text(shortPath, 10, 12)
-
-          // Premium category badge
-          pdf.setFillColor(35, 35, 40)
-          pdf.roundedRect(W - 10, 3, 1, 10, 0.5, 0.5, 'F') // accent bar
-          pdf.setFillColor(145, 20, 34)
-          pdf.roundedRect(W - 8, 3, 1, 10, 0.5, 0.5, 'F') // accent bar
-          
-          const catText = page.category
-          const catBadgeW = pdf.getTextWidth(catText) + 10
-          pdf.setFillColor(40, 40, 48)
-          pdf.roundedRect(W - 8 - catBadgeW - 5, 3, catBadgeW, 5, 1.5, 1.5, 'F')
-          pdf.setDrawColor(60, 60, 70)
-          pdf.setLineWidth(0.2)
-          pdf.roundedRect(W - 8 - catBadgeW - 5, 3, catBadgeW, 5, 1.5, 1.5, 'S')
-          pdf.setFontSize(6)
-          pdf.setTextColor(200, 200, 210)
-          pdf.text(catText, W - 8 - catBadgeW, 6.5)
+          pdf.setTextColor(100, 100, 110)
+          pdf.text(catText, W - 15 - catBadgeW + 4, 11)
         }
 
-        // ── Helper to draw premium page footer ──
+        // ── Helper to draw clean modern page footer ──
         const drawPageFooter = () => {
-          // Footer background
+          // Light footer background
           pdf.setFillColor(250, 250, 252)
-          pdf.rect(0, H - 12, W, 12, 'F')
+          pdf.rect(0, H - 14, W, 14, 'F')
+          pdf.setDrawColor(240, 240, 245)
+          pdf.setLineWidth(0.5)
+          pdf.line(15, H - 14, W - 15, H - 14)
           
-          // Top accent border
-          pdf.setDrawColor(220, 220, 230)
-          pdf.setLineWidth(0.3)
-          pdf.line(10, H - 12, W - 10, H - 12)
-          pdf.setFillColor(145, 20, 34)
-          pdf.rect(10, H - 12.5, 30, 0.5, 'F')
-
-          // Left: Brand with icon-like styling
+          // Left: brand
           setFont('bold')
           pdf.setFontSize(7)
           pdf.setTextColor(80, 80, 90)
-          pdf.text('NUCHA VILLA', 10, H - 6)
-          setFont('normal')
-          pdf.setFontSize(6)
-          pdf.setTextColor(140, 140, 150)
-          pdf.text('Website Preview Report', 10, H - 2.5)
+          pdf.text('NUCHA VILLA', 15, H - 5)
 
-          // Center: Date and time
+          // Center: page counter (minimal)
+          pdf.setFont('normal')
+          pdf.setFontSize(7)
+          pdf.setTextColor(150, 150, 160)
+          pdf.text(`${currentPageNum} / ${totalContentPages}`, W / 2, H - 5, { align: 'center' })
+
+          // Right: date
           const footerDate = new Date().toLocaleDateString('th-TH', {
             year: 'numeric', month: 'short', day: 'numeric'
           })
-          const footerTime = new Date().toLocaleTimeString('th-TH', {
-            hour: '2-digit', minute: '2-digit'
-          })
           pdf.setFontSize(6.5)
-          pdf.setTextColor(120, 120, 130)
-          pdf.text(`${footerDate} · ${footerTime}`, W / 2, H - 5, { align: 'center' })
-
-          // Right: Premium page counter with progress bar
-          const progressPct = currentPageNum / totalContentPages
-          const barW = 25
-          const barX = W - 10 - barW
-          
-          // Progress bar background
-          pdf.setFillColor(220, 220, 230)
-          pdf.roundedRect(barX, H - 9, barW, 4, 2, 2, 'F')
-          
-          // Progress bar fill
-          pdf.setFillColor(145, 20, 34)
-          pdf.roundedRect(barX, H - 9, barW * progressPct, 4, 2, 2, 'F')
-          
-          // Page number text
-          pdf.setFontSize(7)
-          pdf.setTextColor(80, 80, 90)
-          pdf.text(`${currentPageNum}/${totalContentPages}`, W - 10, H - 2.5, { align: 'right' })
+          pdf.setTextColor(150, 150, 160)
+          pdf.text(footerDate, W - 15, H - 5, { align: 'right' })
         }
 
         if (canvasImg) {
@@ -791,13 +768,25 @@ export default function PagePreviewPage() {
               drawX = margin + (imgAreaW - drawW) / 2; drawY = contentTop
             }
 
-            // Shadow + Image + Border
-            pdf.setFillColor(230, 230, 235)
+            // Drop shadow effect (3 layers for smooth shadow)
+            pdf.setFillColor(235, 235, 240)
+            pdf.roundedRect(drawX + 3, drawY + 3, drawW, drawH, 2, 2, 'F')
+            pdf.setFillColor(240, 240, 245)
+            pdf.roundedRect(drawX + 2, drawY + 2, drawW, drawH, 2, 2, 'F')
+            pdf.setFillColor(245, 245, 248)
             pdf.roundedRect(drawX + 1, drawY + 1, drawW, drawH, 1, 1, 'F')
+            
+            // White frame border
+            pdf.setFillColor(255, 255, 255)
+            pdf.roundedRect(drawX - 1, drawY - 1, drawW + 2, drawH + 2, 2, 2, 'F')
+            
+            // The screenshot image
             pdf.addImage(canvasImg, 'JPEG', drawX, drawY, drawW, drawH)
-            pdf.setDrawColor(200, 200, 210)
-            pdf.setLineWidth(0.3)
-            pdf.roundedRect(drawX, drawY, drawW, drawH, 1, 1, 'S')
+            
+            // Subtle border around screenshot
+            pdf.setDrawColor(220, 220, 230)
+            pdf.setLineWidth(0.5)
+            pdf.roundedRect(drawX - 0.5, drawY - 0.5, drawW + 1, drawH + 1, 1, 1, 'S')
 
             // ── Description panel on the right ──
             const descX = W - margin - descPanelW
@@ -902,37 +891,69 @@ export default function PagePreviewPage() {
               drawH = contentH; drawW = contentH * imgRatio
               drawX = margin + (contentW - drawW) / 2; drawY = contentTop
             }
-            pdf.setFillColor(230, 230, 235)
+            // Drop shadow effect (3 layers for smooth shadow)
+            pdf.setFillColor(235, 235, 240)
+            pdf.roundedRect(drawX + 3, drawY + 3, drawW, drawH, 2, 2, 'F')
+            pdf.setFillColor(240, 240, 245)
+            pdf.roundedRect(drawX + 2, drawY + 2, drawW, drawH, 2, 2, 'F')
+            pdf.setFillColor(245, 245, 248)
             pdf.roundedRect(drawX + 1, drawY + 1, drawW, drawH, 1, 1, 'F')
+            
+            // White frame border
+            pdf.setFillColor(255, 255, 255)
+            pdf.roundedRect(drawX - 1, drawY - 1, drawW + 2, drawH + 2, 2, 2, 'F')
+            
+            // The screenshot image
             pdf.addImage(canvasImg, 'JPEG', drawX, drawY, drawW, drawH)
-            pdf.setDrawColor(200, 200, 210)
-            pdf.setLineWidth(0.3)
-            pdf.roundedRect(drawX, drawY, drawW, drawH, 1, 1, 'S')
+            
+            // Subtle border around screenshot
+            pdf.setDrawColor(220, 220, 230)
+            pdf.setLineWidth(0.5)
+            pdf.roundedRect(drawX - 0.5, drawY - 0.5, drawW + 1, drawH + 1, 1, 1, 'S')
           }
           drawPageFooter()
         } else {
-          // Fallback if capture failed
+          // Fallback if capture failed — Modern clean design
           drawPageHeader()
-          pdf.setFillColor(245, 245, 248)
-          pdf.rect(0, 16, W, H - 16, 'F')
+          
+          // Subtle background
+          pdf.setFillColor(250, 250, 252)
+          pdf.rect(0, 20, W, H - 34, 'F')
+
+          // Center content card
+          const cardW = 120
+          const cardX = (W - cardW) / 2
+          const cardY = 60
+          
+          pdf.setFillColor(255, 255, 255)
+          pdf.roundedRect(cardX, cardY, cardW, 50, 3, 3, 'F')
+          pdf.setDrawColor(230, 230, 235)
+          pdf.setLineWidth(0.5)
+          pdf.roundedRect(cardX, cardY, cardW, 50, 3, 3, 'S')
+          
+          // Accent top line on card
+          pdf.setFillColor(145, 20, 34)
+          pdf.rect(cardX, cardY, cardW, 2, 'F')
 
           setFont('bold')
-          pdf.setFontSize(16)
-          pdf.setTextColor(100, 100, 110)
-          pdf.text(`${page.nameTh}`, W / 2, 60, { align: 'center' })
+          pdf.setFontSize(14)
+          pdf.setTextColor(50, 50, 55)
+          pdf.text(`${page.nameTh}`, W / 2, cardY + 15, { align: 'center' })
           setFont('normal')
-          pdf.setFontSize(11)
-          pdf.setTextColor(150, 150, 160)
-          pdf.text(`(${page.name})`, W / 2, 70, { align: 'center' })
-          pdf.setFontSize(9)
+          pdf.setFontSize(10)
+          pdf.setTextColor(130, 130, 140)
+          pdf.text(page.name, W / 2, cardY + 24, { align: 'center' })
+          
+          pdf.setFontSize(8)
           if (isLoginRedirect || page.requiresAuth) {
-            pdf.setTextColor(145, 20, 34)
-            pdf.text(`หน้านี้ต้อง Login เพื่อเข้าถึง — ไม่สามารถจับภาพได้`, W / 2, 78, { align: 'center' })
-            pdf.setTextColor(150, 150, 160)
-            pdf.setFontSize(7)
-            pdf.text(`Auth Required Page`, W / 2, 84, { align: 'center' })
+            pdf.setTextColor(180, 120, 50)
+            pdf.text(`Requires Authentication`, W / 2, cardY + 36, { align: 'center' })
+            pdf.setTextColor(160, 160, 170)
+            pdf.text(`Login required to capture this page`, W / 2, cardY + 42, { align: 'center' })
           } else {
-            pdf.text(`ไม่สามารถจับภาพหน้านี้ได้ — ${page.path}`, W / 2, 80, { align: 'center' })
+            pdf.setTextColor(160, 160, 170)
+            pdf.text(`Screenshot capture failed`, W / 2, cardY + 36, { align: 'center' })
+            pdf.text(page.path, W / 2, cardY + 42, { align: 'center' })
           }
 
           // Still show description even if capture failed

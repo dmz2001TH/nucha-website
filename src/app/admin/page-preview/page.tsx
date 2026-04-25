@@ -231,43 +231,6 @@ export default function PagePreviewPage() {
 
   const refreshAll = () => setIframeKeys((k) => k + 1)
 
-  // ─── Helper: ArrayBuffer → base64 (chunk-safe) ─────────────────
-  const arrayBufferToBase64 = (buffer: ArrayBuffer): string => {
-    const bytes = new Uint8Array(buffer)
-    const chunkSize = 8192
-    let binary = ''
-    for (let i = 0; i < bytes.length; i += chunkSize) {
-      const chunk = bytes.subarray(i, i + chunkSize)
-      binary += String.fromCharCode.apply(null, Array.from(chunk))
-    }
-    return btoa(binary)
-  }
-
-  // ─── Helper: load Thai font for jsPDF ──────────────────────────
-  const loadThaiFont = async (pdf: InstanceType<typeof import('jspdf').jsPDF>) => {
-    try {
-      setExportProgress('กำลังโหลดฟอนต์ภาษาไทย...')
-      // Google Fonts GitHub raw variable TTF (supports all weights)
-      const fontUrl = 'https://raw.githubusercontent.com/google/fonts/main/ofl/notosansthai/NotoSansThai%5Bwdth%2Cwght%5D.ttf'
-
-      const res = await fetch(fontUrl)
-      if (!res.ok) throw new Error('Font fetch failed')
-
-      const buf = await res.arrayBuffer()
-      const base64 = arrayBufferToBase64(buf)
-
-      // Register same variable font as both normal and bold
-      pdf.addFileToVFS('NotoSansThai.ttf', base64)
-      pdf.addFont('NotoSansThai.ttf', 'NotoSansThai', 'normal')
-      pdf.addFont('NotoSansThai.ttf', 'NotoSansThai', 'bold')
-      pdf.setFont('NotoSansThai', 'normal')
-      return true
-    } catch (err) {
-      console.warn('Could not load Thai font, falling back to default:', err)
-      return false
-    }
-  }
-
   // ─── Export selected pages to a single PDF ────────────────────
   const handleExportPDF = useCallback(async () => {
     // Filter: skip auth-required pages for PDF (iframe can't capture authenticated sessions)
@@ -289,239 +252,18 @@ export default function PagePreviewPage() {
 
     try {
       const html2canvas = (await import('html2canvas-pro')).default
-      const { jsPDF } = await import('jspdf')
-
-      const pdf = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' })
-      const W = pdf.internal.pageSize.getWidth()   // 297mm
-      const H = pdf.internal.pageSize.getHeight()   // 210mm
-
-      // ═══════════════════════════════════════════════
-      // PDF METADATA — Professional document properties
-      // ═══════════════════════════════════════════════
-      pdf.setProperties({
-        title: 'NUCHA VILLA Website Preview Report',
-        subject: 'Website Screenshot Documentation',
-        author: 'Nucha Villa Admin System',
-        keywords: 'website, preview, screenshot, nucha villa, documentation',
-        creator: 'Nucha Villa Admin Panel v2.0'
-      })
-
-      // Load Thai font
-      const hasThai = await loadThaiFont(pdf)
-      const setFont = (style: 'normal' | 'bold') => {
-        if (hasThai) pdf.setFont('NotoSansThai', style)
-      }
-
-      // ═══════════════════════════════════════════════
-      // COVER PAGE — Ultra Modern Professional Design
-      // ═══════════════════════════════════════════════
-      // Clean white background
-      pdf.setFillColor(255, 255, 255)
-      pdf.rect(0, 0, W, H, 'F')
-
-      // Top thin accent line
-      pdf.setFillColor(145, 20, 34)
-      pdf.rect(0, 0, W, 3, 'F')
-
-      // Large page number / document type indicator (top right)
-      setFont('bold')
-      pdf.setFontSize(72)
-      pdf.setTextColor(245, 245, 247)
-      pdf.text('WEB', W - 20, 50, { align: 'right' })
-
-      // Subtle geometric accent (top right corner block)
-      pdf.setFillColor(250, 250, 252)
-      pdf.rect(W - 80, 0, 80, H / 2, 'F')
+      // Collect page data with screenshots for API
+      const exportPages: Array<{
+        name: string
+        nameTh: string
+        path: string
+        category: string
+        description?: string
+        features?: string[]
+        screenshot?: string
+        requiresAuth?: boolean
+      }> = []
       
-      // Vertical accent line near title
-      pdf.setFillColor(145, 20, 34)
-      pdf.rect(30, 70, 3, 50, 'F')
-
-      // Main title
-      setFont('bold')
-      pdf.setFontSize(36)
-      pdf.setTextColor(30, 30, 35)
-      pdf.text('Website Preview', 42, 90)
-
-      // Subtitle
-      setFont('normal')
-      pdf.setFontSize(14)
-      pdf.setTextColor(100, 100, 110)
-      pdf.text('รายงานภาพหน้าจอเว็บไซต์', 42, 105)
-
-      // Brand name
-      setFont('bold')
-      pdf.setFontSize(18)
-      pdf.setTextColor(145, 20, 34)
-      pdf.text('NUCHA VILLA', 42, 125)
-      setFont('normal')
-      pdf.setFontSize(11)
-      pdf.setTextColor(150, 150, 160)
-      pdf.text('นุชา วิลล่า — Luxury Villa & Interior Design', 42, 135)
-
-      // Elegant divider
-      pdf.setDrawColor(220, 220, 225)
-      pdf.setLineWidth(0.5)
-      pdf.line(42, 145, 150, 145)
-      pdf.setFillColor(145, 20, 34)
-      pdf.rect(42, 143.5, 25, 3, 'F')
-
-      // Date block
-      setFont('normal')
-      pdf.setFontSize(10)
-      pdf.setTextColor(120, 120, 130)
-      pdf.text('Generated', 42, 160)
-      
-      pdf.setFontSize(11)
-      pdf.setTextColor(60, 60, 65)
-      const dateStrEn = new Date().toLocaleDateString('en-US', {
-        year: 'numeric', month: 'long', day: 'numeric',
-      })
-      pdf.text(dateStrEn, 42, 168)
-
-      // Minimal stat boxes (bottom area)
-      const boxY = H - 60
-      
-      // Total Pages
-      pdf.setFillColor(250, 250, 252)
-      pdf.roundedRect(30, boxY, 50, 30, 3, 3, 'F')
-      pdf.setDrawColor(230, 230, 235)
-      pdf.setLineWidth(0.3)
-      pdf.roundedRect(30, boxY, 50, 30, 3, 3, 'S')
-      pdf.setFontSize(9)
-      pdf.setTextColor(130, 130, 140)
-      pdf.text('Total Pages', 35, boxY + 8)
-      setFont('bold')
-      pdf.setFontSize(16)
-      pdf.setTextColor(30, 30, 35)
-      pdf.text(String(pagesToExport.length), 35, boxY + 22)
-
-      // Categories
-      const uniqueCats = new Set(pagesToExport.map(p => p.category)).size
-      pdf.setFillColor(250, 250, 252)
-      pdf.roundedRect(88, boxY, 50, 30, 3, 3, 'F')
-      pdf.setDrawColor(230, 230, 235)
-      pdf.roundedRect(88, boxY, 50, 30, 3, 3, 'S')
-      setFont('normal')
-      pdf.setFontSize(9)
-      pdf.setTextColor(130, 130, 140)
-      pdf.text('Categories', 93, boxY + 8)
-      setFont('bold')
-      pdf.setFontSize(16)
-      pdf.setTextColor(30, 30, 35)
-      pdf.text(String(uniqueCats), 93, boxY + 22)
-
-      // Bottom footer bar
-      pdf.setFillColor(250, 250, 252)
-      pdf.rect(0, H - 20, W, 20, 'F')
-      pdf.setDrawColor(230, 230, 235)
-      pdf.setLineWidth(0.3)
-      pdf.line(0, H - 20, W, H - 20)
-      
-      setFont('normal')
-      pdf.setFontSize(8)
-      pdf.setTextColor(150, 150, 160)
-      pdf.text('NUCHA VILLA Website Preview Report — Generated from Admin System', 30, H - 8)
-      pdf.text('nucha-villa.com', W - 30, H - 8, { align: 'right' })
-
-      // ═══════════════════════════════════════════════
-      // TABLE OF CONTENTS — Modern Minimal Design
-      // ═══════════════════════════════════════════════
-      pdf.addPage()
-      pdf.setFillColor(255, 255, 255)
-      pdf.rect(0, 0, W, H, 'F')
-
-      // Top accent line
-      pdf.setFillColor(145, 20, 34)
-      pdf.rect(0, 0, W, 2, 'F')
-
-      // TOC Title
-      setFont('bold')
-      pdf.setFontSize(22)
-      pdf.setTextColor(30, 30, 35)
-      pdf.text('Contents', 30, 35)
-      
-      setFont('normal')
-      pdf.setFontSize(11)
-      pdf.setTextColor(130, 130, 140)
-      pdf.text('สารบัญหน้าเว็บไซต์ทั้งหมด', 30, 44)
-
-      // Decorative line under title
-      pdf.setFillColor(145, 20, 34)
-      pdf.rect(30, 50, 20, 2, 'F')
-
-      // TOC entries
-      let tocY = 65
-      const catGroups = CATEGORIES.map(cat => ({
-        cat,
-        pages: pagesToExport.filter(p => p.category === cat)
-      })).filter(g => g.pages.length > 0)
-
-      let pageNum = 2 // start after cover + TOC
-      for (const group of catGroups) {
-        // Category header with background
-        pdf.setFillColor(250, 250, 252)
-        pdf.roundedRect(25, tocY - 5, W - 50, 12, 2, 2, 'F')
-        
-        setFont('bold')
-        pdf.setFontSize(10)
-        pdf.setTextColor(145, 20, 34)
-        pdf.text(group.cat.toUpperCase(), 30, tocY + 2)
-        
-        // Small count badge
-        pdf.setFillColor(245, 245, 248)
-        pdf.roundedRect(W - 55, tocY - 3, 25, 8, 2, 2, 'F')
-        pdf.setFontSize(7)
-        pdf.setTextColor(130, 130, 140)
-        pdf.text(`${group.pages.length} pages`, W - 52, tocY + 2)
-        
-        tocY += 14
-
-        for (const page of group.pages) {
-          pageNum++
-          
-          // Page entry row
-          pdf.setFillColor(255, 255, 255)
-          pdf.roundedRect(28, tocY - 4, W - 56, 10, 1, 1, 'F')
-          
-          setFont('bold')
-          pdf.setFontSize(9)
-          pdf.setTextColor(50, 50, 55)
-          pdf.text(page.nameTh, 32, tocY + 2)
-          
-          setFont('normal')
-          pdf.setFontSize(8)
-          pdf.setTextColor(130, 130, 140)
-          pdf.text(page.name, 32 + pdf.getTextWidth(page.nameTh) + 5, tocY + 2)
-
-          // Page number (right aligned with accent)
-          const pageNumStr = String(pageNum)
-          const numW = pdf.getTextWidth(pageNumStr)
-          pdf.setFillColor(250, 250, 252)
-          pdf.roundedRect(W - 35 - numW, tocY - 2, numW + 8, 6, 2, 2, 'F')
-          pdf.setFontSize(8)
-          pdf.setTextColor(100, 100, 110)
-          pdf.text(pageNumStr, W - 31, tocY + 2, { align: 'right' })
-
-          // Path (small, below)
-          pdf.setFontSize(6.5)
-          pdf.setTextColor(180, 180, 190)
-          pdf.text(page.path, 32, tocY + 8)
-
-          tocY += 16
-          if (tocY > H - 25) {
-            pdf.addPage()
-            pdf.setFillColor(255, 255, 255)
-            pdf.rect(0, 0, W, H, 'F')
-            tocY = 30
-          }
-        }
-        tocY += 6
-      }
-
-      // ═══════════════════════════════════════════════
-      // CAPTURE EACH PAGE
-      // ═══════════════════════════════════════════════
       setExportProgress('กำลังเตรียมจับภาพหน้าเว็บ...')
       const captureContainer = document.createElement('div')
       captureContainer.style.cssText =
@@ -667,339 +409,55 @@ export default function PagePreviewPage() {
           }
         }
 
-        pdf.addPage()
-
-        const totalContentPages = pagesToExport.length
-        const currentPageNum = i + 1
-
-        // ── Helper to draw clean modern page header ──
-        const drawPageHeader = () => {
-          // Clean white background with subtle bottom border
-          pdf.setFillColor(255, 255, 255)
-          pdf.rect(0, 0, W, 20, 'F')
-          pdf.setDrawColor(240, 240, 245)
-          pdf.setLineWidth(0.5)
-          pdf.line(15, 20, W - 15, 20)
-          
-          // Top accent line
-          pdf.setFillColor(145, 20, 34)
-          pdf.rect(0, 0, W, 2, 'F')
-
-          // Page title
-          setFont('bold')
-          pdf.setFontSize(10)
-          pdf.setTextColor(40, 40, 45)
-          pdf.text(`${page.nameTh}`, 15, 10)
-          
-          // English name (smaller, muted)
-          setFont('normal')
-          pdf.setFontSize(7)
-          pdf.setTextColor(150, 150, 160)
-          pdf.text(page.name, 15, 15)
-
-          // Category badge (right side, minimal)
-          const catText = page.category
-          const catBadgeW = pdf.getTextWidth(catText) + 8
-          pdf.setFillColor(250, 250, 252)
-          pdf.roundedRect(W - 15 - catBadgeW, 5, catBadgeW, 10, 2, 2, 'F')
-          pdf.setDrawColor(230, 230, 235)
-          pdf.setLineWidth(0.3)
-          pdf.roundedRect(W - 15 - catBadgeW, 5, catBadgeW, 10, 2, 2, 'S')
-          setFont('normal')
-          pdf.setFontSize(6.5)
-          pdf.setTextColor(100, 100, 110)
-          pdf.text(catText, W - 15 - catBadgeW + 4, 11)
-        }
-
-        // ── Helper to draw clean modern page footer ──
-        const drawPageFooter = () => {
-          // Light footer background
-          pdf.setFillColor(250, 250, 252)
-          pdf.rect(0, H - 14, W, 14, 'F')
-          pdf.setDrawColor(240, 240, 245)
-          pdf.setLineWidth(0.5)
-          pdf.line(15, H - 14, W - 15, H - 14)
-          
-          // Left: brand
-          setFont('bold')
-          pdf.setFontSize(7)
-          pdf.setTextColor(80, 80, 90)
-          pdf.text('NUCHA VILLA', 15, H - 5)
-
-          // Center: page counter (minimal)
-          pdf.setFont('normal')
-          pdf.setFontSize(7)
-          pdf.setTextColor(150, 150, 160)
-          pdf.text(`${currentPageNum} / ${totalContentPages}`, W / 2, H - 5, { align: 'center' })
-
-          // Right: date
-          const footerDate = new Date().toLocaleDateString('th-TH', {
-            year: 'numeric', month: 'short', day: 'numeric'
-          })
-          pdf.setFontSize(6.5)
-          pdf.setTextColor(150, 150, 160)
-          pdf.text(footerDate, W - 15, H - 5, { align: 'right' })
-        }
-
-        if (canvasImg) {
-          // ── Screenshot page ──
-          drawPageHeader()
-
-          // ── Screenshot area (left ~65%) + Description sidebar (right ~35%) ──
-          const hasDesc = page.description || (page.features && page.features.length > 0)
-          const margin = 6
-          const contentTop = 16
-          const contentH = H - contentTop - margin - 10 // Leave space for footer
-
-          if (hasDesc) {
-            // Layout: screenshot on left, description on right
-            const descPanelW = 82
-            const imgAreaW = W - margin * 2 - descPanelW - 4
-            const imgAreaH = contentH
-
-            const imgRatio = canvasW / canvasH
-            const areaRatio = imgAreaW / imgAreaH
-            let drawW: number, drawH: number, drawX: number, drawY: number
-            if (imgRatio > areaRatio) {
-              drawW = imgAreaW; drawH = imgAreaW / imgRatio
-              drawX = margin; drawY = contentTop + (imgAreaH - drawH) / 2
-            } else {
-              drawH = imgAreaH; drawW = imgAreaH * imgRatio
-              drawX = margin + (imgAreaW - drawW) / 2; drawY = contentTop
-            }
-
-            // Drop shadow effect (3 layers for smooth shadow)
-            pdf.setFillColor(235, 235, 240)
-            pdf.roundedRect(drawX + 3, drawY + 3, drawW, drawH, 2, 2, 'F')
-            pdf.setFillColor(240, 240, 245)
-            pdf.roundedRect(drawX + 2, drawY + 2, drawW, drawH, 2, 2, 'F')
-            pdf.setFillColor(245, 245, 248)
-            pdf.roundedRect(drawX + 1, drawY + 1, drawW, drawH, 1, 1, 'F')
-            
-            // White frame border
-            pdf.setFillColor(255, 255, 255)
-            pdf.roundedRect(drawX - 1, drawY - 1, drawW + 2, drawH + 2, 2, 2, 'F')
-            
-            // The screenshot image
-            pdf.addImage(canvasImg, 'JPEG', drawX, drawY, drawW, drawH)
-            
-            // Subtle border around screenshot
-            pdf.setDrawColor(220, 220, 230)
-            pdf.setLineWidth(0.5)
-            pdf.roundedRect(drawX - 0.5, drawY - 0.5, drawW + 1, drawH + 1, 1, 1, 'S')
-
-            // ── Description panel on the right ──
-            const descX = W - margin - descPanelW
-            let descY = contentTop + 2
-
-            // Description panel background
-            pdf.setFillColor(248, 248, 252)
-            pdf.roundedRect(descX - 2, contentTop, descPanelW + 2, contentH, 2, 2, 'F')
-            pdf.setDrawColor(230, 230, 235)
-            pdf.setLineWidth(0.2)
-            pdf.roundedRect(descX - 2, contentTop, descPanelW + 2, contentH, 2, 2, 'S')
-
-            // Section title
-            setFont('bold')
-            pdf.setFontSize(8)
-            pdf.setTextColor(145, 20, 34)
-            pdf.text('รายละเอียดหน้า', descX + 2, descY + 4)
-            descY += 8
-
-            // Divider
-            pdf.setDrawColor(220, 220, 225)
-            pdf.setLineWidth(0.2)
-            pdf.line(descX + 2, descY, descX + descPanelW - 4, descY)
-            descY += 4
-
-            // Description text
-            if (page.description) {
-              setFont('normal')
-              pdf.setFontSize(7)
-              pdf.setTextColor(70, 70, 80)
-              const descLines = pdf.splitTextToSize(page.description, descPanelW - 8)
-              pdf.text(descLines, descX + 2, descY)
-              descY += descLines.length * 3.2 + 4
-            }
-
-            // Features
-            if (page.features && page.features.length > 0) {
-              setFont('bold')
-              pdf.setFontSize(7)
-              pdf.setTextColor(145, 20, 34)
-              pdf.text('ฟีเจอร์ / ความสามารถ', descX + 2, descY)
-              descY += 5
-
-              setFont('normal')
-              pdf.setFontSize(6.5)
-              for (const feat of page.features) {
-                if (descY > H - margin - 30) break
-                // Bullet dot
-                pdf.setFillColor(145, 20, 34)
-                pdf.circle(descX + 4, descY - 0.8, 0.6, 'F')
-                // Feature text
-                pdf.setTextColor(80, 80, 90)
-                pdf.text(feat, descX + 7, descY)
-                descY += 4
-              }
-            }
-
-            // Technical Info Section
-            descY += 6
-            if (descY < H - margin - 20) {
-              // Divider
-              pdf.setDrawColor(220, 220, 225)
-              pdf.setLineWidth(0.2)
-              pdf.line(descX + 2, descY - 2, descX + descPanelW - 4, descY - 2)
-              
-              setFont('bold')
-              pdf.setFontSize(7)
-              pdf.setTextColor(100, 100, 110)
-              pdf.text('ข้อมูลเทคนิค', descX + 2, descY + 2)
-              descY += 6
-
-              setFont('normal')
-              pdf.setFontSize(6)
-              pdf.setTextColor(130, 130, 140)
-              
-              // Capture dimensions
-              pdf.text(`Viewport: 1440×900px`, descX + 2, descY)
-              descY += 3.5
-              pdf.text(`Captured: ${new Date().toLocaleTimeString('th-TH')}`, descX + 2, descY)
-              descY += 3.5
-              pdf.text(`Quality: High (85% JPEG)`, descX + 2, descY)
-              descY += 3.5
-              
-              // URL
-              pdf.setTextColor(100, 100, 110)
-              pdf.text('URL:', descX + 2, descY)
-              descY += 3.5
-              pdf.setTextColor(145, 20, 34)
-              const shortUrl = page.path.length > 35 ? page.path.substring(0, 32) + '...' : page.path
-              pdf.text(shortUrl, descX + 2, descY)
-            }
-          } else {
-            // No description — full-width screenshot
-            const contentW = W - margin * 2
-            const imgRatio = canvasW / canvasH
-            const areaRatio = contentW / contentH
-            let drawW: number, drawH: number, drawX: number, drawY: number
-            if (imgRatio > areaRatio) {
-              drawW = contentW; drawH = contentW / imgRatio
-              drawX = margin; drawY = contentTop + (contentH - drawH) / 2
-            } else {
-              drawH = contentH; drawW = contentH * imgRatio
-              drawX = margin + (contentW - drawW) / 2; drawY = contentTop
-            }
-            // Drop shadow effect (3 layers for smooth shadow)
-            pdf.setFillColor(235, 235, 240)
-            pdf.roundedRect(drawX + 3, drawY + 3, drawW, drawH, 2, 2, 'F')
-            pdf.setFillColor(240, 240, 245)
-            pdf.roundedRect(drawX + 2, drawY + 2, drawW, drawH, 2, 2, 'F')
-            pdf.setFillColor(245, 245, 248)
-            pdf.roundedRect(drawX + 1, drawY + 1, drawW, drawH, 1, 1, 'F')
-            
-            // White frame border
-            pdf.setFillColor(255, 255, 255)
-            pdf.roundedRect(drawX - 1, drawY - 1, drawW + 2, drawH + 2, 2, 2, 'F')
-            
-            // The screenshot image
-            pdf.addImage(canvasImg, 'JPEG', drawX, drawY, drawW, drawH)
-            
-            // Subtle border around screenshot
-            pdf.setDrawColor(220, 220, 230)
-            pdf.setLineWidth(0.5)
-            pdf.roundedRect(drawX - 0.5, drawY - 0.5, drawW + 1, drawH + 1, 1, 1, 'S')
-          }
-          drawPageFooter()
-        } else {
-          // Fallback if capture failed — Modern clean design
-          drawPageHeader()
-          
-          // Subtle background
-          pdf.setFillColor(250, 250, 252)
-          pdf.rect(0, 20, W, H - 34, 'F')
-
-          // Center content card
-          const cardW = 120
-          const cardX = (W - cardW) / 2
-          const cardY = 60
-          
-          pdf.setFillColor(255, 255, 255)
-          pdf.roundedRect(cardX, cardY, cardW, 50, 3, 3, 'F')
-          pdf.setDrawColor(230, 230, 235)
-          pdf.setLineWidth(0.5)
-          pdf.roundedRect(cardX, cardY, cardW, 50, 3, 3, 'S')
-          
-          // Accent top line on card
-          pdf.setFillColor(145, 20, 34)
-          pdf.rect(cardX, cardY, cardW, 2, 'F')
-
-          setFont('bold')
-          pdf.setFontSize(14)
-          pdf.setTextColor(50, 50, 55)
-          pdf.text(`${page.nameTh}`, W / 2, cardY + 15, { align: 'center' })
-          setFont('normal')
-          pdf.setFontSize(10)
-          pdf.setTextColor(130, 130, 140)
-          pdf.text(page.name, W / 2, cardY + 24, { align: 'center' })
-          
-          pdf.setFontSize(8)
-          if (isLoginRedirect || page.requiresAuth) {
-            pdf.setTextColor(180, 120, 50)
-            pdf.text(`Requires Authentication`, W / 2, cardY + 36, { align: 'center' })
-            pdf.setTextColor(160, 160, 170)
-            pdf.text(`Login required to capture this page`, W / 2, cardY + 42, { align: 'center' })
-          } else {
-            pdf.setTextColor(160, 160, 170)
-            pdf.text(`Screenshot capture failed`, W / 2, cardY + 36, { align: 'center' })
-            pdf.text(page.path, W / 2, cardY + 42, { align: 'center' })
-          }
-
-          // Still show description even if capture failed
-          if (page.description) {
-            let descFallbackY = 100
-            setFont('bold')
-            pdf.setFontSize(9)
-            pdf.setTextColor(145, 20, 34)
-            pdf.text('รายละเอียดหน้า', W / 2 - 60, descFallbackY)
-            descFallbackY += 6
-            setFont('normal')
-            pdf.setFontSize(8)
-            pdf.setTextColor(80, 80, 90)
-            const descLines = pdf.splitTextToSize(page.description, 160)
-            pdf.text(descLines, W / 2 - 60, descFallbackY)
-            descFallbackY += descLines.length * 4 + 6
-
-            if (page.features && page.features.length > 0) {
-              setFont('bold')
-              pdf.setFontSize(8)
-              pdf.setTextColor(145, 20, 34)
-              pdf.text('ฟีเจอร์:', W / 2 - 60, descFallbackY)
-              descFallbackY += 5
-              setFont('normal')
-              pdf.setFontSize(7)
-              pdf.setTextColor(80, 80, 90)
-              for (const feat of page.features) {
-                pdf.text(`•  ${feat}`, W / 2 - 56, descFallbackY)
-                descFallbackY += 4
-              }
-            }
-          }
-          drawPageFooter()
-        }
-
+        // Store page data with screenshot for API
+        exportPages.push({
+          name: page.name,
+          nameTh: page.nameTh,
+          path: page.path,
+          category: page.category,
+          description: page.description,
+          features: page.features,
+          screenshot: canvasImg || undefined,
+          requiresAuth: isLoginRedirect
+        })
+        
         // Clean up iframe after each capture to prevent state contamination
         captureContainer.removeChild(captureIframeEl)
       }
 
       // Cleanup container
       document.body.removeChild(captureContainer)
-      setExportProgress('กำลังสร้าง PDF...')
-      pdf.save(`nucha-website-preview-${new Date().toISOString().slice(0, 10)}.pdf`)
+      
+      // Send to API for PDF generation with Puppeteer
+      setExportProgress('กำลังสร้าง PDF ด้วย Puppeteer...')
+      const response = await fetch('/api/export/pdf', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          pages: exportPages,
+          title: 'NUCHA VILLA Website Preview Report'
+        })
+      })
+      
+      if (!response.ok) {
+        const error = await response.json().catch(() => ({ error: 'Unknown error' }))
+        throw new Error(error.error || `HTTP ${response.status}`)
+      }
+      
+      const blob = await response.blob()
+      const url = window.URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = url
+      a.download = `nucha-website-preview-${new Date().toISOString().slice(0, 10)}.pdf`
+      document.body.appendChild(a)
+      a.click()
+      a.remove()
+      window.URL.revokeObjectURL(url)
+      
+      setExportProgress('ส่งออก PDF สำเร็จ!')
     } catch (err) {
       console.error('PDF export failed:', err)
-      alert('เกิดข้อผิดพลาดในการส่งออก PDF')
+      alert('เกิดข้อผิดพลาดในการส่งออก PDF: ' + (err instanceof Error ? err.message : String(err)))
     } finally {
       setExporting(false)
       setExportProgress('')

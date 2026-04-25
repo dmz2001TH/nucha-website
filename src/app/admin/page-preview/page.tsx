@@ -642,10 +642,6 @@ export default function PagePreviewPage() {
           console.warn('Redirect detection failed:', e)
         }
 
-        let canvasImg: string | null = null
-        let canvasW = 1440
-        let canvasH = 900
-
         if (!isLoginRedirect) {
           try {
             const iframeDoc = captureIframeEl.contentDocument || captureIframeEl.contentWindow?.document

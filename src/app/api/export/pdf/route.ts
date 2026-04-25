@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { chromium } from 'playwright'
+import puppeteer from 'puppeteer'
 import { generateReportHTML } from './template'
 
 export async function POST(request: NextRequest) {
@@ -12,15 +12,14 @@ export async function POST(request: NextRequest) {
 
     const html = generateReportHTML(pages, title)
 
-    const browser = await chromium.launch({
-      headless: true,
-      args: ['--no-sandbox', '--disable-setuid-sandbox'],
-      executablePath: 'C:\\Users\\phasa\\AppData\\Local\\ms-playwright\\chromium-1217\\chrome-win64\\chrome.exe'
+    const browser = await puppeteer.launch({
+      headless: 'new' as any,
+      args: ['--no-sandbox', '--disable-setuid-sandbox']
     })
 
     const page = await browser.newPage()
-    await page.setViewportSize({ width: 1440, height: 900 })
-    await page.setContent(html, { waitUntil: 'networkidle', timeout: 30000 })
+    await page.setViewport({ width: 1440, height: 900, deviceScaleFactor: 2 })
+    await page.setContent(html, { waitUntil: 'networkidle0', timeout: 30000 })
 
     const pdfBuffer = await page.pdf({
       format: 'A4',

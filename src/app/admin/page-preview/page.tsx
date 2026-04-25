@@ -13,6 +13,7 @@ import {
   Maximize2,
   X,
   LayoutGrid,
+  Lock,
 } from 'lucide-react'
 
 // ─── All public pages to preview ─────────────────────────────────
@@ -23,6 +24,7 @@ interface PageEntry {
   category: string
   description?: string
   features?: string[]
+  requiresAuth?: boolean
 }
 
 const ALL_PAGES: PageEntry[] = [
@@ -75,51 +77,61 @@ const ALL_PAGES: PageEntry[] = [
     name: 'Admin Dashboard', nameTh: 'แดชบอร์ดแอดมิน', path: '/admin', category: 'หลังบ้าน (Admin)',
     description: 'หน้าหลักของระบบหลังบ้าน แสดงสรุปข้อมูลสำคัญ',
     features: ['สรุปจำนวนวิลล่า/ลูกค้า', 'สถิติการเข้าชม', 'ลิงก์ด่วนไปหน้าต่างๆ'],
+    requiresAuth: true,
   },
   {
     name: 'Admin Villas', nameTh: 'จัดการวิลล่า', path: '/admin/villas', category: 'หลังบ้าน (Admin)',
     description: 'จัดการวิลล่าทั้งหมด — เพิ่ม/แก้ไข/ลบ/เรียงลำดับ',
     features: ['รายการวิลล่า', 'เพิ่ม/แก้ไข/ลบวิลล่า', 'อัปโหลดรูปภาพ/แกลเลอรี', 'จัดการ Features', 'สถานะวิลล่า'],
+    requiresAuth: true,
   },
   {
     name: 'Admin Services', nameTh: 'จัดการบริการ', path: '/admin/services', category: 'หลังบ้าน (Admin)',
     description: 'จัดการบริการ — เพิ่ม/แก้ไข/ลบ',
     features: ['รายการบริการ', 'Rich Text Editor', 'อัปโหลดรูปภาพ', 'ตั้งค่าหมวดหมู่'],
+    requiresAuth: true,
   },
   {
     name: 'Admin Portfolio', nameTh: 'จัดการผลงาน', path: '/admin/portfolio', category: 'หลังบ้าน (Admin)',
     description: 'จัดการผลงาน',
     features: ['รายการผลงาน', 'อัปโหลดรูปภาพ', 'ตั้งค่าหมวดหมู่'],
+    requiresAuth: true,
   },
   {
     name: 'Admin Bookings', nameTh: 'ข้อมูลการจอง', path: '/admin/bookings', category: 'หลังบ้าน (Admin)',
     description: 'ดูรายการการจองคิวปรึกษา',
     features: ['รายการการจอง', 'ข้อมูลติดต่อลูกค้า', 'สถานะการจอง', 'กรองข้อมูล'],
+    requiresAuth: true,
   },
   {
     name: 'Admin Inquiries', nameTh: 'ข้อมูลการสอบถาม', path: '/admin/inquiries', category: 'หลังบ้าน (Admin)',
     description: 'ดูรายการข้อสอบถามที่ส่งเข้ามา',
     features: ['รายการข้อสอบถาม', 'ข้อมูลติดต่อลูกค้า', 'สถานะ', 'กรองข้อมูล'],
+    requiresAuth: true,
   },
   {
     name: 'Admin Users', nameTh: 'จัดการผู้ใช้', path: '/admin/users', category: 'หลังบ้าน (Admin)',
     description: 'จัดการบัญชีผู้ใช้และสิทธิ Admin',
     features: ['รายการผู้ใช้', 'เพิ่ม/แก้ไข/ลบผู้ใช้', 'กำหนดสิทธิ์'],
+    requiresAuth: true,
   },
   {
     name: 'Admin Pages', nameTh: 'จัดการหน้าเว็บ', path: '/admin/pages', category: 'หลังบ้าน (Admin)',
     description: 'จัดการหน้าเว็บแบบ Drag & Drop ด้วย Puck Editor',
     features: ['Drag & Drop Page Builder', 'สร้างหน้าใหม่', 'แก้ไขเนื้อหา'],
+    requiresAuth: true,
   },
   {
     name: 'Admin Settings', nameTh: 'ตั้งค่าเว็บไซต์', path: '/admin/settings', category: 'หลังบ้าน (Admin)',
     description: 'ตั้งค่าทั่วไปของเว็บไซต์ — โลโก้, สี, ข้อมูลติดต่อ, SEO',
     features: ['โลโก้/Favicon', 'สี Theme', 'ข้อมูลบริษัท', 'Social Media Links', 'SEO Settings'],
+    requiresAuth: true,
   },
   {
     name: 'Admin Media', nameTh: 'จัดการไฟล์', path: '/admin/media', category: 'หลังบ้าน (Admin)',
     description: 'จัดการไฟล์รูปภาพและเอกสาร',
     features: ['อัปโหลดไฟล์', 'จัดการโฟลเดอร์', 'ลบไฟล์'],
+    requiresAuth: true,
   },
 ]
 
@@ -129,7 +141,7 @@ const CATEGORY_ALL = 'ทั้งหมด'
 // ─── Page Component ──────────────────────────────────────────────
 export default function PagePreviewPage() {
   const [selectedPages, setSelectedPages] = useState<Set<string>>(
-    new Set(ALL_PAGES.map((p) => p.path))
+    new Set(ALL_PAGES.filter((p) => !p.requiresAuth).map((p) => p.path))
   )
   const [viewMode, setViewMode] = useState<'desktop' | 'mobile'>('desktop')
   const [activeCategory, setActiveCategory] = useState(CATEGORY_ALL)
@@ -201,7 +213,7 @@ export default function PagePreviewPage() {
     })
   }
 
-  const selectAll = () => setSelectedPages(new Set(ALL_PAGES.map((p) => p.path)))
+  const selectAll = () => setSelectedPages(new Set(ALL_PAGES.filter((p) => !p.requiresAuth).map((p) => p.path)))
   const deselectAll = () => setSelectedPages(new Set())
 
   const toggleCategory = (cat: string) => {
@@ -258,9 +270,16 @@ export default function PagePreviewPage() {
 
   // ─── Export selected pages to a single PDF ────────────────────
   const handleExportPDF = useCallback(async () => {
-    const pagesToExport = ALL_PAGES.filter((p) => selectedPages.has(p.path))
+    // Filter: skip auth-required pages for PDF (iframe can't capture authenticated sessions)
+    const pagesToExport = ALL_PAGES.filter((p) => selectedPages.has(p.path) && !p.requiresAuth)
+    const skippedAuth = ALL_PAGES.filter((p) => selectedPages.has(p.path) && p.requiresAuth)
+    
+    if (skippedAuth.length > 0) {
+      console.warn('Skipped auth pages from PDF export:', skippedAuth.map(p => p.path))
+    }
+    
     if (pagesToExport.length === 0) {
-      alert('กรุณาเลือกอย่างน้อย 1 หน้า')
+      alert('กรุณาเลือกอย่างน้อย 1 หน้าที่ไม่ต้อง Login')
       return
     }
 
@@ -584,21 +603,68 @@ export default function PagePreviewPage() {
         let canvasW = 1440
         let canvasH = 900
 
+        // ── Scroll to trigger lazy loading and get full content ──
+        try {
+          const iframeWin = captureIframeEl.contentWindow
+          if (iframeWin) {
+            iframeWin.scrollTo(0, 0)
+            await new Promise(r => setTimeout(r, 300))
+            // Scroll down to trigger lazy loaded images
+            const scrollStep = 800
+            const maxScroll = Math.min(iframeWin.document.body.scrollHeight, 4000)
+            for (let y = 0; y < maxScroll; y += scrollStep) {
+              iframeWin.scrollTo(0, y)
+              await new Promise(r => setTimeout(r, 150))
+            }
+            iframeWin.scrollTo(0, 0)
+            await new Promise(r => setTimeout(r, 300))
+          }
+        } catch (e) {
+          console.warn('Scroll trigger failed:', e)
+        }
+
+        // ── Detect redirect/login page ──
+        let isLoginRedirect = false
         try {
           const iframeDoc = captureIframeEl.contentDocument || captureIframeEl.contentWindow?.document
-          if (iframeDoc?.body) {
-            const canvas = await html2canvas(iframeDoc.body, {
-              scale: 1.5, useCORS: true, allowTaint: true,
-              backgroundColor: '#ffffff', logging: false,
-              width: 1440, windowWidth: 1440,
-              height: Math.min(iframeDoc.body.scrollHeight, 4000),
-            })
-            canvasImg = canvas.toDataURL('image/jpeg', 0.85)
-            canvasW = canvas.width
-            canvasH = canvas.height
+          if (iframeDoc) {
+            const bodyText = iframeDoc.body?.innerText?.toLowerCase() || ''
+            const hasLoginForm = iframeDoc.querySelector('input[type="password"]') !== null
+            const hasLoginText = /login|เข้าสู่ระบบ|sign in|ลงชื่อเข้าใช้/.test(bodyText)
+            const isRedirect = iframeDoc.body?.innerHTML?.length < 500 && hasLoginText
+            isLoginRedirect = hasLoginForm || isRedirect
+            
+            if (isLoginRedirect) {
+              console.warn(`Page ${page.path} redirected to login, using fallback`)
+            }
           }
-        } catch (err) {
-          console.error(`Failed to capture ${page.path}:`, err)
+        } catch (e) {
+          console.warn('Redirect detection failed:', e)
+        }
+
+        let canvasImg: string | null = null
+        let canvasW = 1440
+        let canvasH = 900
+
+        if (!isLoginRedirect) {
+          try {
+            const iframeDoc = captureIframeEl.contentDocument || captureIframeEl.contentWindow?.document
+            if (iframeDoc?.body && iframeDoc.body.innerHTML.length > 100) {
+              const canvas = await html2canvas(iframeDoc.body, {
+                scale: 1.5, useCORS: true, allowTaint: true,
+                backgroundColor: '#ffffff', logging: false,
+                width: 1440, windowWidth: 1440,
+                height: Math.min(iframeDoc.body.scrollHeight, 4000),
+              })
+              canvasImg = canvas.toDataURL('image/jpeg', 0.85)
+              canvasW = canvas.width
+              canvasH = canvas.height
+            } else {
+              console.warn(`Page ${page.path} body empty or too small`)
+            }
+          } catch (err) {
+            console.error(`Failed to capture ${page.path}:`, err)
+          }
         }
 
         pdf.addPage()
@@ -863,7 +929,15 @@ export default function PagePreviewPage() {
           pdf.setTextColor(150, 150, 160)
           pdf.text(`(${page.name})`, W / 2, 70, { align: 'center' })
           pdf.setFontSize(9)
-          pdf.text(`ไม่สามารถจับภาพหน้านี้ได้ — ${page.path}`, W / 2, 80, { align: 'center' })
+          if (isLoginRedirect || page.requiresAuth) {
+            pdf.setTextColor(145, 20, 34)
+            pdf.text(`หน้านี้ต้อง Login เพื่อเข้าถึง — ไม่สามารถจับภาพได้`, W / 2, 78, { align: 'center' })
+            pdf.setTextColor(150, 150, 160)
+            pdf.setFontSize(7)
+            pdf.text(`Auth Required Page`, W / 2, 84, { align: 'center' })
+          } else {
+            pdf.text(`ไม่สามารถจับภาพหน้านี้ได้ — ${page.path}`, W / 2, 80, { align: 'center' })
+          }
 
           // Still show description even if capture failed
           if (page.description) {
@@ -1047,6 +1121,11 @@ export default function PagePreviewPage() {
               >
                 {selected && <Check className="w-3 h-3" />}
                 {page.nameTh}
+                {page.requiresAuth && (
+                  <span title="ต้อง Login เพื่อเข้าถึง">
+                    <Lock className="w-3 h-3 text-amber-500 ml-0.5" />
+                  </span>
+                )}
               </button>
             )
           })}
@@ -1095,7 +1174,14 @@ export default function PagePreviewPage() {
             {/* Clean card header */}
             <div className="px-3 py-2.5 border-b border-gray-100 flex items-center justify-between">
               <div className="min-w-0">
-                <p className="text-sm font-medium text-gray-900 truncate">{page.nameTh}</p>
+                <p className="text-sm font-medium text-gray-900 truncate flex items-center gap-1">
+                  {page.nameTh}
+                  {page.requiresAuth && (
+                    <span title="ต้อง Login เพื่อเข้าถึง">
+                      <Lock className="w-3 h-3 text-amber-500 flex-shrink-0" />
+                    </span>
+                  )}
+                </p>
                 <p className="text-[11px] text-gray-400 truncate">{page.path}</p>
               </div>
               <div className="flex items-center gap-1 flex-shrink-0">

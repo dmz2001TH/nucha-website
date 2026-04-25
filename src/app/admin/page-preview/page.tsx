@@ -141,7 +141,7 @@ const CATEGORY_ALL = 'ทั้งหมด'
 // ─── Page Component ──────────────────────────────────────────────
 export default function PagePreviewPage() {
   const [selectedPages, setSelectedPages] = useState<Set<string>>(
-    new Set(ALL_PAGES.filter((p) => !p.requiresAuth).map((p) => p.path))
+    new Set(ALL_PAGES.map((p) => p.path))
   )
   const [viewMode, setViewMode] = useState<'desktop' | 'mobile'>('desktop')
   const [activeCategory, setActiveCategory] = useState(CATEGORY_ALL)
@@ -213,7 +213,7 @@ export default function PagePreviewPage() {
     })
   }
 
-  const selectAll = () => setSelectedPages(new Set(ALL_PAGES.filter((p) => !p.requiresAuth).map((p) => p.path)))
+  const selectAll = () => setSelectedPages(new Set(ALL_PAGES.map((p) => p.path)))
   const deselectAll = () => setSelectedPages(new Set())
 
   const toggleCategory = (cat: string) => {
@@ -233,16 +233,10 @@ export default function PagePreviewPage() {
 
   // ─── Export selected pages to a single PDF ────────────────────
   const handleExportPDF = useCallback(async () => {
-    // Filter: skip auth-required pages for PDF (iframe can't capture authenticated sessions)
-    const pagesToExport = ALL_PAGES.filter((p) => selectedPages.has(p.path) && !p.requiresAuth)
-    const skippedAuth = ALL_PAGES.filter((p) => selectedPages.has(p.path) && p.requiresAuth)
-    
-    if (skippedAuth.length > 0) {
-      console.warn('Skipped auth pages from PDF export:', skippedAuth.map(p => p.path))
-    }
+    const pagesToExport = ALL_PAGES.filter((p) => selectedPages.has(p.path))
     
     if (pagesToExport.length === 0) {
-      alert('กรุณาเลือกอย่างน้อย 1 หน้าที่ไม่ต้อง Login')
+      alert('กรุณาเลือกอย่างน้อย 1 หน้า')
       return
     }
 

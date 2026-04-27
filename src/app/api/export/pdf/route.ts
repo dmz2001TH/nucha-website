@@ -42,10 +42,9 @@ export async function POST(request: NextRequest) {
           await new Promise(r => setTimeout(r, 1500))
 
           const screenshot = await p.screenshot({
-            fullPage: false,
+            fullPage: true,
             type: 'jpeg',
-            quality: 75,
-            clip: { x: 0, y: 0, width: 1440, height: 900 }
+            quality: 70
           })
 
           await p.close()

@@ -210,7 +210,7 @@ body { font-family:'Noto Sans Thai Looped','Inter',-apple-system,sans-serif; col
   flex:1; overflow:hidden; position:relative;
 }
 .browser-content img {
-  display:block; width:100%; height:100%; object-fit:cover; object-position:top;
+  display:block; width:100%; height:100%; object-fit:contain; object-position:top;
 }
 .browser-fade {
   position:absolute; bottom:0; left:0; right:0;

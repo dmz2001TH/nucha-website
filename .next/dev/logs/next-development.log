@@ -13,3 +13,22 @@
 {"timestamp":"00:30:01.850","source":"Server","level":"LOG","message":"[PDF Export] Generating HTML template..."}
 {"timestamp":"00:30:02.002","source":"Server","level":"LOG","message":"[PDF Export] Generating PDF..."}
 {"timestamp":"00:30:11.706","source":"Server","level":"LOG","message":"[PDF Export] Done: 333847 bytes"}
+{"timestamp":"00:38:33.862","source":"Browser","level":"INFO","message":"%cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold"}
+{"timestamp":"00:38:43.263","source":"Server","level":"LOG","message":"[PDF Export] Starting server-side capture for 1 pages..."}
+{"timestamp":"00:38:52.892","source":"Server","level":"LOG","message":"[PDF Export] Capturing: http://localhost:3000/"}
+{"timestamp":"00:38:58.204","source":"Browser","level":"INFO","message":"%cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold"}
+{"timestamp":"00:39:10.246","source":"Server","level":"LOG","message":"[PDF Export] Generating HTML template..."}
+{"timestamp":"00:39:10.280","source":"Server","level":"LOG","message":"[PDF Export] Generating PDF..."}
+{"timestamp":"00:39:17.409","source":"Server","level":"LOG","message":"[PDF Export] Done: 392193 bytes"}
+{"timestamp":"00:44:12.056","source":"Server","level":"LOG","message":"[PDF Export] Starting server-side capture for 1 pages..."}
+{"timestamp":"00:44:15.424","source":"Server","level":"LOG","message":"[PDF Export] Capturing: http://localhost:3000/"}
+{"timestamp":"00:44:19.668","source":"Browser","level":"INFO","message":"%cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold"}
+{"timestamp":"00:44:33.836","source":"Server","level":"LOG","message":"[PDF Export] Generating HTML template..."}
+{"timestamp":"00:44:33.867","source":"Server","level":"LOG","message":"[PDF Export] Generating PDF..."}
+{"timestamp":"00:44:45.186","source":"Server","level":"LOG","message":"[PDF Export] Done: 534419 bytes"}
+{"timestamp":"00:48:33.245","source":"Server","level":"LOG","message":"[PDF Export] Starting server-side capture for 1 pages..."}
+{"timestamp":"00:48:36.994","source":"Server","level":"LOG","message":"[PDF Export] Capturing: http://localhost:3000/"}
+{"timestamp":"00:48:40.916","source":"Browser","level":"INFO","message":"%cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold"}
+{"timestamp":"00:48:50.910","source":"Server","level":"LOG","message":"[PDF Export] Generating HTML template..."}
+{"timestamp":"00:48:50.944","source":"Server","level":"LOG","message":"[PDF Export] Generating PDF..."}
+{"timestamp":"00:48:58.378","source":"Server","level":"LOG","message":"[PDF Export] Done: 533938 bytes"}

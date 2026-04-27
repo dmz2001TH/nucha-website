@@ -1,4 +1,4 @@
-interface PageData {
+export interface PageData {
   name: string
   nameTh: string
   path: string

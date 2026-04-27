@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import puppeteer from 'puppeteer'
-import { generateReportHTML } from './template'
+import { generateReportHTML, PageData } from './template'
 
 export async function POST(request: NextRequest) {
   try {
@@ -10,18 +10,73 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'No pages provided' }, { status: 400 })
     }
 
-    const html = generateReportHTML(pages, title)
+    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'
+
+    console.log(`[PDF Export] Starting server-side capture for ${pages.length} pages...`)
 
     const browser = await puppeteer.launch({
       headless: 'new' as any,
-      args: ['--no-sandbox', '--disable-setuid-sandbox']
+      args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage']
     })
 
-    const page = await browser.newPage()
-    await page.setViewport({ width: 1440, height: 900, deviceScaleFactor: 2 })
-    await page.setContent(html, { waitUntil: 'networkidle0', timeout: 30000 })
+    // Capture screenshots for each page
+    const pagesWithScreenshots: PageData[] = await Promise.all(
+      pages.map(async (page: PageData) => {
+        if (page.requiresAuth) {
+          return page
+        }
 
-    const pdfBuffer = await page.pdf({
+        try {
+          const p = await browser.newPage()
+          await p.setViewport({ width: 1440, height: 900, deviceScaleFactor: 1 })
+
+          const url = `${baseUrl}${page.path}`
+          console.log(`[PDF Export] Capturing: ${url}`)
+
+          await p.goto(url, {
+            waitUntil: 'networkidle2',
+            timeout: 30000
+          })
+
+          // Wait for animations/fonts to settle
+          await new Promise(r => setTimeout(r, 1500))
+
+          const screenshot = await p.screenshot({
+            fullPage: false,
+            type: 'jpeg',
+            quality: 75,
+            clip: { x: 0, y: 0, width: 1440, height: 900 }
+          })
+
+          await p.close()
+
+          return {
+            ...page,
+            screenshot: `data:image/jpeg;base64,${screenshot.toString('base64')}`
+          }
+        } catch (err) {
+          console.error(`[PDF Export] Failed to capture ${page.path}:`, err)
+          return page
+        }
+      })
+    )
+
+    await browser.close()
+
+    console.log('[PDF Export] Generating HTML template...')
+    const html = generateReportHTML(pagesWithScreenshots, title)
+
+    console.log('[PDF Export] Generating PDF...')
+    const browser2 = await puppeteer.launch({
+      headless: 'new' as any,
+      args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage']
+    })
+
+    const pdfPage = await browser2.newPage()
+    await pdfPage.setViewport({ width: 1440, height: 900, deviceScaleFactor: 1 })
+    await pdfPage.setContent(html, { waitUntil: 'networkidle0', timeout: 60000 })
+
+    const pdfBuffer = await pdfPage.pdf({
       format: 'A4',
       landscape: true,
       printBackground: true,
@@ -29,7 +84,9 @@ export async function POST(request: NextRequest) {
       preferCSSPageSize: true
     })
 
-    await browser.close()
+    await browser2.close()
+
+    console.log(`[PDF Export] Done: ${pdfBuffer.length} bytes`)
 
     const filename = `nucha-website-preview-${new Date().toISOString().split('T')[0]}.pdf`
 
@@ -40,7 +97,7 @@ export async function POST(request: NextRequest) {
       }
     })
   } catch (error) {
-    console.error('Error generating PDF:', error)
+    console.error('[PDF Export] Error:', error)
     return NextResponse.json(
       { error: 'Failed to generate PDF', details: error instanceof Error ? error.message : String(error) },
       { status: 500 }

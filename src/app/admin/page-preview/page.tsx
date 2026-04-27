@@ -242,193 +242,24 @@ export default function PagePreviewPage() {
 
     setExporting(true)
     setExportTotal(pagesToExport.length)
-    setExportCurrent(0)
+    setExportCurrent(1)
+    setExportProgress('กำลังส่งข้อมูลไปยังเซิร์ฟเวอร์...')
 
     try {
-      const html2canvas = (await import('html2canvas-pro')).default
-      // Collect page data with screenshots for API
-      const exportPages: Array<{
-        name: string
-        nameTh: string
-        path: string
-        category: string
-        description?: string
-        features?: string[]
-        screenshot?: string
-        requiresAuth?: boolean
-      }> = []
-      
-      setExportProgress('กำลังเตรียมจับภาพหน้าเว็บ...')
-      const captureContainer = document.createElement('div')
-      captureContainer.style.cssText =
-        'position:fixed;top:0;left:0;width:1440px;height:900px;z-index:-9999;pointer-events:none;overflow:hidden;'
-      document.body.appendChild(captureContainer)
-
-      for (let i = 0; i < pagesToExport.length; i++) {
-        const page = pagesToExport[i]
-        setExportCurrent(i + 1)
-        setExportProgress(`กำลังจับภาพ: ${page.nameTh} (${i + 1}/${pagesToExport.length})`)
-
-        // Create fresh iframe for each page to avoid state contamination
-        const captureIframeEl = document.createElement('iframe')
-        captureIframeEl.style.cssText = 'width:1440px;height:900px;border:none;'
-        captureContainer.appendChild(captureIframeEl)
-
-        // Wait for page to fully load with smart detection
-        await new Promise<void>((resolve) => {
-          let loadTimeout: NodeJS.Timeout
-          let checkInterval: NodeJS.Timeout
-          
-          captureIframeEl.onload = () => {
-            // Give more time for React hydration and images to load
-            loadTimeout = setTimeout(() => {
-              const checkReady = () => {
-                try {
-                  const iframeDoc = captureIframeEl.contentDocument || captureIframeEl.contentWindow?.document
-                  const readyState = iframeDoc?.readyState
-                  const hasBody = iframeDoc?.body && iframeDoc.body.innerHTML.length > 200
-                  
-                  // Check if images are loaded (including background images)
-                  const images = iframeDoc?.querySelectorAll('img')
-                  const imagesLoaded = Array.from(images || []).every((img: HTMLImageElement) => {
-                    if (img.complete) return true
-                    // Force lazy images to load by setting loading to eager
-                    img.setAttribute('loading', 'eager')
-                    return false
-                  })
-                  
-                  // Check fonts loaded
-                  const fontsReady = iframeDoc?.fonts?.status === 'loaded'
-                  
-                  if (readyState === 'complete' && hasBody && (imagesLoaded || attempts > 20)) {
-                    // Give extra 500ms for any final renders
-                    setTimeout(() => {
-                      clearInterval(checkInterval)
-                      resolve()
-                    }, 500)
-                  }
-                } catch (e) {
-                  // Cross-origin or other error, just wait fixed time
-                  clearInterval(checkInterval)
-                  resolve()
-                }
-              }
-              
-              // Check every 500ms, max 25 seconds total
-              let attempts = 0
-              checkInterval = setInterval(() => {
-                attempts++
-                checkReady()
-                if (attempts > 50) {
-                  clearInterval(checkInterval)
-                  resolve() // fallback after 25s
-                }
-              }, 500)
-              
-              // Initial check
-              checkReady()
-            }, 3000) // Increased to 3s for React hydration + lazy images
-          }
-          
-          // Fallback in case onload doesn't fire
-          setTimeout(() => {
-            clearInterval(checkInterval)
-            resolve()
-          }, 25000) // Max 25 seconds total wait
-          
-          captureIframeEl.src = page.path
-        })
-
-        let canvasImg: string | null = null
-        let canvasW = 1440
-        let canvasH = 900
-
-        // ── Scroll to trigger lazy loading and get full content ──
-        try {
-          const iframeWin = captureIframeEl.contentWindow
-          if (iframeWin) {
-            iframeWin.scrollTo(0, 0)
-            await new Promise(r => setTimeout(r, 300))
-            // Scroll down to trigger lazy loaded images
-            const scrollStep = 800
-            const maxScroll = Math.min(iframeWin.document.body.scrollHeight, 4000)
-            for (let y = 0; y < maxScroll; y += scrollStep) {
-              iframeWin.scrollTo(0, y)
-              await new Promise(r => setTimeout(r, 150))
-            }
-            iframeWin.scrollTo(0, 0)
-            await new Promise(r => setTimeout(r, 300))
-          }
-        } catch (e) {
-          console.warn('Scroll trigger failed:', e)
-        }
-
-        // ── Detect redirect/login page ──
-        let isLoginRedirect = false
-        try {
-          const iframeDoc = captureIframeEl.contentDocument || captureIframeEl.contentWindow?.document
-          if (iframeDoc) {
-            const bodyText = iframeDoc.body?.innerText?.toLowerCase() || ''
-            const hasLoginForm = iframeDoc.querySelector('input[type="password"]') !== null
-            const hasLoginText = /login|เข้าสู่ระบบ|sign in|ลงชื่อเข้าใช้/.test(bodyText)
-            const isRedirect = iframeDoc.body?.innerHTML?.length < 500 && hasLoginText
-            isLoginRedirect = hasLoginForm || isRedirect
-            
-            if (isLoginRedirect) {
-              console.warn(`Page ${page.path} redirected to login, using fallback`)
-            }
-          }
-        } catch (e) {
-          console.warn('Redirect detection failed:', e)
-        }
-
-        if (!isLoginRedirect) {
-          try {
-            const iframeDoc = captureIframeEl.contentDocument || captureIframeEl.contentWindow?.document
-            if (iframeDoc?.body && iframeDoc.body.innerHTML.length > 100) {
-              const canvas = await html2canvas(iframeDoc.body, {
-                scale: 1.5, useCORS: true, allowTaint: true,
-                backgroundColor: '#ffffff', logging: false,
-                width: 1440, windowWidth: 1440,
-                height: Math.min(iframeDoc.body.scrollHeight, 4000),
-              })
-              canvasImg = canvas.toDataURL('image/jpeg', 0.85)
-              canvasW = canvas.width
-              canvasH = canvas.height
-            } else {
-              console.warn(`Page ${page.path} body empty or too small`)
-            }
-          } catch (err) {
-            console.error(`Failed to capture ${page.path}:`, err)
-          }
-        }
-
-        // Store page data with screenshot for API
-        exportPages.push({
-          name: page.name,
-          nameTh: page.nameTh,
-          path: page.path,
-          category: page.category,
-          description: page.description,
-          features: page.features,
-          screenshot: canvasImg || undefined,
-          requiresAuth: isLoginRedirect
-        })
-        
-        // Clean up iframe after each capture to prevent state contamination
-        captureContainer.removeChild(captureIframeEl)
-      }
-
-      // Cleanup container
-      document.body.removeChild(captureContainer)
-      
-      // Send to API for PDF generation with Puppeteer
-      setExportProgress('กำลังสร้าง PDF ด้วย Puppeteer...')
+      // Server captures screenshots + generates PDF
       const response = await fetch('/api/export/pdf', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          pages: exportPages,
+          pages: pagesToExport.map(p => ({
+            name: p.name,
+            nameTh: p.nameTh,
+            path: p.path,
+            category: p.category,
+            description: p.description,
+            features: p.features,
+            requiresAuth: p.requiresAuth
+          })),
           title: 'NUCHA VILLA Website Preview Report'
         })
       })

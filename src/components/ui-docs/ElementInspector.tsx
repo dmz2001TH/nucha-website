@@ -3,8 +3,90 @@
 import { useUIStore } from '@/lib/ui-docs/store'
 import { INSPECTOR_TABS } from '@/lib/ui-docs/types'
 
+function handleExportJSON(currentPage: ReturnType<typeof useUIStore>['currentPage']) {
+  if (!currentPage) return
+  const data = JSON.stringify(currentPage, null, 2)
+  const blob = new Blob([data], { type: 'application/json' })
+  const url = URL.createObjectURL(blob)
+  const a = document.createElement('a')
+  a.href = url
+  a.download = `ui-docs-${currentPage.pageId}.json`
+  a.click()
+  URL.revokeObjectURL(url)
+}
+
+function handleExportMarkdown(currentPage: ReturnType<typeof useUIStore>['currentPage']) {
+  if (!currentPage) return
+  const lines: string[] = [
+    `# UI Docs — ${currentPage.pageName} (${currentPage.pageNameTh})`,
+    '',
+    `- **Path:** \`${currentPage.path}\``,
+    `- **Version:** ${currentPage.version}`,
+    `- **Last Updated:** ${currentPage.lastUpdated}`,
+    `- **Elements:** ${currentPage.elements.length}`,
+    '',
+    '---',
+    '',
+  ]
+
+  currentPage.elements.forEach((el: typeof currentPage.elements[number], idx: number) => {
+    lines.push(`## ${idx + 1}. ${el.name} (${el.nameTh || ''})`)
+    lines.push('')
+    lines.push(`- **Type:** ${el.type}`)
+    lines.push(`- **Status:** ${el.status}`)
+    lines.push(`- **Selector:** \`${el.selector}\``)
+    if (el.component) lines.push(`- **Component:** ${el.component}`)
+    if (el.variant) lines.push(`- **Variant:** ${el.variant}`)
+    if (el.textContent) lines.push(`- **Text:** "${el.textContent}"`)
+    lines.push('')
+    lines.push(`> ${el.description}`)
+    if (el.descriptionTh) lines.push(`> ${el.descriptionTh}`)
+    lines.push('')
+    lines.push('**UX:**')
+    if (el.ux.goal) lines.push(`- Goal: ${el.ux.goal}`)
+    if (el.ux.kpi) lines.push(`- KPI: ${el.ux.kpi}`)
+    lines.push(`- Priority: ${el.ux.priority}/5`)
+    lines.push('')
+    lines.push('**Technical:**')
+    lines.push(`- CSS: \`${el.technical.cssSelector}\``)
+    lines.push(`- Data Source: ${el.technical.dataSource}`)
+    lines.push(`- Responsive: Desktop ${el.technical.responsive.desktop ? '✓' : '✗'} | Tablet ${el.technical.responsive.tablet ? '✓' : '✗'} | Mobile ${el.technical.responsive.mobile ? '✓' : '✗'}`)
+    if (el.technical.tailwindClasses?.length) {
+      lines.push(`- Tailwind: \`${el.technical.tailwindClasses.join(' ')}\``)
+    }
+    if (el.behavior) {
+      lines.push('')
+      lines.push('**Behavior:**')
+      if (el.behavior.clickAction) lines.push(`- Click: ${el.behavior.clickAction}`)
+      if (el.behavior.route) lines.push(`- Route: \`${el.behavior.route}\``)
+      if (el.behavior.eventName) lines.push(`- Event: \`${el.behavior.eventName}\``)
+    }
+    if (el.accessibility) {
+      lines.push('')
+      lines.push('**Accessibility:**')
+      if (el.accessibility.ariaLabel) lines.push(`- ARIA Label: ${el.accessibility.ariaLabel}`)
+      if (el.accessibility.role) lines.push(`- Role: ${el.accessibility.role}`)
+    }
+    if (el.tags?.length) {
+      lines.push('')
+      lines.push(`**Tags:** ${el.tags.map((t: string) => `\`${t}\``).join(', ')}`)
+    }
+    lines.push('')
+    lines.push('---')
+    lines.push('')
+  })
+
+  const blob = new Blob([lines.join('\n')], { type: 'text/markdown' })
+  const url = URL.createObjectURL(blob)
+  const a = document.createElement('a')
+  a.href = url
+  a.download = `ui-docs-${currentPage.pageId}.md`
+  a.click()
+  URL.revokeObjectURL(url)
+}
+
 export default function ElementInspector() {
-  const { state, dispatch, currentElement } = useUIStore()
+  const { state, dispatch, currentElement, currentPage } = useUIStore()
 
   if (!state.inspectorOpen) {
     return (
@@ -21,17 +103,41 @@ export default function ElementInspector() {
   return (
     <div className="w-96 bg-white border-l border-gray-200 flex flex-col h-screen">
       {/* Header */}
-      <div className="px-4 py-3 border-b border-gray-200 flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <span className="material-symbols-outlined text-[18px] text-red-500">layers</span>
-          <h2 className="font-semibold text-sm text-gray-900">Inspector</h2>
+      <div className="px-4 py-3 border-b border-gray-200">
+        <div className="flex items-center justify-between mb-2">
+          <div className="flex items-center gap-2">
+            <span className="material-symbols-outlined text-[18px] text-red-500">layers</span>
+            <h2 className="font-semibold text-sm text-gray-900">Inspector</h2>
+          </div>
+          <button
+            onClick={() => dispatch({ type: 'TOGGLE_INSPECTOR' })}
+            className="text-gray-400 hover:text-gray-600 transition-colors"
+          >
+            <span className="material-symbols-outlined text-[18px]">visibility_off</span>
+          </button>
         </div>
-        <button
-          onClick={() => dispatch({ type: 'TOGGLE_INSPECTOR' })}
-          className="text-gray-400 hover:text-gray-600 transition-colors"
-        >
-          <span className="material-symbols-outlined text-[18px]">visibility_off</span>
-        </button>
+        {/* Export buttons */}
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => handleExportJSON(currentPage)}
+            className="flex items-center gap-1 px-2 py-1 text-[10px] font-medium text-gray-500 bg-gray-50 hover:bg-gray-100 rounded-md transition-colors border border-gray-200"
+            title="Export as JSON"
+          >
+            <span className="material-symbols-outlined text-[12px]">data_object</span>
+            JSON
+          </button>
+          <button
+            onClick={() => handleExportMarkdown(currentPage)}
+            className="flex items-center gap-1 px-2 py-1 text-[10px] font-medium text-gray-500 bg-gray-50 hover:bg-gray-100 rounded-md transition-colors border border-gray-200"
+            title="Export as Markdown"
+          >
+            <span className="material-symbols-outlined text-[12px]">markdown</span>
+            Markdown
+          </button>
+          {currentPage && (
+            <span className="ml-auto text-[10px] text-gray-400">{currentPage.elements.length} elements</span>
+          )}
+        </div>
       </div>
 
       {!currentElement ? (

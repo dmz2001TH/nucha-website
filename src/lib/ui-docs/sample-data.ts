@@ -1,5 +1,8 @@
 import { PageAnnotation } from './types'
 
+// ============================================================
+// HOMEPAGE
+// ============================================================
 export const homepageAnnotations: PageAnnotation = {
   pageId: 'homepage',
   pageName: 'Homepage',
@@ -24,10 +27,10 @@ export const homepageAnnotations: PageAnnotation = {
         priority: 5,
       },
       technical: {
-        cssSelector: 'section.relative.min-h-screen',
+        cssSelector: 'section[data-doc="hero-section"]',
         dataSource: 'static',
         responsive: { desktop: true, tablet: true, mobile: true },
-        tailwindClasses: ['relative', 'min-h-screen', 'flex', 'items-center'],
+        tailwindClasses: ['relative', 'min-h-[100dvh]', 'flex', 'items-center'],
       },
       behavior: {
         route: '/',
@@ -37,6 +40,34 @@ export const homepageAnnotations: PageAnnotation = {
         role: 'banner',
         ariaLabel: 'Hero banner section',
       },
+      tags: ['above-the-fold', 'conversion'],
+    },
+    {
+      id: 'hero-headline',
+      selector: '[data-doc="hero-headline"]',
+      name: 'Hero Headline',
+      nameTh: 'พาดหัวหลัก',
+      type: 'heading',
+      description: 'Main H1 headline with brand name and tagline',
+      descriptionTh: 'พาดหัว H1 พร้อมชื่อแบรนด์และคำขวัญ',
+      textContent: 'NUCHA VILLA — Luxury Living in Pattaya',
+      component: 'HeroTitle',
+      status: 'active',
+      ux: {
+        goal: 'Brand recognition & emotional connection',
+        priority: 5,
+      },
+      technical: {
+        cssSelector: 'h1[data-doc="hero-headline"]',
+        dataSource: 'static',
+        responsive: { desktop: true, tablet: true, mobile: true },
+        tailwindClasses: ['text-4xl', 'sm:text-5xl', 'md:text-6xl', 'lg:text-7xl', 'xl:text-[8rem]', 'font-black'],
+      },
+      accessibility: {
+        role: 'heading',
+        ariaLabel: 'Main page headline',
+      },
+      tags: ['seo-h1', 'branding'],
     },
     {
       id: 'hero-cta-primary',
@@ -59,43 +90,18 @@ export const homepageAnnotations: PageAnnotation = {
         cssSelector: 'a[data-doc="hero-cta-primary"]',
         dataSource: 'static',
         responsive: { desktop: true, tablet: true, mobile: true },
-        tailwindClasses: ['bg-red-600', 'text-white', 'px-8', 'py-4', 'rounded-lg'],
+        tailwindClasses: ['group', 'cursor-pointer'],
       },
       behavior: {
         clickAction: 'navigate',
-        route: '/villas',
+        route: '/portfolio',
         eventName: 'hero_cta_click',
       },
       accessibility: {
         ariaLabel: 'Explore our luxury villas',
         role: 'link',
       },
-    },
-    {
-      id: 'hero-headline',
-      selector: '[data-doc="hero-headline"]',
-      name: 'Hero Headline',
-      nameTh: 'พาดหัวหลัก',
-      type: 'heading',
-      description: 'Main H1 headline with brand name and tagline',
-      descriptionTh: 'พาดหัว H1 พร้อมชื่อแบรนด์และคำขวัญ',
-      textContent: 'NUCHA VILLA — Luxury Living in Pattaya',
-      component: 'HeroTitle',
-      status: 'active',
-      ux: {
-        goal: 'Brand recognition & emotional connection',
-        priority: 5,
-      },
-      technical: {
-        cssSelector: 'h1[data-doc="hero-headline"]',
-        dataSource: 'static',
-        responsive: { desktop: true, tablet: true, mobile: true },
-        tailwindClasses: ['text-5xl', 'font-bold', 'text-white', 'drop-shadow'],
-      },
-      accessibility: {
-        role: 'heading',
-        ariaLabel: 'Main page headline',
-      },
+      tags: ['conversion', 'cta'],
     },
     {
       id: 'nav-logo',
@@ -123,6 +129,7 @@ export const homepageAnnotations: PageAnnotation = {
       accessibility: {
         ariaLabel: 'Nucha Villa logo - go to homepage',
       },
+      tags: ['navigation', 'branding'],
     },
     {
       id: 'services-section',
@@ -136,6 +143,7 @@ export const homepageAnnotations: PageAnnotation = {
       status: 'active',
       ux: {
         goal: 'Inform visitors about services',
+        kpi: 'Service detail page visits',
         priority: 4,
       },
       technical: {
@@ -146,6 +154,11 @@ export const homepageAnnotations: PageAnnotation = {
       behavior: {
         eventName: 'services_section_view',
       },
+      accessibility: {
+        role: 'region',
+        ariaLabel: 'Our services',
+      },
+      tags: ['content', 'services'],
     },
     {
       id: 'portfolio-grid',
@@ -166,7 +179,13 @@ export const homepageAnnotations: PageAnnotation = {
         cssSelector: 'div[data-doc="portfolio-grid"]',
         dataSource: 'api',
         responsive: { desktop: true, tablet: true, mobile: true },
+        tailwindClasses: ['grid', 'grid-cols-1', 'sm:grid-cols-2', 'lg:grid-cols-12', 'gap-4'],
       },
+      accessibility: {
+        role: 'region',
+        ariaLabel: 'Portfolio projects',
+      },
+      tags: ['content', 'portfolio'],
     },
     {
       id: 'contact-button',
@@ -174,8 +193,8 @@ export const homepageAnnotations: PageAnnotation = {
       name: 'Contact Button',
       nameTh: 'ปุ่มติดต่อ',
       type: 'button',
-      description: 'Floating or fixed contact button that opens WhatsApp/Line',
-      descriptionTh: 'ปุ่มติดต่อแบบลอย/ติด เปิด WhatsApp/Line',
+      description: 'Floating or fixed contact button that opens booking page',
+      descriptionTh: 'ปุ่มติดต่อแบบลอย/ติด นำไปหน้าจองคิว',
       textContent: 'Contact Us',
       component: 'ContactButton',
       variant: 'floating',
@@ -186,20 +205,1084 @@ export const homepageAnnotations: PageAnnotation = {
         priority: 5,
       },
       technical: {
-        cssSelector: 'button[data-doc="contact-button"]',
-        dataSource: 'env',
+        cssSelector: 'a[data-doc="contact-button"]',
+        dataSource: 'static',
         responsive: { desktop: true, tablet: true, mobile: true },
       },
       behavior: {
-        clickAction: 'open_external',
-        externalUrl: 'https://wa.me/...',
+        clickAction: 'navigate',
+        route: '/booking',
         eventName: 'contact_click',
       },
+      accessibility: {
+        ariaLabel: 'Book a consultation',
+        role: 'link',
+      },
+      tags: ['conversion', 'cta', 'booking'],
     },
   ],
 }
 
-export const allPageAnnotations: PageAnnotation[] = [homepageAnnotations]
+// ============================================================
+// VILLAS PAGE
+// ============================================================
+export const villasPageAnnotations: PageAnnotation = {
+  pageId: 'villas',
+  pageName: 'Villas',
+  pageNameTh: 'วิลล่า',
+  path: '/villas',
+  lastUpdated: '2026-04-28',
+  version: '1.0.0',
+  elements: [
+    {
+      id: 'villas-hero',
+      selector: 'main > section:first-of-type',
+      name: 'Villas Hero Section',
+      nameTh: 'ส่วนหัววิลล่า',
+      type: 'hero',
+      description: 'Page hero with Thai label, large heading, and description text',
+      descriptionTh: 'ส่วนหัวหน้าพร้อมป้ายภาษาไทย หัวข้อขนาดใหญ่ และข้อความอธิบาย',
+      component: 'PageHero',
+      status: 'active',
+      ux: {
+        goal: 'Set context and attract visitors to browse villas',
+        kpi: 'Scroll depth to villa cards',
+        priority: 5,
+      },
+      technical: {
+        cssSelector: 'main > section:first-of-type',
+        dataSource: 'static',
+        responsive: { desktop: true, tablet: true, mobile: true },
+        tailwindClasses: ['px-5', 'sm:px-8', 'md:px-12', 'mb-12'],
+      },
+      accessibility: {
+        role: 'banner',
+        ariaLabel: 'Villas page hero',
+      },
+      tags: ['above-the-fold'],
+    },
+    {
+      id: 'villas-filter-bar',
+      selector: 'section:has(button)',
+      name: 'Filter & Sort Controls',
+      nameTh: 'ตัวกรองและเรียงลำดับ',
+      type: 'form',
+      description: 'Status filter buttons (All, Available, Reserved, Sold) and sort dropdown',
+      descriptionTh: 'ปุ่มกรองสถานะ (ทั้งหมด, พร้อมขาย, จองแล้ว, ขายแล้ว) และ dropdown เรียงลำดับ',
+      component: 'VillasClient',
+      status: 'active',
+      ux: {
+        goal: 'Help users find relevant villas quickly',
+        kpi: 'Filter usage rate',
+        priority: 4,
+      },
+      technical: {
+        cssSelector: 'section:has(button)',
+        dataSource: 'static',
+        responsive: { desktop: true, tablet: true, mobile: true },
+      },
+      behavior: {
+        eventName: 'villa_filter_change',
+      },
+      accessibility: {
+        role: 'toolbar',
+        ariaLabel: 'Villa filters and sorting',
+      },
+      tags: ['filter', 'interaction'],
+    },
+    {
+      id: 'villas-grid',
+      selector: 'div.grid',
+      name: 'Villas Grid',
+      nameTh: 'กริดวิลล่า',
+      type: 'section',
+      description: 'Responsive grid of villa cards with images, pricing, and status badges',
+      descriptionTh: 'กริดแสดงวิลล่าแบบ responsive พร้อมรูปภาพ ราคา และสถานะ',
+      component: 'VillasClient',
+      status: 'active',
+      ux: {
+        goal: 'Showcase available villas and drive detail page visits',
+        kpi: 'Villa detail page visits',
+        priority: 5,
+      },
+      technical: {
+        cssSelector: 'div.grid',
+        dataSource: 'api',
+        responsive: { desktop: true, tablet: true, mobile: true },
+      },
+      behavior: {
+        eventName: 'villa_card_click',
+      },
+      accessibility: {
+        role: 'region',
+        ariaLabel: 'Villa listings',
+      },
+      tags: ['content', 'listings'],
+    },
+    {
+      id: 'villa-card',
+      selector: 'a[href^="/villas/"]',
+      name: 'Villa Card',
+      nameTh: 'การ์ดวิลล่า',
+      type: 'card',
+      description: 'Individual villa card with cover image, name, price, bedrooms, bathrooms, area, and status badge',
+      descriptionTh: 'การ์ดวิลล่าแต่ละหลัง พร้อมรูปปก ชื่อ ราคา ห้องนอน ห้องน้ำ พื้นที่ และสถานะ',
+      component: 'VillaCard',
+      status: 'active',
+      ux: {
+        goal: 'Entice clicks to villa detail page',
+        kpi: 'Card click-through rate',
+        priority: 4,
+      },
+      technical: {
+        cssSelector: 'a[href^="/villas/"]',
+        dataSource: 'api',
+        responsive: { desktop: true, tablet: true, mobile: true },
+      },
+      behavior: {
+        clickAction: 'navigate',
+        route: '/villas/[slug]',
+      },
+      accessibility: {
+        role: 'link',
+        ariaLabel: 'View villa details',
+      },
+      tags: ['content', 'interactive'],
+    },
+  ],
+}
+
+// ============================================================
+// SERVICES PAGE
+// ============================================================
+export const servicesPageAnnotations: PageAnnotation = {
+  pageId: 'services',
+  pageName: 'Services',
+  pageNameTh: 'บริการ',
+  path: '/services',
+  lastUpdated: '2026-04-28',
+  version: '1.0.0',
+  elements: [
+    {
+      id: 'services-hero',
+      selector: 'main > section:first-of-type',
+      name: 'Services Hero Section',
+      nameTh: 'ส่วนหัวบริการ',
+      type: 'hero',
+      description: 'Page hero with "สิ่งที่เราทำ" label and large heading',
+      descriptionTh: 'ส่วนหัวหน้าพร้อมป้าย "สิ่งที่เราทำ" และหัวข้อขนาดใหญ่',
+      component: 'PageHero',
+      status: 'active',
+      ux: {
+        goal: 'Set context for services browsing',
+        priority: 4,
+      },
+      technical: {
+        cssSelector: 'main > section:first-of-type',
+        dataSource: 'static',
+        responsive: { desktop: true, tablet: true, mobile: true },
+      },
+      accessibility: {
+        role: 'banner',
+        ariaLabel: 'Services page hero',
+      },
+      tags: ['above-the-fold'],
+    },
+    {
+      id: 'services-grid',
+      selector: 'div.grid.grid-cols-1.sm\\:grid-cols-2.lg\\:grid-cols-3',
+      name: 'Services Grid',
+      nameTh: 'กริดบริการ',
+      type: 'section',
+      description: 'Grid of service cards with cover images, titles, and descriptions. Cards link to individual service pages.',
+      descriptionTh: 'กริดแสดงบริการพร้อมรูปปก ชื่อ และคำอธิบาย ลิงก์ไปหน้าบริการแต่ละรายการ',
+      component: 'ServicesGrid',
+      status: 'active',
+      ux: {
+        goal: 'Showcase all services and drive service detail visits',
+        kpi: 'Service card click-through rate',
+        priority: 5,
+      },
+      technical: {
+        cssSelector: 'div.grid.grid-cols-1',
+        dataSource: 'api',
+        responsive: { desktop: true, tablet: true, mobile: true },
+      },
+      behavior: {
+        clickAction: 'navigate',
+        route: '/services/[title]',
+        eventName: 'service_card_click',
+      },
+      accessibility: {
+        role: 'region',
+        ariaLabel: 'Service listings',
+      },
+      tags: ['content', 'services'],
+    },
+    {
+      id: 'service-card',
+      selector: 'a[href^="/services/"]',
+      name: 'Service Card',
+      nameTh: 'การ์ดบริการ',
+      type: 'card',
+      description: 'Individual service card with cover image, title overlay, and description',
+      descriptionTh: 'การ์ดบริการแต่ละรายการ พร้อมรูปปก ชื่อซ้อนทับ และคำอธิบาย',
+      component: 'ServiceCard',
+      status: 'active',
+      ux: {
+        goal: 'Entice clicks to service detail page',
+        kpi: 'Card engagement rate',
+        priority: 4,
+      },
+      technical: {
+        cssSelector: 'a[href^="/services/"]',
+        dataSource: 'api',
+        responsive: { desktop: true, tablet: true, mobile: true },
+      },
+      behavior: {
+        clickAction: 'navigate',
+        route: '/services/[title]',
+      },
+      accessibility: {
+        role: 'link',
+      },
+      tags: ['content', 'interactive'],
+    },
+    {
+      id: 'services-detail-section',
+      selector: 'section:has(h2)',
+      name: 'Service Detail Section',
+      nameTh: 'ส่วนรายละเอียดบริการ',
+      type: 'section',
+      description: 'Featured service detail with image, title, description, feature list, and CTA button',
+      descriptionTh: 'รายละเอียดบริการที่โดดเด่น พร้อมรูป ชื่อ คำอธิบาย รายการฟีเจอร์ และปุ่ม CTA',
+      component: 'ServiceDetail',
+      status: 'active',
+      ux: {
+        goal: 'Provide in-depth info about the primary service',
+        kpi: 'CTA click rate',
+        priority: 4,
+      },
+      technical: {
+        cssSelector: 'section:has(h2)',
+        dataSource: 'api',
+        responsive: { desktop: true, tablet: true, mobile: true },
+      },
+      accessibility: {
+        role: 'region',
+        ariaLabel: 'Service details',
+      },
+      tags: ['content', 'conversion'],
+    },
+    {
+      id: 'services-process-section',
+      selector: 'section.bg-gray-50',
+      name: 'Process Section',
+      nameTh: 'ส่วนขั้นตอนการทำงาน',
+      type: 'section',
+      description: 'Four-step process showcase (Consult → Design → Develop → Execute) with icons and descriptions',
+      descriptionTh: 'แสดงขั้นตอนการทำงาน 4 ขั้น (ปรึกษา → ออกแบบ → พัฒนา → ดำเนินการ) พร้อมไอคอนและคำอธิบาย',
+      component: 'ProcessSteps',
+      status: 'active',
+      ux: {
+        goal: 'Build trust by showing structured workflow',
+        priority: 3,
+      },
+      technical: {
+        cssSelector: 'section.bg-gray-50',
+        dataSource: 'static',
+        responsive: { desktop: true, tablet: true, mobile: true },
+      },
+      accessibility: {
+        role: 'region',
+        ariaLabel: 'Our process',
+      },
+      tags: ['content', 'trust-building'],
+    },
+    {
+      id: 'services-cta-button',
+      selector: 'a[href="/contact"]',
+      name: 'Service Inquiry CTA',
+      nameTh: 'ปุ่มสอบถามบริการ',
+      type: 'button',
+      description: 'CTA button to inquire about a specific service, links to contact page',
+      descriptionTh: 'ปุ่มสอบถามบริการ ลิงก์ไปหน้าติดต่อ',
+      textContent: 'สอบถามบริการนี้',
+      component: 'ButtonPrimary',
+      status: 'active',
+      ux: {
+        goal: 'Convert service interest into inquiry',
+        kpi: 'Inquiry form submissions',
+        priority: 5,
+      },
+      technical: {
+        cssSelector: 'a[href="/contact"]',
+        dataSource: 'static',
+        responsive: { desktop: true, tablet: true, mobile: true },
+      },
+      behavior: {
+        clickAction: 'navigate',
+        route: '/contact',
+        eventName: 'service_inquiry_click',
+      },
+      accessibility: {
+        ariaLabel: 'Inquire about this service',
+        role: 'link',
+      },
+      tags: ['conversion', 'cta'],
+    },
+  ],
+}
+
+// ============================================================
+// PORTFOLIO PAGE
+// ============================================================
+export const portfolioPageAnnotations: PageAnnotation = {
+  pageId: 'portfolio',
+  pageName: 'Portfolio',
+  pageNameTh: 'ผลงาน',
+  path: '/portfolio',
+  lastUpdated: '2026-04-28',
+  version: '1.0.0',
+  elements: [
+    {
+      id: 'portfolio-hero',
+      selector: 'main > section:first-of-type',
+      name: 'Portfolio Hero Section',
+      nameTh: 'ส่วนหัวผลงาน',
+      type: 'hero',
+      description: 'Page hero with "ผลงานของเรา" label and large heading',
+      descriptionTh: 'ส่วนหัวหน้าพร้อมป้าย "ผลงานของเรา" และหัวข้อขนาดใหญ่',
+      component: 'PageHero',
+      status: 'active',
+      ux: {
+        goal: 'Set context for portfolio browsing',
+        priority: 4,
+      },
+      technical: {
+        cssSelector: 'main > section:first-of-type',
+        dataSource: 'static',
+        responsive: { desktop: true, tablet: true, mobile: true },
+      },
+      accessibility: {
+        role: 'banner',
+        ariaLabel: 'Portfolio page hero',
+      },
+      tags: ['above-the-fold'],
+    },
+    {
+      id: 'portfolio-filter-bar',
+      selector: 'section:has(button)',
+      name: 'Category Filter Buttons',
+      nameTh: 'ปุ่มกรองหมวดหมู่',
+      type: 'form',
+      description: 'Category filter buttons: All, Residential, Commercial, Interior, Architecture',
+      descriptionTh: 'ปุ่มกรองหมวดหมู่: ทั้งหมด, บ้านพักอาศัย, พาณิชย์, ออกแบบภายใน, สถาปัตยกรรม',
+      component: 'PortfolioClient',
+      status: 'active',
+      ux: {
+        goal: 'Help users filter projects by category',
+        kpi: 'Filter usage rate',
+        priority: 3,
+      },
+      technical: {
+        cssSelector: 'section:has(button)',
+        dataSource: 'static',
+        responsive: { desktop: true, tablet: true, mobile: true },
+      },
+      behavior: {
+        eventName: 'portfolio_filter_change',
+      },
+      accessibility: {
+        role: 'toolbar',
+        ariaLabel: 'Portfolio category filters',
+      },
+      tags: ['filter', 'interaction'],
+    },
+    {
+      id: 'portfolio-grid',
+      selector: 'div.grid.grid-cols-1.sm\\:grid-cols-2.lg\\:grid-cols-3',
+      name: 'Portfolio Grid',
+      nameTh: 'กริดผลงาน',
+      type: 'section',
+      description: 'Responsive grid of portfolio project cards with cover images, titles, categories, and locations',
+      descriptionTh: 'กริดแสดงผลงานแบบ responsive พร้อมรูปปก ชื่อ หมวดหมู่ และสถานที่',
+      component: 'PortfolioClient',
+      status: 'active',
+      ux: {
+        goal: 'Showcase completed projects',
+        kpi: 'Project detail page visits',
+        priority: 5,
+      },
+      technical: {
+        cssSelector: 'div.grid',
+        dataSource: 'api',
+        responsive: { desktop: true, tablet: true, mobile: true },
+      },
+      behavior: {
+        eventName: 'portfolio_card_click',
+      },
+      accessibility: {
+        role: 'region',
+        ariaLabel: 'Portfolio projects',
+      },
+      tags: ['content', 'portfolio'],
+    },
+    {
+      id: 'portfolio-card',
+      selector: 'a[href^="/portfolio/"]',
+      name: 'Portfolio Card',
+      nameTh: 'การ์ดผลงาน',
+      type: 'card',
+      description: 'Individual project card with cover image, title, category badge, and location',
+      descriptionTh: 'การ์ดผลงานแต่ละโครงการ พร้อมรูปปก ชื่อ ป้ายหมวดหมู่ และสถานที่',
+      component: 'PortfolioCard',
+      status: 'active',
+      ux: {
+        goal: 'Entice clicks to project detail page',
+        kpi: 'Card click-through rate',
+        priority: 4,
+      },
+      technical: {
+        cssSelector: 'a[href^="/portfolio/"]',
+        dataSource: 'api',
+        responsive: { desktop: true, tablet: true, mobile: true },
+      },
+      behavior: {
+        clickAction: 'navigate',
+        route: '/portfolio/[slug]',
+      },
+      accessibility: {
+        role: 'link',
+      },
+      tags: ['content', 'interactive'],
+    },
+    {
+      id: 'portfolio-empty-state',
+      selector: 'div.text-center.py-20',
+      name: 'Empty State',
+      nameTh: 'สถานะว่าง',
+      type: 'other',
+      description: 'Shown when no projects match the selected category filter',
+      descriptionTh: 'แสดงเมื่อไม่มีผลงานตรงกับหมวดหมู่ที่เลือก',
+      component: 'EmptyState',
+      status: 'hidden',
+      ux: {
+        goal: 'Inform user no results found',
+        priority: 2,
+      },
+      technical: {
+        cssSelector: 'div.text-center.py-20',
+        dataSource: 'static',
+        responsive: { desktop: true, tablet: true, mobile: true },
+      },
+      accessibility: {
+        role: 'status',
+        ariaLabel: 'No projects available',
+      },
+      tags: ['empty-state'],
+    },
+  ],
+}
+
+// ============================================================
+// BOOKING PAGE
+// ============================================================
+export const bookingPageAnnotations: PageAnnotation = {
+  pageId: 'booking',
+  pageName: 'Booking',
+  pageNameTh: 'จองคิว',
+  path: '/booking',
+  lastUpdated: '2026-04-28',
+  version: '1.0.0',
+  elements: [
+    {
+      id: 'booking-hero',
+      selector: 'main > section:first-of-type',
+      name: 'Booking Hero Section',
+      nameTh: 'ส่วนหัวจองคิว',
+      type: 'hero',
+      description: 'Page hero with "นัดหมาย" label and heading "จองคิวปรึกษา"',
+      descriptionTh: 'ส่วนหัวหน้าพร้อมป้าย "นัดหมาย" และหัวข้อ "จองคิวปรึกษา"',
+      component: 'PageHero',
+      status: 'active',
+      ux: {
+        goal: 'Set context for booking flow',
+        priority: 4,
+      },
+      technical: {
+        cssSelector: 'main > section:first-of-type',
+        dataSource: 'static',
+        responsive: { desktop: true, tablet: true, mobile: true },
+      },
+      accessibility: {
+        role: 'banner',
+        ariaLabel: 'Booking page hero',
+      },
+      tags: ['above-the-fold'],
+    },
+    {
+      id: 'booking-steps',
+      selector: 'section:has([class*="rounded-full"])',
+      name: 'Booking Steps Indicator',
+      nameTh: 'ตัวบ่งชี้ขั้นตอน',
+      type: 'navigation',
+      description: 'Four-step progress indicator: Select Date → Select Time → Fill Info → Complete',
+      descriptionTh: 'ตัวบ่งชี้ความคืบหน้า 4 ขั้น: เลือกวัน → เลือกเวลา → กรอกข้อมูล → เสร็จสิ้น',
+      component: 'StepIndicator',
+      status: 'active',
+      ux: {
+        goal: 'Show booking progress and reduce abandonment',
+        kpi: 'Step completion rate',
+        priority: 4,
+      },
+      technical: {
+        cssSelector: 'section:has([class*="rounded-full"])',
+        dataSource: 'static',
+        responsive: { desktop: true, tablet: true, mobile: true },
+      },
+      accessibility: {
+        role: 'navigation',
+        ariaLabel: 'Booking steps',
+      },
+      tags: ['progress', 'ux'],
+    },
+    {
+      id: 'booking-calendar',
+      selector: 'div.grid.grid-cols-7',
+      name: 'Date Calendar',
+      nameTh: 'ปฏิทินเลือกวัน',
+      type: 'other',
+      description: 'Interactive calendar for date selection. Sundays and past dates are disabled.',
+      descriptionTh: 'ปฏิทินแบบโต้ตอบสำหรับเลือกวัน วันอาทิตย์และวันที่ผ่านมาแล้วไม่สามารถเลือกได้',
+      component: 'BookingCalendar',
+      status: 'active',
+      ux: {
+        goal: 'Allow date selection for consultation',
+        kpi: 'Date selection completion rate',
+        priority: 5,
+      },
+      technical: {
+        cssSelector: 'div.grid.grid-cols-7',
+        dataSource: 'static',
+        responsive: { desktop: true, tablet: true, mobile: true },
+      },
+      behavior: {
+        eventName: 'booking_date_select',
+      },
+      accessibility: {
+        role: 'grid',
+        ariaLabel: 'Select consultation date',
+      },
+      tags: ['form', 'interaction', 'calendar'],
+    },
+    {
+      id: 'booking-time-slots',
+      selector: 'div.grid.grid-cols-2',
+      name: 'Time Slot Picker',
+      nameTh: 'ตัวเลือกเวลา',
+      type: 'other',
+      description: 'Grid of available time slots (09:00-17:00, 1-hour intervals)',
+      descriptionTh: 'กริดเวลาที่ว่าง (09:00-17:00, ช่วงละ 1 ชั่วโมง)',
+      component: 'TimeSlotPicker',
+      status: 'active',
+      ux: {
+        goal: 'Allow time selection for consultation',
+        kpi: 'Time slot selection rate',
+        priority: 5,
+      },
+      technical: {
+        cssSelector: 'div.grid.grid-cols-2',
+        dataSource: 'static',
+        responsive: { desktop: true, tablet: true, mobile: true },
+      },
+      behavior: {
+        eventName: 'booking_time_select',
+      },
+      accessibility: {
+        role: 'radiogroup',
+        ariaLabel: 'Select consultation time',
+      },
+      tags: ['form', 'interaction'],
+    },
+    {
+      id: 'booking-form',
+      selector: 'form',
+      name: 'Booking Form',
+      nameTh: 'แบบฟอร์มจองคิว',
+      type: 'form',
+      description: 'Contact form with name, email, phone, topic select, and message textarea. Submits to /api/bookings.',
+      descriptionTh: 'แบบฟอร์มติดต่อพร้อมชื่อ อีเมล โทรศัพท์ หัวข้อ และข้อความ ส่งไปยัง /api/bookings',
+      component: 'BookingForm',
+      status: 'active',
+      ux: {
+        goal: 'Collect booking information',
+        kpi: 'Form completion rate',
+        priority: 5,
+      },
+      technical: {
+        cssSelector: 'form',
+        dataSource: 'static',
+        responsive: { desktop: true, tablet: true, mobile: true },
+      },
+      behavior: {
+        clickAction: 'submit',
+        eventName: 'booking_form_submit',
+      },
+      accessibility: {
+        role: 'form',
+        ariaLabel: 'Consultation booking form',
+      },
+      tags: ['form', 'conversion', 'submission'],
+    },
+    {
+      id: 'booking-success',
+      selector: 'div.text-center:has(h2)',
+      name: 'Booking Success State',
+      nameTh: 'สถานะจองสำเร็จ',
+      type: 'other',
+      description: 'Success confirmation with check icon, booking details summary, and action buttons',
+      descriptionTh: 'ยืนยันการจองสำเร็จ พร้อมไอคอนเช็ค สรุปรายละเอียดการจอง และปุ่มดำเนินการ',
+      component: 'BookingSuccess',
+      status: 'hidden',
+      ux: {
+        goal: 'Confirm successful booking and provide next steps',
+        priority: 4,
+      },
+      technical: {
+        cssSelector: 'div.text-center:has(h2)',
+        dataSource: 'static',
+        responsive: { desktop: true, tablet: true, mobile: true },
+      },
+      accessibility: {
+        role: 'status',
+        ariaLabel: 'Booking confirmation',
+      },
+      tags: ['confirmation', 'success-state'],
+    },
+  ],
+}
+
+// ============================================================
+// CONTACT PAGE
+// ============================================================
+export const contactPageAnnotations: PageAnnotation = {
+  pageId: 'contact',
+  pageName: 'Contact',
+  pageNameTh: 'ติดต่อเรา',
+  path: '/contact',
+  lastUpdated: '2026-04-28',
+  version: '1.0.0',
+  elements: [
+    {
+      id: 'contact-hero',
+      selector: 'main > section:first-of-type',
+      name: 'Contact Hero Section',
+      nameTh: 'ส่วนหัวติดต่อ',
+      type: 'hero',
+      description: 'Page hero with "ติดต่อเรา" label and large heading',
+      descriptionTh: 'ส่วนหัวหน้าพร้อมป้าย "ติดต่อเรา" และหัวข้อขนาดใหญ่',
+      component: 'PageHero',
+      status: 'active',
+      ux: {
+        goal: 'Set context and encourage contact',
+        priority: 4,
+      },
+      technical: {
+        cssSelector: 'main > section:first-of-type',
+        dataSource: 'static',
+        responsive: { desktop: true, tablet: true, mobile: true },
+      },
+      accessibility: {
+        role: 'banner',
+        ariaLabel: 'Contact page hero',
+      },
+      tags: ['above-the-fold'],
+    },
+    {
+      id: 'contact-form',
+      selector: 'form',
+      name: 'Contact Form',
+      nameTh: 'แบบฟอร์มติดต่อ',
+      type: 'form',
+      description: 'Contact form with name, email, phone, interest select, and message. Submits to /api/inquiries.',
+      descriptionTh: 'แบบฟอร์มติดต่อพร้อมชื่อ อีเมล โทรศัพท์ ความสนใจ และข้อความ ส่งไปยัง /api/inquiries',
+      component: 'ContactForm',
+      status: 'active',
+      ux: {
+        goal: 'Collect visitor inquiries',
+        kpi: 'Form submission rate',
+        priority: 5,
+      },
+      technical: {
+        cssSelector: 'form',
+        dataSource: 'static',
+        responsive: { desktop: true, tablet: true, mobile: true },
+      },
+      behavior: {
+        clickAction: 'submit',
+        eventName: 'contact_form_submit',
+      },
+      accessibility: {
+        role: 'form',
+        ariaLabel: 'Contact inquiry form',
+      },
+      tags: ['form', 'conversion', 'submission'],
+    },
+    {
+      id: 'contact-info-cards',
+      selector: 'div.space-y-4',
+      name: 'Contact Info Cards',
+      nameTh: 'การ์ดข้อมูลติดต่อ',
+      type: 'section',
+      description: 'Contact information cards: Office address, Phone, Email, and Social media links',
+      descriptionTh: 'การ์ดข้อมูลติดต่อ: ที่อยู่สำนักงาน, โทรศัพท์, อีเมล, และโซเชียลมีเดีย',
+      component: 'ContactInfo',
+      status: 'active',
+      ux: {
+        goal: 'Provide alternative contact methods',
+        priority: 4,
+      },
+      technical: {
+        cssSelector: 'div.space-y-4',
+        dataSource: 'static',
+        responsive: { desktop: true, tablet: true, mobile: true },
+      },
+      accessibility: {
+        role: 'region',
+        ariaLabel: 'Contact information',
+      },
+      tags: ['content', 'contact'],
+    },
+    {
+      id: 'contact-phone',
+      selector: 'div:has(span:text("+66"))',
+      name: 'Phone Number',
+      nameTh: 'เบอร์โทรศัพท์',
+      type: 'text',
+      description: 'Office phone number: +66 (0) 81-234-5678, available Mon-Fri 9:00-18:00',
+      descriptionTh: 'เบอร์สำนักงาน: +66 (0) 81-234-5678 เปิดให้บริการ จันทร์-ศุกร์ 9:00-18:00',
+      textContent: '+66 (0) 81-234-5678',
+      status: 'active',
+      ux: {
+        goal: 'Enable phone contact',
+        priority: 3,
+      },
+      technical: {
+        cssSelector: 'div:has(span)',
+        dataSource: 'env',
+        responsive: { desktop: true, tablet: true, mobile: true },
+      },
+      behavior: {
+        clickAction: 'tel:+66812345678',
+      },
+      accessibility: {
+        ariaLabel: 'Call us at +66 81-234-5678',
+      },
+      tags: ['contact', 'phone'],
+    },
+    {
+      id: 'contact-email',
+      selector: 'div:has(span:text("mail"))',
+      name: 'Email Address',
+      nameTh: 'ที่อยู่อีเมล',
+      type: 'text',
+      description: 'Contact email: concierge@nucha-innovation.com, response within 24 hours',
+      descriptionTh: 'อีเมลติดต่อ: concierge@nucha-innovation.com ตอบกลับภายใน 24 ชั่วโมง',
+      textContent: 'concierge@nucha-innovation.com',
+      status: 'active',
+      ux: {
+        goal: 'Enable email contact',
+        priority: 3,
+      },
+      technical: {
+        cssSelector: 'div:has(span)',
+        dataSource: 'env',
+        responsive: { desktop: true, tablet: true, mobile: true },
+      },
+      behavior: {
+        clickAction: 'mailto:concierge@nucha-innovation.com',
+      },
+      accessibility: {
+        ariaLabel: 'Email us at concierge@nucha-innovation.com',
+      },
+      tags: ['contact', 'email'],
+    },
+    {
+      id: 'contact-map',
+      selector: 'div:has(> div[class*="leaflet"])',
+      name: 'Interactive Map',
+      nameTh: 'แผนที่แบบโต้ตอบ',
+      type: 'other',
+      description: 'Leaflet interactive map showing NUCHA office location in Pattaya',
+      descriptionTh: 'แผนที่แบบโต้ตอบแสดงตำแหน่งสำนักงาน NUCHA ในพัทยา',
+      component: 'InteractiveMap',
+      status: 'active',
+      ux: {
+        goal: 'Help visitors find the office',
+        priority: 3,
+      },
+      technical: {
+        cssSelector: 'div:has(> div[class*="leaflet"])',
+        dataSource: 'static',
+        responsive: { desktop: true, tablet: true, mobile: true },
+      },
+      accessibility: {
+        role: 'application',
+        ariaLabel: 'Office location map',
+      },
+      tags: ['map', 'location'],
+    },
+    {
+      id: 'contact-social-links',
+      selector: 'div:has(svg)',
+      name: 'Social Media Links',
+      nameTh: 'ลิงก์โซเชียลมีเดีย',
+      type: 'navigation',
+      description: 'Social media icon links: Facebook, Instagram, LinkedIn',
+      descriptionTh: 'ลิงก์ไอคอนโซเชียลมีเดีย: Facebook, Instagram, LinkedIn',
+      component: 'SocialLinks',
+      status: 'active',
+      ux: {
+        goal: 'Connect visitors to social presence',
+        priority: 2,
+      },
+      technical: {
+        cssSelector: 'div:has(svg)',
+        dataSource: 'static',
+        responsive: { desktop: true, tablet: true, mobile: true },
+      },
+      accessibility: {
+        role: 'navigation',
+        ariaLabel: 'Social media links',
+      },
+      tags: ['social', 'navigation'],
+    },
+  ],
+}
+
+// ============================================================
+// PHILOSOPHY PAGE
+// ============================================================
+export const philosophyPageAnnotations: PageAnnotation = {
+  pageId: 'philosophy',
+  pageName: 'Philosophy',
+  pageNameTh: 'ปรัชญา',
+  path: '/philosophy',
+  lastUpdated: '2026-04-28',
+  version: '1.0.0',
+  elements: [
+    {
+      id: 'philosophy-hero',
+      selector: 'section.relative',
+      name: 'Philosophy Hero Section',
+      nameTh: 'ส่วนหัวปรัชญา',
+      type: 'hero',
+      description: 'Split-layout hero with text content on the left (title, description, CTA buttons) and image on the right. Includes "10+ ปีประสบการณ์" badge.',
+      descriptionTh: 'ส่วนหัวแบบ split layout พร้อมข้อความด้านซ้าย (หัวข้อ คำอธิบาย ปุ่ม CTA) และรูปด้านขวา พร้อมป้าย "10+ ปีประสบการณ์"',
+      component: 'PhilosophyHero',
+      status: 'active',
+      ux: {
+        goal: 'Communicate brand philosophy and build trust',
+        kpi: 'Scroll depth to principles section',
+        priority: 5,
+      },
+      technical: {
+        cssSelector: 'section.relative',
+        dataSource: 'cms',
+        responsive: { desktop: true, tablet: true, mobile: true },
+      },
+      behavior: {
+        eventName: 'philosophy_hero_view',
+      },
+      accessibility: {
+        role: 'banner',
+        ariaLabel: 'Philosophy page hero',
+      },
+      tags: ['above-the-fold', 'branding'],
+    },
+    {
+      id: 'philosophy-hero-cta-contact',
+      selector: 'a[href="/contact"]',
+      name: 'Contact CTA Button',
+      nameTh: 'ปุ่มติดต่อ',
+      type: 'button',
+      description: 'Primary CTA button linking to contact page',
+      descriptionTh: 'ปุ่ม CTA หลัก ลิงก์ไปหน้าติดต่อ',
+      textContent: 'ติดต่อเรา',
+      component: 'ButtonPrimary',
+      status: 'active',
+      ux: {
+        goal: 'Convert philosophy interest into contact',
+        kpi: 'Click-through rate',
+        priority: 4,
+      },
+      technical: {
+        cssSelector: 'a[href="/contact"]',
+        dataSource: 'static',
+        responsive: { desktop: true, tablet: true, mobile: true },
+      },
+      behavior: {
+        clickAction: 'navigate',
+        route: '/contact',
+        eventName: 'philosophy_contact_click',
+      },
+      accessibility: {
+        ariaLabel: 'Contact us',
+        role: 'link',
+      },
+      tags: ['conversion', 'cta'],
+    },
+    {
+      id: 'philosophy-hero-cta-portfolio',
+      selector: 'a[href="/portfolio"]',
+      name: 'Portfolio CTA Button',
+      nameTh: 'ปุ่มดูผลงาน',
+      type: 'button',
+      description: 'Secondary CTA button linking to portfolio page',
+      descriptionTh: 'ปุ่ม CTA รอง ลิงก์ไปหน้าผลงาน',
+      textContent: 'ดูผลงาน',
+      component: 'ButtonSecondary',
+      status: 'active',
+      ux: {
+        goal: 'Drive portfolio exploration',
+        priority: 3,
+      },
+      technical: {
+        cssSelector: 'a[href="/portfolio"]',
+        dataSource: 'static',
+        responsive: { desktop: true, tablet: true, mobile: true },
+      },
+      behavior: {
+        clickAction: 'navigate',
+        route: '/portfolio',
+      },
+      accessibility: {
+        ariaLabel: 'View our portfolio',
+        role: 'link',
+      },
+      tags: ['navigation', 'cta'],
+    },
+    {
+      id: 'philosophy-principles',
+      selector: 'section.bg-gray-50',
+      name: 'Principles Section',
+      nameTh: 'ส่วนหลักการ',
+      type: 'section',
+      description: 'Four principle cards in 2-column grid: Architectural Excellence, Sustainable Innovation, Unique Identity, International Standards. Each with number, icon, title (TH/EN), and description.',
+      descriptionTh: 'การ์ดหลักการ 4 ใบในกริด 2 คอลัมน์: ความเป็นเลิศทางสถาปัตยกรรม, นวัตกรรมที่ยั่งยืน, เอกลักษณ์เฉพาะตัว, คุณภาพระดับสากล แต่ละใบมีตัวเลข ไอคอน ชื่อ (TH/EN) และคำอธิบาย',
+      component: 'PrinciplesGrid',
+      status: 'active',
+      ux: {
+        goal: 'Communicate core values and build brand trust',
+        priority: 4,
+      },
+      technical: {
+        cssSelector: 'section.bg-gray-50',
+        dataSource: 'cms',
+        responsive: { desktop: true, tablet: true, mobile: true },
+      },
+      accessibility: {
+        role: 'region',
+        ariaLabel: 'Our principles',
+      },
+      tags: ['content', 'values', 'trust-building'],
+    },
+    {
+      id: 'philosophy-principle-card',
+      selector: 'div:has(> div > span.material-symbols-outlined)',
+      name: 'Principle Card',
+      nameTh: 'การ์ดหลักการ',
+      type: 'card',
+      description: 'Individual principle card with large number, icon, Thai title, English subtitle, and description',
+      descriptionTh: 'การ์ดหลักการแต่ละใบ พร้อมตัวเลขใหญ่ ไอคอน ชื่อภาษาไทย ชื่อภาษาอังกฤษ และคำอธิบาย',
+      component: 'PrincipleCard',
+      status: 'active',
+      ux: {
+        goal: 'Explain individual company principles',
+        priority: 3,
+      },
+      technical: {
+        cssSelector: 'div:has(> div > span.material-symbols-outlined)',
+        dataSource: 'cms',
+        responsive: { desktop: true, tablet: true, mobile: true },
+      },
+      accessibility: {
+        role: 'article',
+      },
+      tags: ['content'],
+    },
+    {
+      id: 'philosophy-story',
+      selector: 'section:has(img[alt="Our Story"])',
+      name: 'Story Section',
+      nameTh: 'ส่วนเรื่องราว',
+      type: 'section',
+      description: 'Company story section with image and narrative text about NUCHA\'s founding and mission',
+      descriptionTh: 'ส่วนเรื่องราวบริษัท พร้อมรูปภาพและข้อความเล่าเรื่องเกี่ยวกับการก่อตั้งและพันธกิจของ NUCHA',
+      component: 'StorySection',
+      status: 'active',
+      ux: {
+        goal: 'Build emotional connection through brand story',
+        priority: 3,
+      },
+      technical: {
+        cssSelector: 'section:has(img[alt="Our Story"])',
+        dataSource: 'cms',
+        responsive: { desktop: true, tablet: true, mobile: true },
+      },
+      accessibility: {
+        role: 'region',
+        ariaLabel: 'Our story',
+      },
+      tags: ['content', 'story'],
+    },
+    {
+      id: 'philosophy-cta',
+      selector: 'section:has(h2:text("พร้อมเริ่มต้น"))',
+      name: 'CTA Section',
+      nameTh: 'ส่วนเรียกร้อง',
+      type: 'section',
+      description: 'Bottom CTA section encouraging visitors to start their journey with NUCHA',
+      descriptionTh: 'ส่วน CTA ท้ายหน้าเชิญชวนให้ผู้เยี่ยมชมเริ่มต้นการเดินทางกับ NUCHA',
+      component: 'CTASection',
+      status: 'active',
+      ux: {
+        goal: 'Final conversion push before footer',
+        kpi: 'CTA click rate',
+        priority: 5,
+      },
+      technical: {
+        cssSelector: 'section:has(h2)',
+        dataSource: 'static',
+        responsive: { desktop: true, tablet: true, mobile: true },
+      },
+      behavior: {
+        clickAction: 'navigate',
+        route: '/contact',
+        eventName: 'philosophy_cta_click',
+      },
+      accessibility: {
+        role: 'region',
+        ariaLabel: 'Start your journey',
+      },
+      tags: ['conversion', 'cta'],
+    },
+  ],
+}
+
+// ============================================================
+// ALL PAGES
+// ============================================================
+export const allPageAnnotations: PageAnnotation[] = [
+  homepageAnnotations,
+  villasPageAnnotations,
+  servicesPageAnnotations,
+  portfolioPageAnnotations,
+  bookingPageAnnotations,
+  contactPageAnnotations,
+  philosophyPageAnnotations,
+]
 
 export const pageList = allPageAnnotations.map((p) => ({
   pageId: p.pageId,

@@ -30,8 +30,9 @@ import {
   Tag,
   ArrowUp,
   ArrowDown,
+  Download,
 } from 'lucide-react'
-import { allPageAnnotations, pageList } from '@/lib/ui-docs/sample-data'
+import { allPageAnnotations } from '@/lib/ui-docs/sample-data'
 import type { AnnotatedElement, PageAnnotation, ElementType } from '@/lib/ui-docs/types'
 
 // ─── All public pages to preview ─────────────────────────────────
@@ -108,6 +109,8 @@ export default function PagePreviewPage() {
   const iframeRef = useRef<HTMLIFrameElement>(null)
   const [sidebarOpen, setSidebarOpen] = useState(true)
   const [bottomPanelOpen, setBottomPanelOpen] = useState(true)
+  const [exporting, setExporting] = useState(false)
+  const [exportProgress, setExportProgress] = useState('')
 
   // Get annotation for current page
   const currentAnnotation: PageAnnotation | undefined = useMemo(() => {
@@ -171,6 +174,59 @@ export default function PagePreviewPage() {
       setSelectedElementId(elements[idx - 1].id)
     }
   }
+
+  // Export current page as UI Spec PDF
+  const handleExportPDF = useCallback(async () => {
+    setExporting(true)
+    setExportProgress('กำลังจับ screenshot และสร้าง UI Spec...')
+
+    try {
+      const annotation = selectedPage.annotationPageId
+        ? allPageAnnotations.find(a => a.pageId === selectedPage.annotationPageId)
+        : undefined
+
+      const response = await fetch('/api/export/pdf', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          pages: [{
+            name: selectedPage.name,
+            nameTh: selectedPage.nameTh,
+            path: selectedPage.path,
+            category: selectedPage.category,
+            description: selectedPage.description,
+            features: selectedPage.features,
+            requiresAuth: selectedPage.requiresAuth,
+            elements: annotation?.elements || [],
+            version: annotation?.version || '1.0.0',
+            lastUpdated: annotation?.lastUpdated || new Date().toISOString().slice(0, 10),
+          }],
+          title: 'NUCHA VILLA — UI Specification Document'
+        })
+      })
+
+      if (!response.ok) {
+        const err = await response.json().catch(() => ({ error: 'Unknown error' }))
+        throw new Error(err.error || `HTTP ${response.status}`)
+      }
+
+      const blob = await response.blob()
+      const url = window.URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = url
+      a.download = `nucha-ui-spec-${selectedPage.name.toLowerCase()}-${new Date().toISOString().slice(0, 10)}.pdf`
+      document.body.appendChild(a)
+      a.click()
+      a.remove()
+      window.URL.revokeObjectURL(url)
+    } catch (err) {
+      console.error('PDF export failed:', err)
+      alert('ส่งออก PDF ไม่สำเร็จ: ' + (err instanceof Error ? err.message : String(err)))
+    } finally {
+      setExporting(false)
+      setExportProgress('')
+    }
+  }, [selectedPage])
 
   // Keyboard navigation
   useEffect(() => {
@@ -236,6 +292,23 @@ export default function PagePreviewPage() {
             <button className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-red-500 text-white text-xs font-medium hover:bg-red-600 transition-colors shadow-sm">
               <Pencil className="w-3.5 h-3.5" />
               แก้ไขหน้าเว็บไซต์
+            </button>
+            <button
+              onClick={handleExportPDF}
+              disabled={exporting}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-gray-900 text-white text-xs font-medium hover:bg-gray-800 disabled:opacity-40 transition-colors shadow-sm"
+            >
+              {exporting ? (
+                <>
+                  <RefreshCw className="w-3.5 h-3.5 animate-spin" />
+                  {exportProgress || 'กำลังส่งออก...'}
+                </>
+              ) : (
+                <>
+                  <Download className="w-3.5 h-3.5" />
+                  Export UI Spec PDF
+                </>
+              )}
             </button>
           </div>
         </div>

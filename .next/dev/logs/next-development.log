@@ -1,34 +1,9 @@
-{"timestamp":"00:00:03.455","source":"Server","level":"WARN","message":"⚠ The \"middleware\" file convention is deprecated. Please use \"proxy\" instead. Learn more: https://nextjs.org/docs/messages/middleware-to-proxy"}
-{"timestamp":"00:00:05.943","source":"Server","level":"LOG","message":""}
-{"timestamp":"00:00:15.116","source":"Browser","level":"INFO","message":"%cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold"}
-{"timestamp":"00:01:27.294","source":"Server","level":"ERROR","message":"Error generating PDF: TimeoutError: Navigation timeout of 30000 ms exceeded"}
-{"timestamp":"00:01:48.148","source":"Browser","level":"ERROR","message":"PDF export failed: {}"}
-{"timestamp":"00:01:48.398","source":"Server","level":"ERROR","message":"[browser] \"PDF export failed:\" \"\\u001b[31mError: Failed to generate PDF\\u001b[39m\\n\\u001b[31m    at PagePreviewPage.useCallback[handleExportPDF] (src/app/admin/page-preview/page.tsx:438:15)\\u001b[39m\\n  \\u001b[90m436 |\\u001b[0m       \\u001b[36mif\\u001b[0m (!response.ok) {\\n  \\u001b[90m437 |\\u001b[0m         \\u001b[36mconst\\u001b[0m error = \\u001b[36mawait\\u001b[0m response.json().\\u001b[36mcatch\\u001b[0m(() => ({ error: \\u001b[32m'Un...\\u001b[0m\\n\\u001b[31m\\u001b[1m>\\u001b[0m \\u001b[90m438 |\\u001b[0m         \\u001b[36mthrow\\u001b[0m \\u001b[36mnew\\u001b[0m \\u001b[33mError\\u001b[0m(error.error || \\u001b[32m`HTTP \\u001b[0m${response.status\\u001b[32m}`\\u001b[0m)\\n  \\u001b[90m    |\\u001b[0m               \\u001b[31m\\u001b[1m^\\u001b[0m\\n  \\u001b[90m439 |\\u001b[0m       }\\n  \\u001b[90m440 |\\u001b[0m       \\n  \\u001b[90m441 |\\u001b[0m       \\u001b[36mconst\\u001b[0m blob = \\u001b[36mawait\\u001b[0m response.blob()\" \"\\u001b[2m(src/app/admin/page-preview/page.tsx:453:15)\\u001b[22m\""}
-{"timestamp":"00:01:48.399","source":"Browser","level":"ERROR","message":"PDF export failed: \"\\u001b[31mError: Failed to generate PDF\\u001b[39m\\n\\u001b[31m    at PagePreviewPage.useCallback[handleExportPDF] (src/app/admin/page-preview/page.tsx:438:15)\\u001b[39m\\n  \\u001b[90m436 |\\u001b[0m       \\u001b[36mif\\u001b[0m (!response.ok) {\\n  \\u001b[90m437 |\\u001b[0m         \\u001b[36mconst\\u001b[0m error = \\u001b[36mawait\\u001b[0m response.json().\\u001b[36mcatch\\u001b[0m(() => ({ error: \\u001b[32m'Un...\\u001b[0m\\n\\u001b[31m\\u001b[1m>\\u001b[0m \\u001b[90m438 |\\u001b[0m         \\u001b[36mthrow\\u001b[0m \\u001b[36mnew\\u001b[0m \\u001b[33mError\\u001b[0m(error.error || \\u001b[32m`HTTP \\u001b[0m${response.status\\u001b[32m}`\\u001b[0m)\\n  \\u001b[90m    |\\u001b[0m               \\u001b[31m\\u001b[1m^\\u001b[0m\\n  \\u001b[90m439 |\\u001b[0m       }\\n  \\u001b[90m440 |\\u001b[0m       \\n  \\u001b[90m441 |\\u001b[0m       \\u001b[36mconst\\u001b[0m blob = \\u001b[36mawait\\u001b[0m response.blob()\" \"\\u001b[2m(src/app/admin/page-preview/page.tsx:453:15)\\u001b[22m\""}
-{"timestamp":"00:25:47.556","source":"Server","level":"LOG","message":"✓ Compiled in 3.9s"}
-{"timestamp":"00:25:56.992","source":"Browser","level":"INFO","message":"%cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold"}
-{"timestamp":"00:27:22.992","source":"Server","level":"LOG","message":"[PDF Export] Starting server-side capture for 1 pages..."}
-{"timestamp":"00:27:28.865","source":"Server","level":"LOG","message":"[PDF Export] Capturing: http://localhost:3000/"}
-{"timestamp":"00:27:31.420","source":"Browser","level":"INFO","message":"%cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold"}
-{"timestamp":"00:30:01.850","source":"Server","level":"LOG","message":"[PDF Export] Generating HTML template..."}
-{"timestamp":"00:30:02.002","source":"Server","level":"LOG","message":"[PDF Export] Generating PDF..."}
-{"timestamp":"00:30:11.706","source":"Server","level":"LOG","message":"[PDF Export] Done: 333847 bytes"}
-{"timestamp":"00:38:33.862","source":"Browser","level":"INFO","message":"%cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold"}
-{"timestamp":"00:38:43.263","source":"Server","level":"LOG","message":"[PDF Export] Starting server-side capture for 1 pages..."}
-{"timestamp":"00:38:52.892","source":"Server","level":"LOG","message":"[PDF Export] Capturing: http://localhost:3000/"}
-{"timestamp":"00:38:58.204","source":"Browser","level":"INFO","message":"%cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold"}
-{"timestamp":"00:39:10.246","source":"Server","level":"LOG","message":"[PDF Export] Generating HTML template..."}
-{"timestamp":"00:39:10.280","source":"Server","level":"LOG","message":"[PDF Export] Generating PDF..."}
-{"timestamp":"00:39:17.409","source":"Server","level":"LOG","message":"[PDF Export] Done: 392193 bytes"}
-{"timestamp":"00:44:12.056","source":"Server","level":"LOG","message":"[PDF Export] Starting server-side capture for 1 pages..."}
-{"timestamp":"00:44:15.424","source":"Server","level":"LOG","message":"[PDF Export] Capturing: http://localhost:3000/"}
-{"timestamp":"00:44:19.668","source":"Browser","level":"INFO","message":"%cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold"}
-{"timestamp":"00:44:33.836","source":"Server","level":"LOG","message":"[PDF Export] Generating HTML template..."}
-{"timestamp":"00:44:33.867","source":"Server","level":"LOG","message":"[PDF Export] Generating PDF..."}
-{"timestamp":"00:44:45.186","source":"Server","level":"LOG","message":"[PDF Export] Done: 534419 bytes"}
-{"timestamp":"00:48:33.245","source":"Server","level":"LOG","message":"[PDF Export] Starting server-side capture for 1 pages..."}
-{"timestamp":"00:48:36.994","source":"Server","level":"LOG","message":"[PDF Export] Capturing: http://localhost:3000/"}
-{"timestamp":"00:48:40.916","source":"Browser","level":"INFO","message":"%cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold"}
-{"timestamp":"00:48:50.910","source":"Server","level":"LOG","message":"[PDF Export] Generating HTML template..."}
-{"timestamp":"00:48:50.944","source":"Server","level":"LOG","message":"[PDF Export] Generating PDF..."}
-{"timestamp":"00:48:58.378","source":"Server","level":"LOG","message":"[PDF Export] Done: 533938 bytes"}
+{"timestamp":"00:00:05.568","source":"Server","level":"WARN","message":"⚠ The \"middleware\" file convention is deprecated. Please use \"proxy\" instead. Learn more: https://nextjs.org/docs/messages/middleware-to-proxy"}
+{"timestamp":"00:00:09.034","source":"Server","level":"LOG","message":""}
+{"timestamp":"00:00:33.914","source":"Browser","level":"INFO","message":"%cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold"}
+{"timestamp":"00:00:44.190","source":"Server","level":"LOG","message":"○ Compiling /api/settings ..."}
+{"timestamp":"00:01:13.490","source":"Browser","level":"INFO","message":"%cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold"}
+{"timestamp":"00:02:34.241","source":"Browser","level":"INFO","message":"%cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold"}
+{"timestamp":"00:06:36.721","source":"Server","level":"LOG","message":"○ Compiling /admin/ui-docs ..."}
+{"timestamp":"00:12:37.672","source":"Server","level":"LOG","message":"✓ Compiled in 7.4s"}
+{"timestamp":"00:16:12.832","source":"Browser","level":"INFO","message":"%cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold"}

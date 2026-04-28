@@ -130,6 +130,7 @@ export default function Navigation({ currentPage }: { currentPage?: string }) {
         <div className="flex justify-between items-center px-5 sm:px-8 md:px-12 lg:px-16 pt-2 md:pt-3 pb-4 md:pb-5 max-w-[1920px] mx-auto">
           {logoUrl && (
             <Link
+              data-doc="nav-logo"
               href="/"
               className="flex items-center gap-3 hover:opacity-80 transition-opacity"
             >

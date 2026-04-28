@@ -73,10 +73,10 @@ export function middleware(request: NextRequest) {
   // Security headers
   const response = NextResponse.next()
 
-  // ป้องกัน clickjacking (ยกเว้นสำหรับ page-preview)
+  // ป้องกัน clickjacking (ยกเว้นสำหรับ page-preview และ ui-docs)
   const referer = request.headers.get('referer')
-  const isFromPagePreview = referer?.includes('/admin/page-preview')
-  if (!isFromPagePreview) {
+  const isFromAdminPreview = referer?.includes('/admin/page-preview') || referer?.includes('/admin/ui-docs')
+  if (!isFromAdminPreview) {
     response.headers.set('X-Frame-Options', 'DENY')
   } else {
     response.headers.set('X-Frame-Options', 'SAMEORIGIN')

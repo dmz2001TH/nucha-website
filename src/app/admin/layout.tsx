@@ -39,6 +39,7 @@ function AdminLayoutContent({ children }: { children: React.ReactNode }) {
     { href: '/admin/users', label: 'ผู้ใช้งาน', icon: 'group' },
     { href: '/admin/settings', label: 'ตั้งค่า', icon: 'settings' },
     { href: '/admin/page-preview', label: 'ดูตัวอย่างหน้าเว็บ', icon: 'preview' },
+    { href: '/admin/ui-docs', label: 'เอกสาร UI', icon: 'code' },
     { divider: true },
     { href: '/', label: 'ดูเว็บไซต์', icon: 'open_in_new', external: true }
   ]

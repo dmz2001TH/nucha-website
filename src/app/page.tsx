@@ -71,7 +71,7 @@ function HeroSection({ heroSettings }: { heroSettings: Record<string, string> })
   const heroImage = heroSettings.hero_image || 'https://console.baanmaevilla.com/uploads/LINE_ALBUM_6_Type_B_18_182a78a5c2.jpg'
 
   return (
-    <section className="relative min-h-[100dvh] flex items-center overflow-hidden pt-16 md:pt-20 bg-white">
+    <section data-doc="hero-section" className="relative min-h-[100dvh] flex items-center overflow-hidden pt-16 md:pt-20 bg-white">
       <div className="absolute inset-0 z-0">
         <img
           alt="Luxury Villa Architectural View"
@@ -88,7 +88,7 @@ function HeroSection({ heroSettings }: { heroSettings: Record<string, string> })
           <span className="text-primary text-xs sm:text-sm tracking-[0.3em] sm:tracking-[0.4em] uppercase font-bold mb-3 sm:mb-4 block font-headline" style={{textShadow: '2px 2px 0px white'}}>
             {tagline}
           </span>
-          <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-[8rem] font-black leading-[0.9] tracking-tighter text-gray-900 font-headline" style={{textShadow: '3px 3px 0px white'}}>
+          <h1 data-doc="hero-headline" className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-[8rem] font-black leading-[0.9] tracking-tighter text-gray-900 font-headline" style={{textShadow: '3px 3px 0px white'}}>
             {heroBrandPrefix} <br /> <span className="text-primary">{heroBrandHighlight}</span>
           </h1>
           <p className="max-w-xl text-gray-900 font-body font-semibold text-base sm:text-lg mt-6 sm:mt-8 leading-relaxed" style={{textShadow: '2px 2px 0px white'}}>
@@ -110,7 +110,7 @@ function HeroSection({ heroSettings }: { heroSettings: Record<string, string> })
 
         <div className="lg:col-span-5 xl:col-span-4 hidden lg:block">
           <div className="border-l-2 border-primary/20 pl-8 space-y-6">
-            <Link href="/portfolio" className="group cursor-pointer block">
+            <Link data-doc="hero-cta-primary" href="/portfolio" className="group cursor-pointer block">
               <span className="block text-[0.65rem] tracking-widest text-primary font-bold uppercase mb-1 font-headline">แบบ</span>
               <h3 className="text-xl font-headline text-gray-900 group-hover:text-primary transition-colors">{sidebarProject}</h3>
             </Link>
@@ -133,7 +133,7 @@ function HeroSection({ heroSettings }: { heroSettings: Record<string, string> })
 // Services Accordion Section
 function ServicesSection({ services }: { services: Array<{ title: string; description: string; image: string; slug: string }> }) {
   return (
-    <section className="bg-white pt-8 sm:pt-12 md:pt-16 pb-8 sm:pb-12 px-5 sm:px-8 md:px-12 overflow-hidden">
+    <section data-doc="services-section" className="bg-white pt-8 sm:pt-12 md:pt-16 pb-8 sm:pb-12 px-5 sm:px-8 md:px-12 overflow-hidden">
       <div className="max-w-[1400px] mx-auto">
         <div className="mb-8 md:mb-12">
           <h2 className="text-3xl sm:text-4xl md:text-5xl font-headline font-black text-gray-900 uppercase tracking-tighter">
@@ -216,7 +216,7 @@ function PortfolioSection({ projects }: { projects: Array<{ title: string; locat
           </Link>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-4 sm:gap-4 lg:gap-6 auto-rows-[250px] sm:auto-rows-[280px] lg:auto-rows-[300px]">
+        <div data-doc="portfolio-grid" className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-4 sm:gap-4 lg:gap-6 auto-rows-[250px] sm:auto-rows-[280px] lg:auto-rows-[300px]">
           {projects.length > 0 ? (
             projects.map((project, index) => (
               <div
@@ -309,7 +309,7 @@ function ContactSection() {
                   <option className="bg-white">ปรึกษาออกแบบภายใน</option>
                 </select>
               </div>
-              <Link href="/booking"
+              <Link data-doc="contact-button" href="/booking"
                 className="block w-full bg-primary text-white font-headline font-bold py-3.5 sm:py-4 uppercase tracking-[0.2em] rounded-lg hover:bg-primary-dark transition-all shadow-xl shadow-red-500/20 text-sm sm:text-base text-center"
               >
                 จองคิวปรึกษา

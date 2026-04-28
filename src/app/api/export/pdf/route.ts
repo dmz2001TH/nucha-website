@@ -4,7 +4,7 @@ import { generateReportHTML, PageData } from './template'
 
 export async function POST(request: NextRequest) {
   try {
-    const { pages, title = 'NUCHA VILLA — UI Specification Document' } = await request.json()
+    const { pages, title = 'Website Preview Report' } = await request.json()
 
     if (!pages || pages.length === 0) {
       return NextResponse.json({ error: 'No pages provided' }, { status: 400 })
@@ -12,7 +12,7 @@ export async function POST(request: NextRequest) {
 
     const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'
 
-    console.log(`[PDF Export] Starting capture for ${pages.length} pages...`)
+    console.log(`[PDF Export] Starting server-side capture for ${pages.length} pages...`)
 
     const browser = await puppeteer.launch({
       headless: 'new' as any,
@@ -28,7 +28,7 @@ export async function POST(request: NextRequest) {
 
         try {
           const p = await browser.newPage()
-          await p.setViewport({ width: 1440, height: 900, deviceScaleFactor: 1.5 })
+          await p.setViewport({ width: 1440, height: 900, deviceScaleFactor: 1 })
 
           const url = `${baseUrl}${page.path}`
           console.log(`[PDF Export] Capturing: ${url}`)
@@ -38,45 +38,20 @@ export async function POST(request: NextRequest) {
             timeout: 30000
           })
 
-          await new Promise(r => setTimeout(r, 2000))
+          // Wait for animations/fonts to settle
+          await new Promise(r => setTimeout(r, 1500))
 
           const screenshot = await p.screenshot({
             fullPage: true,
             type: 'jpeg',
-            quality: 80
+            quality: 70
           })
-
-          // Also capture element positions for annotation markers
-          let elementPositions: Record<string, { x: number; y: number; w: number; h: number }> = {}
-          if (page.elements && page.elements.length > 0) {
-            try {
-              elementPositions = await p.evaluate((els: { id: string; selector: string }[]) => {
-                const result: Record<string, { x: number; y: number; w: number; h: number }> = {}
-                els.forEach((el) => {
-                  const target = document.querySelector(el.selector)
-                  if (target) {
-                    const rect = target.getBoundingClientRect()
-                    result[el.id] = {
-                      x: Math.round(rect.left + window.scrollX),
-                      y: Math.round(rect.top + window.scrollY),
-                      w: Math.round(rect.width),
-                      h: Math.round(rect.height)
-                    }
-                  }
-                })
-                return result
-              }, page.elements.map(e => ({ id: e.id, selector: e.selector })))
-            } catch {
-              // elements not found
-            }
-          }
 
           await p.close()
 
           return {
             ...page,
-            screenshot: `data:image/jpeg;base64,${screenshot.toString('base64')}`,
-            elementPositions
+            screenshot: `data:image/jpeg;base64,${screenshot.toString('base64')}`
           }
         } catch (err) {
           console.error(`[PDF Export] Failed to capture ${page.path}:`, err)
@@ -87,7 +62,7 @@ export async function POST(request: NextRequest) {
 
     await browser.close()
 
-    console.log('[PDF Export] Generating spec document HTML...')
+    console.log('[PDF Export] Generating HTML template...')
     const html = generateReportHTML(pagesWithScreenshots, title)
 
     console.log('[PDF Export] Generating PDF...')
@@ -112,7 +87,7 @@ export async function POST(request: NextRequest) {
 
     console.log(`[PDF Export] Done: ${pdfBuffer.length} bytes`)
 
-    const filename = `nucha-ui-spec-${new Date().toISOString().split('T')[0]}.pdf`
+    const filename = `nucha-website-preview-${new Date().toISOString().split('T')[0]}.pdf`
 
     return new NextResponse(pdfBuffer, {
       headers: {

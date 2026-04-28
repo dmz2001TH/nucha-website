@@ -3,18 +3,36 @@
 import { useState, useRef, useCallback, useMemo, useEffect } from 'react'
 import {
   Eye,
-  Download,
-  Loader2,
   Monitor,
+  Tablet,
   Smartphone,
   ExternalLink,
   Check,
   RefreshCw,
-  Maximize2,
   X,
   LayoutGrid,
   Lock,
+  ChevronRight,
+  Pencil,
+  Plus,
+  Layers,
+  MousePointerClick,
+  Type,
+  Image,
+  Link2,
+  Navigation,
+  Grid3X3,
+  MessageSquare,
+  MapPin,
+  Code,
+  Palette,
+  Accessibility,
+  Tag,
+  ArrowUp,
+  ArrowDown,
 } from 'lucide-react'
+import { allPageAnnotations, pageList } from '@/lib/ui-docs/sample-data'
+import type { AnnotatedElement, PageAnnotation, ElementType } from '@/lib/ui-docs/types'
 
 // ─── All public pages to preview ─────────────────────────────────
 interface PageEntry {
@@ -25,633 +43,636 @@ interface PageEntry {
   description?: string
   features?: string[]
   requiresAuth?: boolean
+  annotationPageId?: string
 }
 
 const ALL_PAGES: PageEntry[] = [
-  // ─── Main pages ───
-  {
-    name: 'Homepage', nameTh: 'หน้าแรก', path: '/', category: 'หน้าหลัก',
-    description: 'หน้าแรกของเว็บไซต์ แสดง Hero Slideshow, โครงการแนะนำ, โปรโมชั่น, ข่าวสาร และแผนที่',
-    features: ['Hero Slideshow', 'โครงการแนะนำ (Featured Villas)', 'โปรโมชั่นล่าสุด', 'Quick Search', 'แผนที่โครงการ', 'บริการ'],
-  },
-  {
-    name: 'Villas', nameTh: 'วิลล่าทั้งหมด', path: '/villas', category: 'หน้าหลัก',
-    description: 'รายการวิลล่าทั้งหมด รองรับการค้นหา, กรองตามสถานะ/ราคา/ทำเล, และเรียงลำดับ',
-    features: ['ค้นหาวิลล่า', 'กรองตามสถานะ/ราคา/ทำเล', 'เรียงลำดับ', 'แสดงแบบ Grid/List', 'Pagination'],
-  },
-  {
-    name: 'Contact', nameTh: 'ติดต่อเรา', path: '/contact', category: 'หน้าหลัก',
-    description: 'ฟอร์มติดต่อเรา, ข้อมูลติดต่อบริษัท, แผนที่สำนักงาน',
-    features: ['ฟอร์มติดต่อ (ส่ง Lead)', 'แผนที่ Google Maps', 'ข้อมูลที่อยู่/โทรศัพท์/อีเมล', 'LINE QR Code'],
-  },
-  {
-    name: 'Services', nameTh: 'บริการ', path: '/services', category: 'หน้าหลัก',
-    description: 'รายการบริการทั้งหมด รองรับหมวดหมู่และ Pagination',
-    features: ['รายการบริการ', 'หมวดหมู่', 'รูปภาพ Cover', 'Pagination'],
-  },
-  {
-    name: 'Portfolio', nameTh: 'ผลงาน', path: '/portfolio', category: 'หน้าหลัก',
-    description: 'แสดงผลงานโครงการที่สำเร็จแล้ว',
-    features: ['แกลเลอรีผลงาน', 'รายละเอียดโครงการ', 'Filter ตามหมวดหมู่'],
-  },
-  {
-    name: 'Booking', nameTh: 'จองคิว', path: '/booking', category: 'หน้าหลัก',
-    description: 'ฟอร์มจองคิวปรึกษา',
-    features: ['ฟอร์มจองคิว', 'เลือกวันที่', 'เลือกบริการ'],
-  },
-  {
-    name: 'Map', nameTh: 'แผนที่', path: '/map', category: 'หน้าหลัก',
-    description: 'แผนที่แสดงตำแหน่งโครงการทั้งหมด',
-    features: ['Interactive Map', 'Pin โครงการทั้งหมด', 'Popup ข้อมูลโครงการ'],
-  },
-
-  // ─── Info pages ───
-  {
-    name: 'Philosophy', nameTh: 'ปรัชญา', path: '/philosophy', category: 'ข้อมูลบริษัท',
-    description: 'ปรัชญาและค่านิยมของบริษัท',
-    features: ['ข้อมูลปรัชญา', 'ค่านิยม', 'รูปภาพประกอบ'],
-  },
-
-  // ─── Admin / Backend pages ───
-  {
-    name: 'Admin Dashboard', nameTh: 'แดชบอร์ดแอดมิน', path: '/admin', category: 'หลังบ้าน (Admin)',
-    description: 'หน้าหลักของระบบหลังบ้าน แสดงสรุปข้อมูลสำคัญ',
-    features: ['สรุปจำนวนวิลล่า/ลูกค้า', 'สถิติการเข้าชม', 'ลิงก์ด่วนไปหน้าต่างๆ'],
-    requiresAuth: true,
-  },
-  {
-    name: 'Admin Villas', nameTh: 'จัดการวิลล่า', path: '/admin/villas', category: 'หลังบ้าน (Admin)',
-    description: 'จัดการวิลล่าทั้งหมด — เพิ่ม/แก้ไข/ลบ/เรียงลำดับ',
-    features: ['รายการวิลล่า', 'เพิ่ม/แก้ไข/ลบวิลล่า', 'อัปโหลดรูปภาพ/แกลเลอรี', 'จัดการ Features', 'สถานะวิลล่า'],
-    requiresAuth: true,
-  },
-  {
-    name: 'Admin Services', nameTh: 'จัดการบริการ', path: '/admin/services', category: 'หลังบ้าน (Admin)',
-    description: 'จัดการบริการ — เพิ่ม/แก้ไข/ลบ',
-    features: ['รายการบริการ', 'Rich Text Editor', 'อัปโหลดรูปภาพ', 'ตั้งค่าหมวดหมู่'],
-    requiresAuth: true,
-  },
-  {
-    name: 'Admin Portfolio', nameTh: 'จัดการผลงาน', path: '/admin/portfolio', category: 'หลังบ้าน (Admin)',
-    description: 'จัดการผลงาน',
-    features: ['รายการผลงาน', 'อัปโหลดรูปภาพ', 'ตั้งค่าหมวดหมู่'],
-    requiresAuth: true,
-  },
-  {
-    name: 'Admin Bookings', nameTh: 'ข้อมูลการจอง', path: '/admin/bookings', category: 'หลังบ้าน (Admin)',
-    description: 'ดูรายการการจองคิวปรึกษา',
-    features: ['รายการการจอง', 'ข้อมูลติดต่อลูกค้า', 'สถานะการจอง', 'กรองข้อมูล'],
-    requiresAuth: true,
-  },
-  {
-    name: 'Admin Inquiries', nameTh: 'ข้อมูลการสอบถาม', path: '/admin/inquiries', category: 'หลังบ้าน (Admin)',
-    description: 'ดูรายการข้อสอบถามที่ส่งเข้ามา',
-    features: ['รายการข้อสอบถาม', 'ข้อมูลติดต่อลูกค้า', 'สถานะ', 'กรองข้อมูล'],
-    requiresAuth: true,
-  },
-  {
-    name: 'Admin Users', nameTh: 'จัดการผู้ใช้', path: '/admin/users', category: 'หลังบ้าน (Admin)',
-    description: 'จัดการบัญชีผู้ใช้และสิทธิ Admin',
-    features: ['รายการผู้ใช้', 'เพิ่ม/แก้ไข/ลบผู้ใช้', 'กำหนดสิทธิ์'],
-    requiresAuth: true,
-  },
-  {
-    name: 'Admin Pages', nameTh: 'จัดการหน้าเว็บ', path: '/admin/pages', category: 'หลังบ้าน (Admin)',
-    description: 'จัดการหน้าเว็บแบบ Drag & Drop ด้วย Puck Editor',
-    features: ['Drag & Drop Page Builder', 'สร้างหน้าใหม่', 'แก้ไขเนื้อหา'],
-    requiresAuth: true,
-  },
-  {
-    name: 'Admin Settings', nameTh: 'ตั้งค่าเว็บไซต์', path: '/admin/settings', category: 'หลังบ้าน (Admin)',
-    description: 'ตั้งค่าทั่วไปของเว็บไซต์ — โลโก้, สี, ข้อมูลติดต่อ, SEO',
-    features: ['โลโก้/Favicon', 'สี Theme', 'ข้อมูลบริษัท', 'Social Media Links', 'SEO Settings'],
-    requiresAuth: true,
-  },
-  {
-    name: 'Admin Media', nameTh: 'จัดการไฟล์', path: '/admin/media', category: 'หลังบ้าน (Admin)',
-    description: 'จัดการไฟล์รูปภาพและเอกสาร',
-    features: ['อัปโหลดไฟล์', 'จัดการโฟลเดอร์', 'ลบไฟล์'],
-    requiresAuth: true,
-  },
+  { name: 'Homepage', nameTh: 'หน้าแรก', path: '/', category: 'หน้าหลัก', description: 'หน้าแรกของเว็บไซต์ แสดง Hero, โครงการแนะนำ, โปรโมชั่น', features: ['Hero Slideshow', 'โครงการแนะนำ', 'โปรโมชั่นล่าสุด'], annotationPageId: 'homepage' },
+  { name: 'Villas', nameTh: 'วิลล่าทั้งหมด', path: '/villas', category: 'หน้าหลัก', description: 'รายการวิลล่าทั้งหมด รองรับการค้นหาและกรอง', features: ['ค้นหาวิลล่า', 'กรองสถานะ', 'เรียงลำดับ'], annotationPageId: 'villas' },
+  { name: 'Contact', nameTh: 'ติดต่อเรา', path: '/contact', category: 'หน้าหลัก', description: 'ฟอร์มติดต่อ, ข้อมูลบริษัท, แผนที่', features: ['ฟอร์มติดต่อ', 'แผนที่', 'ข้อมูลติดต่อ'], annotationPageId: 'contact' },
+  { name: 'Services', nameTh: 'บริการ', path: '/services', category: 'หน้าหลัก', description: 'รายการบริการทั้งหมด', features: ['รายการบริการ', 'รายละเอียดบริการ'], annotationPageId: 'services' },
+  { name: 'Portfolio', nameTh: 'ผลงาน', path: '/portfolio', category: 'หน้าหลัก', description: 'แสดงผลงานโครงการ', features: ['แกลเลอรีผลงาน', 'Filter หมวดหมู่'], annotationPageId: 'portfolio' },
+  { name: 'Booking', nameTh: 'จองคิว', path: '/booking', category: 'หน้าหลัก', description: 'ฟอร์มจองคิวปรึกษา', features: ['ปฏิทิน', 'เลือกเวลา', 'ฟอร์มจอง'], annotationPageId: 'booking' },
+  { name: 'Philosophy', nameTh: 'ปรัชญา', path: '/philosophy', category: 'ข้อมูลบริษัท', description: 'ปรัชญาและค่านิยมบริษัท', features: ['ปรัชญา', 'ค่านิยม'], annotationPageId: 'philosophy' },
+  { name: 'Map', nameTh: 'แผนที่', path: '/map', category: 'หน้าหลัก', description: 'แผนที่แสดงตำแหน่งโครงการ', features: ['Interactive Map'] },
 ]
 
-const CATEGORIES = [...new Set(ALL_PAGES.map((p) => p.category))]
-const CATEGORY_ALL = 'ทั้งหมด'
+// ─── Element type icon mapping ───────────────────────────────────
+const ELEMENT_ICONS: Record<ElementType, typeof MousePointerClick> = {
+  button: MousePointerClick,
+  heading: Type,
+  section: LayoutGrid,
+  image: Image,
+  link: Link2,
+  input: Type,
+  card: Grid3X3,
+  navigation: Navigation,
+  footer: LayoutGrid,
+  hero: Image,
+  text: Type,
+  icon: Tag,
+  badge: Tag,
+  form: MessageSquare,
+  list: LayoutGrid,
+  other: Layers,
+}
+
+const ELEMENT_TYPE_LABELS: Record<ElementType, string> = {
+  button: 'Button',
+  heading: 'Heading',
+  section: 'Section',
+  image: 'Image',
+  link: 'Link',
+  input: 'Input',
+  card: 'Card',
+  navigation: 'Navigation',
+  footer: 'Footer',
+  hero: 'Hero',
+  text: 'Text',
+  icon: 'Icon',
+  badge: 'Badge',
+  form: 'Form',
+  list: 'List',
+  other: 'Other',
+}
 
 // ─── Page Component ──────────────────────────────────────────────
 export default function PagePreviewPage() {
-  const [selectedPages, setSelectedPages] = useState<Set<string>>(
-    new Set(ALL_PAGES.map((p) => p.path))
-  )
-  const [viewMode, setViewMode] = useState<'desktop' | 'mobile'>('desktop')
-  const [activeCategory, setActiveCategory] = useState(CATEGORY_ALL)
-  const [exporting, setExporting] = useState(false)
-  const [exportProgress, setExportProgress] = useState('')
-  const [exportCurrent, setExportCurrent] = useState(0)
-  const [exportTotal, setExportTotal] = useState(0)
-  const [fullscreenPage, setFullscreenPage] = useState<PageEntry | null>(null)
-  const [fullscreenDevice, setFullscreenDevice] = useState<'desktop' | 'mobile'>('desktop')
-  const [iframeKeys, setIframeKeys] = useState(0)
-  const iframeRefs = useRef<Map<string, HTMLIFrameElement>>(new Map())
-  const previewContainerRefs = useRef<Map<string, HTMLDivElement>>(new Map())
-  const [containerWidths, setContainerWidths] = useState<Map<string, number>>(new Map())
-  const observerRef = useRef<ResizeObserver | null>(null)
+  const [selectedPage, setSelectedPage] = useState<PageEntry>(ALL_PAGES[0])
+  const [viewMode, setViewMode] = useState<'desktop' | 'tablet' | 'mobile'>('desktop')
+  const [selectedElementId, setSelectedElementId] = useState<string | null>(null)
+  const [hoveredElementId, setHoveredElementId] = useState<string | null>(null)
+  const [iframeKey, setIframeKey] = useState(0)
+  const [showOverlay, setShowOverlay] = useState(true)
+  const [elementPositions, setElementPositions] = useState<Record<string, DOMRect | null>>({})
+  const iframeRef = useRef<HTMLIFrameElement>(null)
+  const [sidebarOpen, setSidebarOpen] = useState(true)
+  const [bottomPanelOpen, setBottomPanelOpen] = useState(true)
 
-  // Single ResizeObserver instance
+  // Get annotation for current page
+  const currentAnnotation: PageAnnotation | undefined = useMemo(() => {
+    if (!selectedPage.annotationPageId) return undefined
+    return allPageAnnotations.find((a) => a.pageId === selectedPage.annotationPageId)
+  }, [selectedPage.annotationPageId])
+
+  const elements: AnnotatedElement[] = currentAnnotation?.elements || []
+  const selectedElement = elements.find((e) => e.id === selectedElementId) || null
+
+  // Viewport widths
+  const viewportWidth = viewMode === 'desktop' ? 1440 : viewMode === 'tablet' ? 768 : 375
+  const viewportHeight = viewMode === 'desktop' ? 900 : viewMode === 'tablet' ? 1024 : 812
+
+  // Update element positions from iframe
   useEffect(() => {
-    observerRef.current = new ResizeObserver((entries) => {
-      setContainerWidths((prev) => {
-        const next = new Map(prev)
-        let changed = false
-        for (const entry of entries) {
-          const key = (entry.target as HTMLElement).dataset.pagePath
-          if (key) {
-            const w = Math.round(entry.contentRect.width)
-            if (next.get(key) !== w) {
-              next.set(key, w)
-              changed = true
-            }
+    if (!iframeRef.current || !currentAnnotation || !showOverlay) return
+    const iframe = iframeRef.current
+
+    function updatePositions() {
+      try {
+        const doc = iframe.contentDocument || iframe.contentWindow?.document
+        if (!doc) return
+        const positions: Record<string, DOMRect | null> = {}
+        currentAnnotation!.elements.forEach((el) => {
+          const target = doc.querySelector(el.selector)
+          if (target) {
+            positions[el.id] = target.getBoundingClientRect()
           }
-        }
-        return changed ? next : prev
-      })
-    })
-    return () => observerRef.current?.disconnect()
-  }, [])
-
-  // Helper to register preview container ref + observe
-  const setPreviewRef = useCallback((path: string) => (el: HTMLDivElement | null) => {
-    if (el) {
-      previewContainerRefs.current.set(path, el)
-      observerRef.current?.observe(el)
+        })
+        setElementPositions(positions)
+      } catch {
+        // cross-origin
+      }
     }
-  }, [])
 
-  // Filtered pages based on active category & selection
-  const visiblePages = useMemo(() => {
-    return ALL_PAGES.filter((p) => {
-      const inCategory = activeCategory === CATEGORY_ALL || p.category === activeCategory
-      const isSelected = selectedPages.has(p.path)
-      return inCategory && isSelected
-    })
-  }, [activeCategory, selectedPages])
+    iframe.onload = updatePositions
+    const interval = setInterval(updatePositions, 2000)
+    updatePositions()
 
-  const categoryCount = useMemo(() => {
-    const counts: Record<string, number> = { [CATEGORY_ALL]: selectedPages.size }
-    CATEGORIES.forEach((cat) => {
-      counts[cat] = ALL_PAGES.filter((p) => p.category === cat && selectedPages.has(p.path)).length
-    })
-    return counts
-  }, [selectedPages])
+    return () => clearInterval(interval)
+  }, [currentAnnotation, iframeKey, showOverlay, selectedPage.path])
 
-  const togglePage = (path: string) => {
-    setSelectedPages((prev) => {
-      const next = new Set(prev)
-      if (next.has(path)) next.delete(path)
-      else next.add(path)
-      return next
-    })
+  const handlePageSelect = (page: PageEntry) => {
+    setSelectedPage(page)
+    setSelectedElementId(null)
+    setHoveredElementId(null)
+    setElementPositions({})
   }
 
-  const selectAll = () => setSelectedPages(new Set(ALL_PAGES.map((p) => p.path)))
-  const deselectAll = () => setSelectedPages(new Set())
-
-  const toggleCategory = (cat: string) => {
-    const pagesInCat = ALL_PAGES.filter((p) => p.category === cat)
-    const allSelected = pagesInCat.every((p) => selectedPages.has(p.path))
-    setSelectedPages((prev) => {
-      const next = new Set(prev)
-      pagesInCat.forEach((p) => {
-        if (allSelected) next.delete(p.path)
-        else next.add(p.path)
-      })
-      return next
-    })
-  }
-
-  const refreshAll = () => setIframeKeys((k) => k + 1)
-
-  // ─── Export selected pages to a single PDF ────────────────────
-  const handleExportPDF = useCallback(async () => {
-    const pagesToExport = ALL_PAGES.filter((p) => selectedPages.has(p.path))
-    
-    if (pagesToExport.length === 0) {
-      alert('กรุณาเลือกอย่างน้อย 1 หน้า')
+  const handleElementNavigate = (direction: 'next' | 'prev') => {
+    if (elements.length === 0) return
+    if (!selectedElementId) {
+      setSelectedElementId(direction === 'next' ? elements[0].id : elements[elements.length - 1].id)
       return
     }
-
-    setExporting(true)
-    setExportTotal(pagesToExport.length)
-    setExportCurrent(1)
-    setExportProgress('กำลังส่งข้อมูลไปยังเซิร์ฟเวอร์...')
-
-    try {
-      // Server captures screenshots + generates PDF
-      const response = await fetch('/api/export/pdf', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          pages: pagesToExport.map(p => ({
-            name: p.name,
-            nameTh: p.nameTh,
-            path: p.path,
-            category: p.category,
-            description: p.description,
-            features: p.features,
-            requiresAuth: p.requiresAuth
-          })),
-          title: 'NUCHA VILLA Website Preview Report'
-        })
-      })
-      
-      if (!response.ok) {
-        const error = await response.json().catch(() => ({ error: 'Unknown error' }))
-        throw new Error(error.error || `HTTP ${response.status}`)
-      }
-      
-      const blob = await response.blob()
-      const url = window.URL.createObjectURL(blob)
-      const a = document.createElement('a')
-      a.href = url
-      a.download = `nucha-website-preview-${new Date().toISOString().slice(0, 10)}.pdf`
-      document.body.appendChild(a)
-      a.click()
-      a.remove()
-      window.URL.revokeObjectURL(url)
-      
-      setExportProgress('ส่งออก PDF สำเร็จ!')
-    } catch (err) {
-      console.error('PDF export failed:', err)
-      alert('เกิดข้อผิดพลาดในการส่งออก PDF: ' + (err instanceof Error ? err.message : String(err)))
-    } finally {
-      setExporting(false)
-      setExportProgress('')
-      setExportCurrent(0)
-      setExportTotal(0)
+    const idx = elements.findIndex((e) => e.id === selectedElementId)
+    if (direction === 'next' && idx < elements.length - 1) {
+      setSelectedElementId(elements[idx + 1].id)
+    } else if (direction === 'prev' && idx > 0) {
+      setSelectedElementId(elements[idx - 1].id)
     }
-  }, [selectedPages])
+  }
+
+  // Keyboard navigation
+  useEffect(() => {
+    function onKeyDown(e: KeyboardEvent) {
+      if (e.key === 'ArrowDown' || e.key === 'ArrowRight') {
+        e.preventDefault()
+        handleElementNavigate('next')
+      }
+      if (e.key === 'ArrowUp' || e.key === 'ArrowLeft') {
+        e.preventDefault()
+        handleElementNavigate('prev')
+      }
+      if (e.key === 'Escape') {
+        setSelectedElementId(null)
+      }
+    }
+    window.addEventListener('keydown', onKeyDown)
+    return () => window.removeEventListener('keydown', onKeyDown)
+  }, [selectedElementId, elements])
 
   return (
-    <div className="space-y-5">
-      {/* ─── Clean Header ─── */}
-      <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 pb-4 border-b border-gray-200">
-        <div>
-          <h1 className="text-xl font-semibold text-gray-900 flex items-center gap-2">
-            <Eye className="w-5 h-5 text-gray-500" />
-            Page Preview
-          </h1>
-          <p className="text-sm text-gray-500 mt-0.5">
-            {selectedPages.size} หน้าที่เลือก · {ALL_PAGES.length} หน้าทั้งหมด
-          </p>
-        </div>
-
-        <div className="flex items-center gap-2">
-          {/* Device toggle */}
-          <div className="flex rounded-lg border border-gray-200 bg-white overflow-hidden">
-            <button
-              onClick={() => setViewMode('desktop')}
-              className={`flex items-center gap-1.5 px-3 py-2 text-xs font-medium transition-colors ${
-                viewMode === 'desktop'
-                  ? 'bg-gray-900 text-white'
-                  : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50'
-              }`}
-            >
-              <Monitor className="w-3.5 h-3.5" />
-              Desktop
-            </button>
-            <button
-              onClick={() => setViewMode('mobile')}
-              className={`flex items-center gap-1.5 px-3 py-2 text-xs font-medium transition-colors ${
-                viewMode === 'mobile'
-                  ? 'bg-gray-900 text-white'
-                  : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50'
-              }`}
-            >
-              <Smartphone className="w-3.5 h-3.5" />
-              Mobile
-            </button>
-          </div>
-
-          <button
-            onClick={refreshAll}
-            className="flex items-center gap-1.5 px-3 py-2 rounded-lg border border-gray-200 text-xs font-medium text-gray-500 hover:bg-gray-50 hover:text-gray-700 transition-colors bg-white"
-          >
-            <RefreshCw className="w-3.5 h-3.5" />
-            รีเฟรช
-          </button>
-
-          <button
-            onClick={handleExportPDF}
-            disabled={exporting || selectedPages.size === 0}
-            className="flex items-center gap-2 px-4 py-2 rounded-lg bg-gray-900 text-white text-xs font-medium hover:bg-gray-800 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
-          >
-            {exporting ? (
-              <>
-                <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                กำลังส่งออก...
-              </>
-            ) : (
-              <>
-                <Download className="w-3.5 h-3.5" />
-                ส่งออก PDF ({selectedPages.size})
-              </>
-            )}
-          </button>
-        </div>
-      </div>
-
-      {/* ─── Export Progress Overlay ─── */}
-      {exporting && (
-        <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center">
-          <div className="bg-white rounded-xl shadow-lg p-6 w-full max-w-sm mx-4">
-            <div className="flex flex-col items-center text-center">
-              <Loader2 className="w-6 h-6 text-gray-900 animate-spin mb-3" />
-              <h3 className="text-base font-medium text-gray-900">กำลังสร้าง PDF</h3>
-              <p className="text-sm text-gray-500 mt-1 mb-4">{exportProgress}</p>
-              <div className="w-full bg-gray-100 rounded-full h-2 mb-2">
-                <div
-                  className="bg-gray-900 h-2 rounded-full transition-all duration-300"
-                  style={{ width: exportTotal > 0 ? `${(exportCurrent / exportTotal) * 100}%` : '0%' }}
-                />
-              </div>
-              <p className="text-xs text-gray-400">
-                {exportCurrent} / {exportTotal} หน้า
-              </p>
+    <div className="h-[calc(100vh-8rem)] flex flex-col bg-gray-50 rounded-xl overflow-hidden border border-gray-200">
+      {/* ─── Top Bar ─── */}
+      <div className="bg-white border-b border-gray-200 px-4 py-3">
+        <div className="flex items-center justify-between">
+          {/* Left: Breadcrumb + Page info */}
+          <div className="flex items-center gap-3 min-w-0">
+            <div className="flex items-center gap-1.5 text-xs text-gray-400">
+              <span>หน้าเว็บไซต์</span>
+              <ChevronRight className="w-3 h-3" />
+              <span className="text-gray-700 font-medium">{selectedPage.nameTh}</span>
+              <span className="text-gray-400">({selectedPage.name})</span>
             </div>
+            <span className="px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider bg-green-100 text-green-700 rounded">
+              Published
+            </span>
+            <a
+              href={selectedPage.path}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-[11px] text-blue-500 hover:underline flex items-center gap-1 truncate"
+            >
+              <ExternalLink className="w-3 h-3 flex-shrink-0" />
+              {selectedPage.path}
+            </a>
+          </div>
+
+          {/* Right: Actions */}
+          <div className="flex items-center gap-2">
+            <a
+              href={selectedPage.path}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-gray-200 text-xs font-medium text-gray-600 hover:bg-gray-50 transition-colors"
+            >
+              <Eye className="w-3.5 h-3.5" />
+              ดูหน้าเว็บไซต์
+            </a>
+            <button className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-gray-200 text-xs font-medium text-gray-600 hover:bg-gray-50 transition-colors">
+              <Plus className="w-3.5 h-3.5" />
+              สร้างข้อมูล
+            </button>
+            <button className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-red-500 text-white text-xs font-medium hover:bg-red-600 transition-colors shadow-sm">
+              <Pencil className="w-3.5 h-3.5" />
+              แก้ไขหน้าเว็บไซต์
+            </button>
           </div>
         </div>
-      )}
 
-      {/* ─── Selection Bar ─── */}
-      <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
-        <div className="flex items-center justify-between mb-3">
-          <div className="flex items-center gap-2">
-            <LayoutGrid className="w-4 h-4 text-gray-400" />
-            <span className="text-sm font-medium text-gray-700">เลือกหน้าที่ต้องการแสดง</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <button
-              onClick={selectAll}
-              className="text-xs text-gray-500 hover:text-gray-900 px-2 py-1 rounded hover:bg-white transition-colors"
-            >
-              เลือกทั้งหมด
-            </button>
-            <span className="text-gray-300">|</span>
-            <button
-              onClick={deselectAll}
-              className="text-xs text-gray-500 hover:text-gray-900 px-2 py-1 rounded hover:bg-white transition-colors"
-            >
-              ยกเลิกทั้งหมด
-            </button>
-          </div>
-        </div>
-
-        <div className="flex flex-wrap gap-1.5">
-          {ALL_PAGES.map((page) => {
-            const selected = selectedPages.has(page.path)
-            return (
+        {/* Device toggle + controls */}
+        <div className="flex items-center justify-between mt-3">
+          <div className="flex items-center gap-1 bg-gray-100 rounded-lg p-0.5">
+            {([
+              { mode: 'desktop' as const, icon: Monitor, label: 'Desktop' },
+              { mode: 'tablet' as const, icon: Tablet, label: 'Tablet' },
+              { mode: 'mobile' as const, icon: Smartphone, label: 'Mobile' },
+            ]).map(({ mode, icon: Icon, label }) => (
               <button
-                key={page.path}
-                onClick={() => togglePage(page.path)}
-                className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-xs font-medium transition-colors ${
-                  selected
-                    ? 'bg-gray-900 text-white'
-                    : 'bg-white text-gray-500 border border-gray-200 hover:border-gray-300 hover:text-gray-700'
+                key={mode}
+                onClick={() => setViewMode(mode)}
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition-all ${
+                  viewMode === mode
+                    ? 'bg-white text-gray-900 shadow-sm'
+                    : 'text-gray-500 hover:text-gray-700'
                 }`}
               >
-                {selected && <Check className="w-3 h-3" />}
-                {page.nameTh}
-                {page.requiresAuth && (
-                  <span title="ต้อง Login เพื่อเข้าถึง">
-                    <Lock className="w-3 h-3 text-amber-500 ml-0.5" />
-                  </span>
-                )}
+                <Icon className="w-3.5 h-3.5" />
+                {label}
               </button>
-            )
-          })}
-        </div>
-      </div>
+            ))}
+          </div>
 
-      {/* ─── Category Tabs ─── */}
-      <div className="flex items-center gap-1 overflow-x-auto">
-        {[CATEGORY_ALL, ...CATEGORIES].map((cat) => {
-          const count = categoryCount[cat] ?? 0
-          const isActive = activeCategory === cat
-          return (
+          <div className="flex items-center gap-2">
             <button
-              key={cat}
-              onClick={() => setActiveCategory(cat)}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium whitespace-nowrap transition-colors ${
-                isActive
-                  ? 'bg-gray-900 text-white'
-                  : 'text-gray-500 hover:text-gray-700 hover:bg-gray-100'
+              onClick={() => setShowOverlay(!showOverlay)}
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition-colors ${
+                showOverlay ? 'bg-red-50 text-red-600 border border-red-200' : 'text-gray-500 border border-gray-200 hover:bg-gray-50'
               }`}
             >
-              {cat}
-              <span className={`text-[10px] px-1.5 py-0.5 rounded ${
-                isActive ? 'bg-white/20 text-white' : 'bg-gray-100 text-gray-400'
-              }`}>
-                {count}
-              </span>
+              <Layers className="w-3.5 h-3.5" />
+              Markers {showOverlay ? 'ON' : 'OFF'}
             </button>
-          )
-        })}
+            <button
+              onClick={() => { setIframeKey((k) => k + 1); setElementPositions({}) }}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-md border border-gray-200 text-xs font-medium text-gray-500 hover:bg-gray-50 transition-colors"
+            >
+              <RefreshCw className="w-3.5 h-3.5" />
+              รีเฟรช
+            </button>
+          </div>
+        </div>
       </div>
 
-      {/* ─── Page Preview Grid ─── */}
-      <div
-        className={`grid gap-4 ${
-          viewMode === 'desktop'
-            ? 'grid-cols-1 xl:grid-cols-2'
-            : 'grid-cols-2 md:grid-cols-3 lg:grid-cols-4'
-        }`}
-      >
-        {visiblePages.map((page) => (
-          <div
-            key={page.path}
-            className="group bg-white rounded-lg border border-gray-200 overflow-hidden hover:shadow-md hover:border-gray-300 transition-all"
-          >
-            {/* Clean card header */}
-            <div className="px-3 py-2.5 border-b border-gray-100 flex items-center justify-between">
-              <div className="min-w-0">
-                <p className="text-sm font-medium text-gray-900 truncate flex items-center gap-1">
-                  {page.nameTh}
-                  {page.requiresAuth && (
-                    <span title="ต้อง Login เพื่อเข้าถึง">
-                      <Lock className="w-3 h-3 text-amber-500 flex-shrink-0" />
-                    </span>
-                  )}
-                </p>
-                <p className="text-[11px] text-gray-400 truncate">{page.path}</p>
+      {/* ─── Main Content Area ─── */}
+      <div className="flex-1 flex overflow-hidden min-h-0">
+        {/* ─── Preview Area ─── */}
+        <div className="flex-1 flex flex-col overflow-hidden min-w-0">
+          {/* Iframe container */}
+          <div className="flex-1 overflow-auto bg-gray-100 p-4 flex justify-center">
+            <div
+              className="relative bg-white shadow-lg rounded-lg overflow-hidden"
+              style={{
+                width: viewportWidth,
+                maxWidth: '100%',
+                transform: viewMode !== 'desktop' ? `scale(${Math.min(1, (700) / viewportWidth)})` : undefined,
+                transformOrigin: 'top center',
+              }}
+            >
+              <iframe
+                key={`${selectedPage.path}-${iframeKey}`}
+                ref={iframeRef}
+                src={selectedPage.path}
+                className="w-full border-0"
+                style={{ height: viewportHeight, width: viewportWidth }}
+                sandbox="allow-same-origin allow-scripts"
+                title={`${selectedPage.name} Preview`}
+              />
+
+              {/* Annotation Overlay */}
+              {showOverlay && currentAnnotation && (
+                <div className="absolute inset-0 pointer-events-none" style={{ zIndex: 10 }}>
+                  {elements.map((el, idx) => {
+                    const pos = elementPositions[el.id]
+                    if (!pos) return null
+
+                    const isSelected = selectedElementId === el.id
+                    const isHovered = hoveredElementId === el.id
+
+                    // Scale positions for non-desktop viewports
+                    const scale = viewMode === 'desktop' ? 1 : Math.min(1, 700 / viewportWidth)
+                    const left = pos.left * scale
+                    const top = pos.top * scale
+                    const width = pos.width * scale
+                    const height = pos.height * scale
+
+                    return (
+                      <div
+                        key={el.id}
+                        className="absolute pointer-events-auto cursor-pointer transition-all duration-150"
+                        style={{ left, top, width, height }}
+                        onClick={() => setSelectedElementId(el.id)}
+                        onMouseEnter={() => setHoveredElementId(el.id)}
+                        onMouseLeave={() => setHoveredElementId(null)}
+                      >
+                        <div
+                          className={`absolute inset-0 border-2 rounded-sm transition-colors ${
+                            isSelected
+                              ? 'border-red-500 bg-red-500/10'
+                              : isHovered
+                                ? 'border-red-400 bg-red-400/5'
+                                : 'border-transparent'
+                          }`}
+                        />
+                        {showOverlay && (
+                          <div
+                            className={`absolute -top-3 -left-3 w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-bold text-white shadow transition-transform ${
+                              isSelected ? 'bg-red-600 scale-110' : 'bg-gray-700 hover:bg-red-500'
+                            }`}
+                          >
+                            {idx + 1}
+                          </div>
+                        )}
+                        {(isHovered || isSelected) && (
+                          <div className="absolute -top-7 left-0 bg-gray-900 text-white text-[10px] px-2 py-0.5 rounded whitespace-nowrap z-20 shadow-lg">
+                            {el.name}
+                          </div>
+                        )}
+                      </div>
+                    )
+                  })}
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* ─── Bottom Panel: Component List ─── */}
+          {bottomPanelOpen && elements.length > 0 && (
+            <div className="bg-white border-t border-gray-200 px-4 py-3">
+              <div className="flex items-center justify-between mb-2">
+                <div className="flex items-center gap-2">
+                  <Layers className="w-4 h-4 text-gray-400" />
+                  <span className="text-sm font-medium text-gray-700">
+                    รายการองค์ประกอบในหน้านี้ ({elements.length})
+                  </span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => handleElementNavigate('prev')}
+                    disabled={!selectedElementId}
+                    className="p-1 rounded text-gray-400 hover:text-gray-600 hover:bg-gray-100 disabled:opacity-30 transition-colors"
+                  >
+                    <ArrowUp className="w-3.5 h-3.5" />
+                  </button>
+                  <button
+                    onClick={() => handleElementNavigate('next')}
+                    disabled={!selectedElementId}
+                    className="p-1 rounded text-gray-400 hover:text-gray-600 hover:bg-gray-100 disabled:opacity-30 transition-colors"
+                  >
+                    <ArrowDown className="w-3.5 h-3.5" />
+                  </button>
+                  <button
+                    onClick={() => setBottomPanelOpen(false)}
+                    className="p-1 rounded text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors"
+                  >
+                    <X className="w-3.5 h-3.5" />
+                  </button>
+                </div>
               </div>
-              <div className="flex items-center gap-1 flex-shrink-0">
-                <button
-                  onClick={() => { setFullscreenPage(page); setFullscreenDevice(viewMode) }}
-                  className="p-1 rounded text-gray-400 hover:text-gray-700 hover:bg-gray-100 transition-colors"
-                  title="ดูแบบเต็มจอ"
-                >
-                  <Maximize2 className="w-3.5 h-3.5" />
-                </button>
-                <a
-                  href={page.path}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="p-1 rounded text-gray-400 hover:text-gray-700 hover:bg-gray-100 transition-colors"
-                  title="เปิดในแท็บใหม่"
-                >
-                  <ExternalLink className="w-3.5 h-3.5" />
-                </a>
+              <div className="flex items-center gap-2 overflow-x-auto pb-1">
+                {elements.map((el, idx) => {
+                  const isSelected = selectedElementId === el.id
+                  const Icon = ELEMENT_ICONS[el.type] || Layers
+                  return (
+                    <button
+                      key={el.id}
+                      onClick={() => setSelectedElementId(el.id)}
+                      className={`flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-medium whitespace-nowrap transition-all flex-shrink-0 ${
+                        isSelected
+                          ? 'bg-red-50 text-red-700 border border-red-200 shadow-sm'
+                          : 'bg-gray-50 text-gray-600 border border-gray-200 hover:bg-gray-100 hover:border-gray-300'
+                      }`}
+                    >
+                      <span
+                        className={`w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold flex-shrink-0 ${
+                          isSelected ? 'bg-red-500 text-white' : 'bg-gray-300 text-white'
+                        }`}
+                      >
+                        {idx + 1}
+                      </span>
+                      <Icon className="w-3.5 h-3.5 flex-shrink-0" />
+                      <span>{el.name}</span>
+                      <span className={`text-[10px] px-1.5 py-0.5 rounded ${
+                        isSelected ? 'bg-red-100 text-red-600' : 'bg-gray-200 text-gray-500'
+                      }`}>
+                        {ELEMENT_TYPE_LABELS[el.type]}
+                      </span>
+                    </button>
+                  )
+                })}
               </div>
             </div>
+          )}
+        </div>
 
-            {/* Iframe preview */}
-            {(() => {
-              const cw = containerWidths.get(page.path) || 0
-              const iframeW = viewMode === 'desktop' ? 1440 : 390
-              const iframeH = viewMode === 'desktop' ? 900 : 844
-              const scale = cw > 0 ? cw / iframeW : 0.35
-              const visibleH = iframeH * scale
-              return (
-                <div
-                  ref={setPreviewRef(page.path)}
-                  data-page-path={page.path}
-                  className="relative bg-gray-50 overflow-hidden"
-                  style={{ height: `${Math.min(visibleH, viewMode === 'desktop' ? 360 : 420)}px` }}
-                >
-                  <div
-                    style={{
-                      width: `${iframeW}px`,
-                      height: `${iframeH}px`,
-                      transformOrigin: 'top left',
-                      transform: `scale(${scale})`,
-                    }}
-                  >
-                    <iframe
-                      key={`${page.path}-${iframeKeys}`}
-                      ref={(el) => { if (el) iframeRefs.current.set(page.path, el) }}
-                      src={page.path}
-                      className="w-full h-full border-0 bg-white"
-                      title={page.name}
-                      loading="lazy"
-                      sandbox="allow-same-origin allow-scripts"
-                    />
-                  </div>
-
-                  {/* Subtle hover overlay with actions */}
-                  <div className="absolute inset-0 bg-black/50 flex items-center justify-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                    <button
-                      onClick={() => { setFullscreenPage(page); setFullscreenDevice(viewMode) }}
-                      className="flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-white text-gray-900 text-xs font-medium hover:bg-gray-50"
-                    >
-                      <Maximize2 className="w-3.5 h-3.5" />
-                      ดูเต็มจอ
-                    </button>
-                    <a
-                      href={page.path}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-gray-900 text-white text-xs font-medium hover:bg-gray-800"
-                    >
-                      <ExternalLink className="w-3.5 h-3.5" />
-                      เปิดหน้า
-                    </a>
-                  </div>
-                </div>
-              )
-            })()}
-
-            {/* Card footer - minimal info */}
-            {page.description && (
-              <div className="px-3 py-2 bg-gray-50 border-t border-gray-100">
-                <p className="text-[11px] text-gray-500 line-clamp-1">{page.description}</p>
+        {/* ─── Right Sidebar: Element Inspector ─── */}
+        {sidebarOpen && (
+          <div className="w-80 bg-white border-l border-gray-200 flex flex-col overflow-hidden flex-shrink-0">
+            {/* Sidebar header */}
+            <div className="px-4 py-3 border-b border-gray-200 flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Layers className="w-4 h-4 text-red-500" />
+                <span className="text-sm font-semibold text-gray-900">ตัวแก้ไของค์ประกอบ</span>
               </div>
+              <button
+                onClick={() => setSidebarOpen(false)}
+                className="p-1 rounded text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            {/* Page selector */}
+            <div className="px-4 py-3 border-b border-gray-100">
+              <label className="text-[10px] font-bold text-gray-400 uppercase tracking-wider block mb-1.5">เลือกหน้า</label>
+              <select
+                value={selectedPage.path}
+                onChange={(e) => {
+                  const page = ALL_PAGES.find((p) => p.path === e.target.value)
+                  if (page) handlePageSelect(page)
+                }}
+                className="w-full text-sm border border-gray-200 rounded-lg px-3 py-2 focus:ring-2 focus:ring-red-300 focus:border-red-300 outline-none"
+              >
+                {ALL_PAGES.map((p) => (
+                  <option key={p.path} value={p.path}>{p.nameTh} ({p.path})</option>
+                ))}
+              </select>
+            </div>
+
+            {!selectedElement ? (
+              /* Empty state */
+              <div className="flex-1 flex items-center justify-center text-gray-400 text-sm p-6">
+                <div className="text-center">
+                  <MousePointerClick className="w-8 h-8 mx-auto mb-2 opacity-40" />
+                  <p className="font-medium">คลิกบนหน้าเว็บ</p>
+                  <p className="text-xs mt-1 opacity-60">หรือเลือกจากรายการด้านล่าง</p>
+                  <p className="text-[10px] mt-2 text-gray-300">↑ ↓ นำทาง element</p>
+                </div>
+              </div>
+            ) : (
+              <>
+                {/* Element header */}
+                <div className="px-4 py-3 border-b border-gray-100">
+                  <div className="flex items-center gap-2 mb-2">
+                    <span className="px-2 py-0.5 bg-red-50 text-red-600 text-[10px] font-bold rounded uppercase">
+                      {ELEMENT_TYPE_LABELS[selectedElement.type]}
+                    </span>
+                    <span className={`px-2 py-0.5 text-[10px] font-bold rounded uppercase ${
+                      selectedElement.status === 'active'
+                        ? 'bg-green-50 text-green-600'
+                        : selectedElement.status === 'disabled'
+                          ? 'bg-gray-100 text-gray-500'
+                          : 'bg-yellow-50 text-yellow-600'
+                    }`}>
+                      {selectedElement.status}
+                    </span>
+                  </div>
+                  <h3 className="font-bold text-gray-900 text-sm">{selectedElement.name}</h3>
+                  {selectedElement.nameTh && (
+                    <p className="text-xs text-gray-500">{selectedElement.nameTh}</p>
+                  )}
+                  {selectedElement.description && (
+                    <p className="text-xs text-gray-400 mt-1 leading-relaxed">{selectedElement.description}</p>
+                  )}
+                </div>
+
+                {/* Scrollable content */}
+                <div className="flex-1 overflow-y-auto">
+                  {/* ข้อมูลทั่วไป (General Info) */}
+                  <div className="px-4 py-3 border-b border-gray-100">
+                    <h4 className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-2">ข้อมูลทั่วไป</h4>
+                    <div className="space-y-2">
+                      <InfoRow label="Type" value={`${selectedElement.type === 'heading' ? 'Heading (H1)' : ELEMENT_TYPE_LABELS[selectedElement.type]}`} />
+                      {selectedElement.textContent && (
+                        <InfoRow label="Text" value={selectedElement.textContent} mono />
+                      )}
+                      <InfoRow label="Position" value={selectedElement.component || currentAnnotation?.pageName || '—'} />
+                      {selectedElement.variant && (
+                        <InfoRow label="Variant" value={selectedElement.variant} />
+                      )}
+                      <InfoRow label="Data Source" value={selectedElement.technical.dataSource} />
+                      <div>
+                        <span className="text-[10px] text-gray-400 block mb-1">Responsive</span>
+                        <div className="flex gap-2">
+                          <ResponsiveDot active={selectedElement.technical.responsive.desktop} label="Desktop" />
+                          <ResponsiveDot active={selectedElement.technical.responsive.tablet} label="Tablet" />
+                          <ResponsiveDot active={selectedElement.technical.responsive.mobile} label="Mobile" />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* การกระทำ (Action) */}
+                  <div className="px-4 py-3 border-b border-gray-100">
+                    <h4 className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-2">การกระทำ</h4>
+                    <div className="space-y-2">
+                      <InfoRow label="Type" value={selectedElement.behavior?.clickAction || '—'} />
+                      <InfoRow label="Link" value={selectedElement.behavior?.route || selectedElement.behavior?.externalUrl || '—'} mono />
+                      <InfoRow label="Event" value={selectedElement.behavior?.eventName || '—'} mono />
+                    </div>
+                  </div>
+
+                  {/* วัตถุประสงค์ (Purpose) */}
+                  <div className="px-4 py-3 border-b border-gray-100">
+                    <h4 className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-2">วัตถุประสงค์</h4>
+                    <p className="text-xs text-gray-600 leading-relaxed">
+                      {selectedElement.ux.goal || '—'}
+                    </p>
+                    {selectedElement.ux.kpi && (
+                      <p className="text-[11px] text-gray-400 mt-1">KPI: {selectedElement.ux.kpi}</p>
+                    )}
+                    <div className="flex items-center gap-0.5 mt-2">
+                      {Array.from({ length: 5 }).map((_, i) => (
+                        <div
+                          key={i}
+                          className={`w-2 h-2 rounded-full ${
+                            i < selectedElement.ux.priority ? 'bg-red-400' : 'bg-gray-200'
+                          }`}
+                        />
+                      ))}
+                      <span className="text-[10px] text-gray-400 ml-1">Priority {selectedElement.ux.priority}/5</span>
+                    </div>
+                  </div>
+
+                  {/* ข้อมูลทางเทคนิค (Technical) */}
+                  <div className="px-4 py-3 border-b border-gray-100">
+                    <h4 className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-2 flex items-center gap-1">
+                      <Code className="w-3 h-3" />
+                      ข้อมูลทางเทคนิค
+                    </h4>
+                    <div className="space-y-2">
+                      <InfoRow label="CSS Selector" value={selectedElement.technical.cssSelector} mono />
+                      {selectedElement.component && (
+                        <InfoRow label="Component" value={selectedElement.component} mono />
+                      )}
+                      {selectedElement.technical.tailwindClasses && selectedElement.technical.tailwindClasses.length > 0 && (
+                        <div>
+                          <span className="text-[10px] text-gray-400 block mb-1">Tailwind Classes</span>
+                          <div className="flex flex-wrap gap-1">
+                            {selectedElement.technical.tailwindClasses.map((cls) => (
+                              <span key={cls} className="px-1.5 py-0.5 bg-blue-50 text-blue-600 text-[10px] rounded font-mono">
+                                {cls}
+                              </span>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Accessibility */}
+                  {selectedElement.accessibility && (
+                    <div className="px-4 py-3 border-b border-gray-100">
+                      <h4 className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-2 flex items-center gap-1">
+                        <Accessibility className="w-3 h-3" />
+                        การเข้าถึง
+                      </h4>
+                      <div className="space-y-2">
+                        {selectedElement.accessibility.ariaLabel && (
+                          <InfoRow label="ARIA Label" value={selectedElement.accessibility.ariaLabel} />
+                        )}
+                        {selectedElement.accessibility.role && (
+                          <InfoRow label="Role" value={selectedElement.accessibility.role} />
+                        )}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Tags */}
+                  {selectedElement.tags && selectedElement.tags.length > 0 && (
+                    <div className="px-4 py-3">
+                      <h4 className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-2">Tags</h4>
+                      <div className="flex flex-wrap gap-1">
+                        {selectedElement.tags.map((tag) => (
+                          <span key={tag} className="px-2 py-0.5 bg-gray-100 text-gray-600 text-[10px] rounded-full">
+                            {tag}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                {/* Footer nav */}
+                <div className="px-4 py-2.5 border-t border-gray-200 flex items-center justify-between bg-gray-50">
+                  <button
+                    onClick={() => handleElementNavigate('prev')}
+                    className="text-[11px] text-gray-500 hover:text-gray-900 transition-colors"
+                  >
+                    ← ก่อนหน้า
+                  </button>
+                  <span className="text-[10px] text-gray-400 font-mono">{selectedElement.id}</span>
+                  <button
+                    onClick={() => handleElementNavigate('next')}
+                    className="text-[11px] text-gray-500 hover:text-gray-900 transition-colors"
+                  >
+                    ถัดไป →
+                  </button>
+                </div>
+              </>
             )}
           </div>
-        ))}
+        )}
+
+        {/* Sidebar toggle when closed */}
+        {!sidebarOpen && (
+          <button
+            onClick={() => setSidebarOpen(true)}
+            className="absolute right-0 top-1/2 -translate-y-1/2 z-10 w-8 h-16 bg-white rounded-l-lg shadow-lg border border-r-0 border-gray-200 flex items-center justify-center text-gray-500 hover:text-red-500 transition-colors"
+          >
+            <ChevronRight className="w-4 h-4 rotate-180" />
+          </button>
+        )}
       </div>
-
-      {/* ─── Empty State ─── */}
-      {visiblePages.length === 0 && (
-        <div className="flex flex-col items-center justify-center py-16 text-center">
-          <Eye className="w-8 h-8 text-gray-300 mb-3" />
-          <p className="text-sm font-medium text-gray-600">
-            {selectedPages.size === 0 ? 'ยังไม่ได้เลือกหน้า' : 'ไม่มีหน้าในหมวดนี้'}
-          </p>
-          <p className="text-xs text-gray-400 mt-1">
-            {selectedPages.size === 0
-              ? 'เลือกหน้าที่ต้องการดูตัวอย่างจากด้านบน'
-              : 'ลองเลือกหมวดหมู่อื่น'
-            }
-          </p>
-        </div>
-      )}
-
-      {/* ─── Fullscreen Modal ─── */}
-      {fullscreenPage && (
-        <div className="fixed inset-0 z-50 bg-black/70 flex items-center justify-center p-4">
-          <div className="bg-white rounded-lg w-full max-w-6xl h-[90vh] flex flex-col overflow-hidden shadow-xl">
-            {/* Clean modal header */}
-            <div className="flex items-center justify-between px-4 py-3 border-b border-gray-200 bg-gray-50">
-              <div className="flex items-center gap-3">
-                <div>
-                  <h3 className="text-sm font-medium text-gray-900">
-                    {fullscreenPage.nameTh}
-                    <span className="text-gray-400 ml-2 text-xs">{fullscreenPage.name}</span>
-                  </h3>
-                  <p className="text-[11px] text-gray-400">{fullscreenPage.path}</p>
-                </div>
-              </div>
-              <div className="flex items-center gap-2">
-                <div className="flex rounded border border-gray-200 overflow-hidden bg-white">
-                  <button
-                    onClick={() => setFullscreenDevice('desktop')}
-                    className={`p-1.5 transition-colors ${
-                      fullscreenDevice === 'desktop' ? 'bg-gray-900 text-white' : 'text-gray-500 hover:text-gray-700'
-                    }`}
-                  >
-                    <Monitor className="w-4 h-4" />
-                  </button>
-                  <button
-                    onClick={() => setFullscreenDevice('mobile')}
-                    className={`p-1.5 transition-colors ${
-                      fullscreenDevice === 'mobile' ? 'bg-gray-900 text-white' : 'text-gray-500 hover:text-gray-700'
-                    }`}
-                  >
-                    <Smartphone className="w-4 h-4" />
-                  </button>
-                </div>
-                <a
-                  href={fullscreenPage.path}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center gap-1 px-2.5 py-1.5 rounded border border-gray-200 text-xs font-medium text-gray-600 hover:bg-gray-50 bg-white"
-                >
-                  <ExternalLink className="w-3.5 h-3.5" />
-                  เปิด
-                </a>
-                <button
-                  onClick={() => setFullscreenPage(null)}
-                  className="p-1.5 hover:bg-gray-200 rounded text-gray-400 hover:text-gray-700 transition-colors"
-                >
-                  <X className="w-4 h-4" />
-                </button>
-              </div>
-            </div>
-            {/* Modal iframe */}
-            <div className="flex-1 overflow-hidden bg-gray-100 flex items-start justify-center">
-              <div className={`bg-white h-full transition-all ${
-                fullscreenDevice === 'desktop' ? 'w-full' : 'w-[390px] border-x border-gray-200'
-              }`}>
-                <iframe
-                  src={fullscreenPage.path}
-                  className="w-full h-full border-0"
-                  title={fullscreenPage.name}
-                />
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
+  )
+}
+
+// ─── Helper Components ───────────────────────────────────────────
+function InfoRow({ label, value, mono = false }: { label: string; value: string; mono?: boolean }) {
+  return (
+    <div>
+      <span className="text-[10px] text-gray-400 block">{label}</span>
+      <p className={`text-xs text-gray-800 ${mono ? 'font-mono text-[11px]' : ''}`}>{value}</p>
+    </div>
+  )
+}
+
+function ResponsiveDot({ active, label }: { active: boolean; label: string }) {
+  return (
+    <span className={`flex items-center gap-1 text-[10px] ${active ? 'text-green-600' : 'text-gray-300'}`}>
+      <span className={`w-1.5 h-1.5 rounded-full ${active ? 'bg-green-500' : 'bg-gray-300'}`} />
+      {label}
+    </span>
   )
 }
